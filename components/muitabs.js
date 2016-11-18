@@ -5,6 +5,17 @@ const PT=React.PropTypes;
 const tabsBarJustifiedClass = 'mui-tabs__bar--justified',
       isActiveClass = 'mui--is-active';
 
+const styles={
+	closebutton:{float:"right",color:"white",width:"1.1em",
+	fontSize:"125%",background:"#ff3f3f",borderRadius:"50%"}
+}
+const closeButton=(props)=>{
+	const onClick=(e)=>{
+		const i=parseInt(e.target.dataset.idx,10);
+		props.onClose(i);
+	}
+	return E("span",{style:styles.closebutton,onClick,"data-idx":props.i},"×");
+}
 const Tabs=React.createClass({
 	getInitialState(){
 		return {selected:0}
@@ -41,8 +52,10 @@ const Tabs=React.createClass({
 			const name=this.props.tabs[i][0];
 			const label=this.props.tabs[i][1];
 			const isActive = (i === this.state.selected) ? true : false;
+			const closable=this.props.closable ;
 			tabEls.push(E("li",{key:i,className:(isActive) ? isActiveClass : '',
-				},E("a",{onClick:this.onTabClick,"data-i":i},label))
+				},E("a",{onClick:this.onTabClick,"data-i":i},label,
+				isActive&&closable&&E(closeButton,{i,onClose:this.props.onClose})))
 			);
 
 			var className = 'mui-tabs__pane ';

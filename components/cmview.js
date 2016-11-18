@@ -59,7 +59,7 @@ const CMView=React.createClass({
 		return this.cm;
 	}
 	,setCM(cm){
-		this.cm=cm.getCodeMirror();
+		if (cm) this.cm=cm.getCodeMirror();
 	}
 	,render(){
 		return E("div",{},

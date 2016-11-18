@@ -1,34 +1,27 @@
-const  { OPEN_AT,OPEN_AT_FAILED,SET_ACTIVE_ARTICLE } = require('../actions/articles');
+const  { OPEN_AT,OPEN_AT_FAILED,SET_ACTIVE_ARTICLE,CLOSE_ARTICLE } = require('../actions/articles');
 
 module.exports=function articles(state = [] , action = {}) {
 	const A=action;
+
   if (OPEN_AT===A.type) {
 		var newstate=state.slice();
     const {title,corpus,address,article,text}=action;
-    var obj={title,corpus,address,article,text};
+    var id='A'+Math.floor(Math.random()*10000000);
+    var obj={title,corpus,address,article,text,id,active:true};
     newstate.forEach((a)=>a.active=false);
-    if (A.replaceAt!==undefined && newstate[A.replaceAt]) {
-      newstate[A.replaceAt]=obj;
-      obj.seq=A.replaceAt;
-      obj.active=true;
-    } else {
-      if (A.insertAt!==undefined) {
-        newstate=[].concat(state.slice(0,A.insertAt));
-      }
-      obj.seq=newstate.length;
-      obj.active=true;
-      newstate.push(obj);
-      if (A.insertAt!==undefined) newstate=newstate.concat(state.slice(A.insertAt));        
-    }
+    newstate.push(obj);
 		return newstate;
   } else if(SET_ACTIVE_ARTICLE===A.type){
-    if (typeof state[A.seq]=="undefined") return state;
-
-    var newstate=state.slice();
-    newstate.forEach((o)=>o.active=false);
-    newstate[A.seq]=Object.assign({},newstate[A.seq],{active:true});
-
-    return newstate;
+    return state.map((o)=>{
+      if (o.id==A.id) {
+        return Object.assign({},o,{active:true})
+      } else {
+        o.active=false;
+      }
+      return o;
+    });
+  } else if (CLOSE_ARTICLE===A.type) {
+    return state.filter((o)=>o.id!==A.id);
   } else {
   	return state;
   }

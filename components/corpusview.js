@@ -22,7 +22,6 @@ const CorpusView=React.createClass({
 		address:PT.string.isRequired,
 		text:PT.array.isRequired,
 		decorations:PT.array,
-		seq:PT.number.isRequired,
 		onViewReady:PT.func,
 		onViewLeaving:PT.func,
 		onCursorActivity:PT.func,
@@ -137,7 +136,6 @@ const CorpusView=React.createClass({
 	}
 	,lineWidget(opts){
 		if (opts.corpus!==this.corpus)return;
-		if (opts.seq!==this.props.seq)return;
 		const linech=this.toLogicalPos(opts.address);
 		if (linech.line==-1)return;
 		if (this.linewidget) this.linewidget.clear();
@@ -155,13 +153,11 @@ const CorpusView=React.createClass({
 		this.highlight=this.cm.markText(r.start,r.end,{className:"highlight",clearOnEnter:true});
 	}
 	,toggleLayout(opts){
-		if (opts.corpus!==this.corpus||opts.seq!==this.props.side) return;
 		const article=this.cor.articleOf(this.state.startkpos);
 		this.layout(article,this.state.text);
 	}
 	,layout(article,text,address){
 		const cor=this.cor;
-		const seq=this.props.seq;
 		const layouttag="p";
 
 		if (!address){
@@ -276,12 +272,12 @@ const CorpusView=React.createClass({
 	}
 	,setCM(cm){
 		this.viewer=cm;
-		this.cm=cm.getCodeMirror();
+		if (cm) this.cm=cm.getCodeMirror();
 	}
 	,render(){
 		if (!this.state.text) return E("div",{},"loading");
 		const props=Object.assign({},this.props,
-			{ref:"cm",
+			{ref:this.setCM,
 			text:this.state.text,
 			onCursorActivity:this.onCursorActivity,
 			onCopy:this.onCopy,
