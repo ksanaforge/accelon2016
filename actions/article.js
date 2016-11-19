@@ -4,9 +4,10 @@ const ksanacorpus=require("ksana-corpus");
 const TOGGLE_LAYOUT = 'TOGGLE_LAYOUT';
 const UPDATE_ARTICLE='UPDATE_ARTICLE';
 
-const getActiveArticle=(articles)=>articles.filter((a)=>a.active)[0];
+const getActiveArticle=(state)=>state.articles[state.activeArticleTab];
+
 const toggleLayout=()=>(dispatch,getState)=>{
-	const active=getActiveArticle(getState().articles);
+	const active=getActiveArticle(getState());
 	active&&dispatch({type:TOGGLE_LAYOUT,id:active.id});
 };
 
@@ -15,9 +16,9 @@ const _fetchArticle=(corpus,address,dispatch,type,id)=>{
 		if (!err) {
 			const article=cor.articleOf(address);
       if (article){
-        cor.getArticleText( article.at, text=>{
+        cor.getArticleTextTag( article.at, ["ptr","def","note"] , (res)=>{
           dispatch({type,corpus,address,id,
-            article,title:article.articlename,text});
+            article,title:article.articlename,text:res.text,fields:res.fields});
         });
       } else {
         dispatch({type: FETCH_FAILED,corpus,address});
@@ -27,7 +28,7 @@ const _fetchArticle=(corpus,address,dispatch,type,id)=>{
 }
 
 const nextprevArticle=(dispatch,getState,nav)=>{
-	const active=getActiveArticle(getState().articles);
+	const active=getActiveArticle(getState());
 	if (!active)return;
 	const cor=ksanacorpus.openCorpus(active.corpus);
 	if (!cor)return;//should be open
@@ -43,7 +44,7 @@ const prevArticle=()=>(dispatch,getState)=>{
 	nextprevArticle(dispatch,getState,-1);
 };
 const updateArticleByAddress=(address)=>(dispatch,getState)=>{
-	const active=getActiveArticle(getState().articles);
+	const active=getActiveArticle(getState());
 	if (!active)return;
 	const cor=ksanacorpus.openCorpus(active.corpus);
 	if (!cor)return;//should be open

@@ -8,7 +8,6 @@ const styles={
 }
 
 const MainTabs=(props)=>{	
-	var selected=0;
 	const topmargin=props.topMargin||"0px";
 	const containerstyle={ height: "-webkit-calc(100vh - "+topmargin+")"} ;
 
@@ -16,9 +15,6 @@ const MainTabs=(props)=>{
 
 	const panes=props.articles.map((a,idx)=>{
 		var article=a;
-		if (a.active) {
-			selected=idx;
-		}
 		const viewprops=Object.assign({},article,{setSelection:props.setSelection});
 		
 		const selection=props.selections[article.id];
@@ -43,7 +39,7 @@ const MainTabs=(props)=>{
 		props.closeArticle(props.articles[i].id);
 	}
 	return E("div",{},
-		E(MUITabs,{onSelectTab,tabs,panes,selected,
+		E(MUITabs,{onSelectTab,tabs,panes,selected:props.activeArticleTab,
 			closable:true,onClose,panel:props.viewOptions})
 	)
 }

@@ -7,12 +7,13 @@ const ArticleActions=require('../actions/article');
 const SelectionActions=require('../actions/selection');
 
 function mapStateToProps(state,ownProps) {
-	const activeArticle=state.articles.filter((a)=>a.active)[0];
+	const activeArticle=state.articles[state.activeArticleTab];
   return {
-  	activeArticle,
     articles: state.articles,
+    activeArticleTab:state.activeArticleTab,
     selections: state.selections,
-    corpus: state.corpus
+    corpus: state.corpus,
+    activeArticle
   };
 }
 

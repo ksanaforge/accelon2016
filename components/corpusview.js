@@ -4,19 +4,11 @@ const PT=React.PropTypes;
 const CMView=require("./cmview");
 const {openCorpus}=require("ksana-corpus");
 /*
-const defaultrule=require("../defaultrule");
 const addressHashTag=require("../units/addresshashtag");
 const decorations=require("../decorations/");
 const decorateBond=require("../decorations/bond");
 */
 const CorpusView=React.createClass({
-	/*
-	contextTypes:{
-		action:PT.func.isRequired,
-		listen:PT.func.isRequired,
-		unlistenAll:PT.func.isRequired
-	}
-	*/
 	propTypes:{
 		corpus:PT.string.isRequired,
 		address:PT.string.isRequired,
@@ -30,11 +22,10 @@ const CorpusView=React.createClass({
 
 	}
 	,getInitialState(){
-		return {text:"",startkpos:1,article:{},linebreaks:[],pagebreaks:[]};
+		return {text:"",linebreaks:[],pagebreaks:[]};
 	}
 	,componentDidMount(){
 		/*
-		this.context.listen("goto",this.goto,this);
 		this.context.listen("highlightAddress",this.highlightAddress,this);
 		this.context.listen("charWidget",this.charWidget,this);
 		this.context.listen("lineWidget",this.lineWidget,this);
@@ -83,10 +74,10 @@ const CorpusView=React.createClass({
 		return this.cor.toLogicalRange(this.state.linebreaks,range,this.getRawLine);
 	}
 	,fromLogicalPos(linech){
-		const firstline=this.cor.bookLineOf(this.state.startkpos); //first of of the article
+		const firstline=this.cor.bookLineOf(this.props.article.start); //first of of the article
 		const text=this.cm.doc.getLine(linech.line);
 		const lb=this.state.linebreaks[linech.line];
-		if (!text) return this.state.startkpos;
+		if (!text) return this.props.article.start;
 		return this.cor.fromLogicalPos(text,linech.ch,lb,firstline,this.getRawLine);
 	}
 	,decorate(){
@@ -147,7 +138,7 @@ const CorpusView=React.createClass({
 
 		const changetext=function(layout){
 			const text=layout.lines.join("\n");
-			this.setState({text,linebreaks:layout.linebreaks,startkpos:article.start,
+			this.setState({text,linebreaks:layout.linebreaks,
 				pagebreaks:layout.pagebreaks,article},()=>{
 					this.scrollToAddress(address);
 				}
@@ -176,11 +167,10 @@ const CorpusView=React.createClass({
 		if (this.charwidget)this.charwidget.clear();
 		this.charwidget=this.cm.setBookmark(linech,{widget:opts.widget,handleMouseEvents:true});
 	}
-
 	,kRangeFromSel(cm,from,to){
 		if (!from||!to)return 0;
 		const f=this.cor.fromLogicalPos.bind(this.cor);
-		const firstline=this.cor.bookLineOf(this.state.startkpos); //first of of the article
+		const firstline=this.cor.bookLineOf(this.props.article.start); //first of of the article
 		const s=f(cm.doc.getLine(from.line),from.ch,this.state.linebreaks[from.line],firstline,this.getRawLine);
 		const e=f(cm.doc.getLine(to.line),to.ch,this.state.linebreaks[to.line],firstline,this.getRawLine);
 		return this.cor.makeKRange(s,e);
@@ -252,7 +242,7 @@ const CorpusView=React.createClass({
 			onCursorActivity:this.onCursorActivity,
 			onCopy:this.onCopy,
 			onViewportChange:this.onViewportChange,
-			articlename:this.state.article.articlename
+			articlename:this.props.article.articlename
 			}
 		);
 		return E(CMView,props);

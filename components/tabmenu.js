@@ -16,12 +16,22 @@ const TabMenu=React.createClass({
 	,propTypes:{
 		panel:PT.func.isRequired,
 	}
+	,componentWillUnmount(){
+		this.clearTimeout();
+	}
+	,clearTimeout(){
+		clearTimeout(this.closemenutimer);
+		clearTimeout(this.openmenutimer);
+	}
 	,onMouseEnter(){
-		clearTimeout(this.closemenu);
-		if (!this.state.menuopen) this.setState({menuopen:true});
+		this.clearTimeout();
+		this.openmenutimer=setTimeout(()=>{
+			if (!this.state.menuopen) this.setState({menuopen:true});
+		},100);
 	}
 	,onMouseLeave(){
-		this.closemenu=setTimeout(()=>{
+		this.clearTimeout();
+		this.closemenutimer=setTimeout(()=>{
 			if (this.state.menuopen && !this.state.sticky) this.setState({menuopen:false});
 		},500);
 	}
