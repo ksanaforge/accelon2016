@@ -14,15 +14,15 @@ const CorpusView=React.createClass({
 		address:PT.string.isRequired,
 		text:PT.array.isRequired,
 		layout:PT.bool,
+		focus:PT.bool, //currectly visible
 		decorations:PT.array,
 		onViewReady:PT.func,
 		onViewLeaving:PT.func,
 		onCursorActivity:PT.func,
 		onViewport:PT.func
-
 	}
 	,getInitialState(){
-		return {text:"",linebreaks:[],pagebreaks:[]};
+		return {textobj:new String(""),linebreaks:[],pagebreaks:[]};
 	}
 	,componentDidMount(){
 		/*
@@ -49,6 +49,12 @@ const CorpusView=React.createClass({
 	,componentWillUnmount(){
 		this.cm.setValue("");
 	}
+	,shouldComponentUpdate(nextProps,nextState){
+		return (nextProps.corpus!==this.props.corpus
+			||nextProps.address!==this.props.address
+			||nextProps.layout!==this.props.layout
+			||nextState.textobj!==this.state.textobj);
+	}
 	,componentWillReceiveProps(nextProps){//cor changed
 		if (nextProps.corpus!==this.props.corpus
 			||nextProps.address!==this.props.address
@@ -61,6 +67,9 @@ const CorpusView=React.createClass({
 			} else {
 				this.loadtext(nextProps);
 			}
+		}
+		if (this.cm && nextProps.focus) {
+			this.cm.focus();
 		}
 	}	
 	,clearSelection(){
@@ -118,7 +127,7 @@ const CorpusView=React.createClass({
 	,scrollToAddress(address){
 		const r=this.cor.toLogicalRange(this.state.linebreaks,address,this.getRawLine);
 		if (!r || r.start.line<0)return;
-		this.viewer.jumpToRange(r.start,r.end);		
+		if (this.viewer) this.viewer.jumpToRange(r.start,r.end);		
 	}
 	,highlightAddress(address){
 		this.highlight&&this.highlight.clear();
@@ -137,8 +146,9 @@ const CorpusView=React.createClass({
 		var book=cor.bookOf(article.start);
 
 		const changetext=function(layout){
-			const text=layout.lines.join("\n");
-			this.setState({text,linebreaks:layout.linebreaks,
+			const textobj=new String(layout.lines.join("\n"));
+
+			this.setState({textobj,linebreaks:layout.linebreaks,
 				pagebreaks:layout.pagebreaks,article},()=>{
 					this.scrollToAddress(address);
 				}
@@ -212,12 +222,14 @@ const CorpusView=React.createClass({
 			const range=this.kRangeFromSel(cm,sel.head,sel.anchor);
 			const r=this.cor.parseRange(range);
 			const selectionText=cm.doc.getSelection();
+
 			this.props.setSelection({corpus:this.props.corpus,id:this.props.id,
 					caretText:this.getCaretText(cm),selectionText,
 					startAddress:this.cor.stringify(r.start),
 					endAddress:this.cor.stringify(r.end),
 					address:this.cor.stringify(range),
 					start:r.start,end:r.end,range});
+
 		}
 	}
 	,onCursorActivity(cm){
@@ -230,15 +242,18 @@ const CorpusView=React.createClass({
 	,onViewportChange(cm,from,to){
 		//decorateBond.onViewportChange.call(this,cm,from,to);
 	}
-	,setCM(cm){
-		this.viewer=cm;
-		if (cm) this.cm=cm.getCodeMirror();
+	,setCM(cmviewer){
+		if (cmviewer) {
+			this.viewer=cmviewer;
+			this.cm=cmviewer.getCodeMirror();
+		}
 	}
 	,render(){
-		if (!this.state.text) return E("div",{},"loading");
+		if (!this.state.textobj.valueOf()) return E("div",{},"loading");
+
 		const props=Object.assign({},this.props,
 			{ref:this.setCM,
-			text:this.state.text,
+			textobj:this.state.textobj,
 			onCursorActivity:this.onCursorActivity,
 			onCopy:this.onCopy,
 			onViewportChange:this.onViewportChange,

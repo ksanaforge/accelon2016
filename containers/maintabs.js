@@ -15,7 +15,8 @@ const MainTabs=(props)=>{
 
 	const panes=props.articles.map((a,idx)=>{
 		var article=a;
-		const viewprops=Object.assign({},article,{setSelection:props.setSelection});
+		const focus=props.activeArticleTab==idx;
+		const viewprops=Object.assign({},article,{setSelection:props.setSelection,focus});
 		
 		const selection=props.selections[article.id];
 		const caretpos=selection?selection.start:article.article.start;

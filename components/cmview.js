@@ -5,13 +5,16 @@ const CodeMirror=require("ksana-codemirror").Component;
 
 const CMView=React.createClass({
 	propTypes:{
-		text:PT.string.isRequired
+		textobj:PT.object.isRequired
 	}
 	,componentDidMount(){
-		this.loadText(this.props.text);
+		this.loadText(this.props.textobj.valueOf());
+	}
+	,shouldComponentUpdate(nextProps){
+		return nextProps.textobj!==this.props.textobj;
 	}
 	,componentWillReceiveProps(nextProps){
-		if (nextProps.text!==this.text) this.loadText(nextProps.text);
+		if (nextProps.textobj!==this.textobj) this.loadText(nextProps.textobj.valueOf());
 	}
 	,loadText(newtext){
 		this.text=newtext;
