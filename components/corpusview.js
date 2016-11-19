@@ -62,7 +62,10 @@ const CorpusView=React.createClass({
 		if (nextProps.corpus!==this.props.corpus
 			||nextProps.address!==this.props.address
 			||nextProps.layout!==this.props.layout){
-			if (nextProps.article.at===this.props.article.at) {
+
+			if (nextProps.article.at===this.props.article.at
+				&& nextProps.layout==this.props.layout
+				&&nextProps.corpus==this.props.corpus) {
 				this.scrollToAddress(nextProps.address);
 			} else {
 				this.loadtext(nextProps);

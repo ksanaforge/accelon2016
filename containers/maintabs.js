@@ -2,18 +2,18 @@ const React =require('react');
 const E=React.createElement;
 const MUITabs=require("../components/muitabs");
 const CorpusView=require("../components/corpusview");
+const styles={
+	navcontainer:{position:"relative",zIndex:200},
+	nav:{position:"absolute",right:19}
+}
 
 const MainTabs=(props)=>{	
-	const topmargin=props.topMargin||"0px";
-	var styles={
-		container:{ height: "-webkit-calc(100vh - "+topmargin+")"} ,
-		navcontainer:{position:"relative",zIndex:200},
-		nav:{position:"absolute",right:19}
-	}
 	var selected=0;
-	const onSelectItem=(address)=>{
-		props.updateArticleByAddress(address);
-	}
+	const topmargin=props.topMargin||"0px";
+	const containerstyle={ height: "-webkit-calc(100vh - "+topmargin+")"} ;
+
+	const onSelectItem=(address)=>props.updateArticleByAddress(address);
+
 	const panes=props.articles.map((a,idx)=>{
 		var article=a;
 		if (a.active) {
@@ -24,7 +24,7 @@ const MainTabs=(props)=>{
 		const selection=props.selections[article.id];
 		const caretpos=selection?selection.start:article.article.start;
 		const navprops={caretpos,corpus:article.corpus,onSelectItem};
-		return E("div",{style:styles.container},
+		return E("div",{style:containerstyle},
 			E("div",{style:styles.navcontainer},
 				E("div",{style:styles.nav},E(props.nav,navprops))),
 			E(CorpusView,viewprops)

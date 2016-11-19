@@ -39,7 +39,7 @@ TOCNav=React.createClass({
 });
 const styles={
 	activeButtonStyle:{opacity:0.9,fontWeight:700},
-	buttonStyle:{opacity:0.7,fontWeight:700,color:"red"},	
+	buttonStyle:{opacity:0.7,fontWeight:700,color:"blue"},	
 	selectedButton:{background:"blue",color:"white"}
 }
 module.exports=TOCNav;
