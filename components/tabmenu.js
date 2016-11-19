@@ -11,18 +11,31 @@ const styles={
 
 const TabMenu=React.createClass({
 	getInitialState(){
-		return {menuopen:false}
+		return {menuopen:false,sticky:false};
 	}
 	,propTypes:{
 		panel:PT.func.isRequired,
 	}
+	,onMouseEnter(){
+		clearTimeout(this.closemenu);
+		if (!this.state.menuopen) this.setState({menuopen:true});
+	}
+	,onMouseLeave(){
+		this.closemenu=setTimeout(()=>{
+			if (this.state.menuopen && !this.state.sticky) this.setState({menuopen:false});
+		},500);
+	}
 	,toggleMenu(){
-		this.setState({menuopen:!this.state.menuopen})
+		if (!this.state.sticky) {
+			this.setState({sticky:true, menuopen:true})	
+		} else {
+			this.setState({sticky:false, menuopen:false})	
+		}
 	}
 	,render(){
-		const caption=this.state.menuopen?"⏷":"⏵";
-		return E("div",{onClick:this.toggleMenu},
-			E("span",{style:styles.menubutton},caption),
+		var caption=this.state.sticky?"⏷":"⏵";
+		return E("div",{onMouseEnter:this.onMouseEnter,onMouseLeave:this.onMouseLeave},
+			E("span",{style:styles.menubutton,onClick:this.toggleMenu},caption),
 			this.state.menuopen&&E("div",{style:styles.panel},E(this.props.panel))
 		)		
 	}
