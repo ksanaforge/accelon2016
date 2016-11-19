@@ -1,25 +1,36 @@
 const React =require('react');
 const E=React.createElement;
-const MUITabs=require("./muitabs");
-const CorpusView=require("./corpusview");
-
+const MUITabs=require("../components/muitabs");
+const CorpusView=require("../components/corpusview");
 
 const MainTabs=(props)=>{	
 	const topmargin=props.topMargin||"0px";
 	var styles={
-		container:{ height: "-webkit-calc(100vh - "+topmargin+")"} 
+		container:{ height: "-webkit-calc(100vh - "+topmargin+")"} ,
+		nav:{position:"absolute",zIndex:200}
 	}
 	var selected=0;
+	const onSelectItem=(address)=>{
+		console.log("select item",address)
+	}
 	const panes=props.articles.map((a,idx)=>{
+		var article=a;
 		if (a.active) {
 			selected=idx;
-			return E("div",{style:styles.container},E(CorpusView,props.activeArticle))
-		}  else {
-			return E("div",{style:styles.container},E(CorpusView,a))	
 		}
+		const viewprops=Object.assign({},article,{setSelection:props.setSelection});
+		
+		const selection=props.selections[article.id];
+		const caretpos=selection?selection.start:article.article.start;
+		const navprops={caretpos,corpus:article.corpus,onSelectItem};
+		return E("div",{style:styles.container},
+			E("div",{style:styles.nav},E(props.nav,navprops)),
+			E(CorpusView,viewprops)
+		);
 	});
+
 	const tabs=props.articles.map((a)=>[a.id,a.title]);
-	
+
 	const onSelectTab=(newtab,oldtab)=>{
 		const tab=props.articles[newtab];
 		if (!tab) return true;

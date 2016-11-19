@@ -3,7 +3,6 @@ const {TOGGLE_LAYOUT,UPDATE_ARTICLE }=require("../actions/article");
 
 module.exports=function articles(state = [] , action = {}) {
 	const A=action;
-  console.log(action)
   if (OPEN_AT===A.type) {
 		var newstate=state.slice();
     const {corpus,title,address,article,text}=action;

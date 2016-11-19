@@ -4,21 +4,24 @@ const Desktop =require('./desktop');
 const CorpusActions=require('../actions/corpus');
 const ArticlesActions=require('../actions/articles');
 const ArticleActions=require('../actions/article');
+const SelectionActions=require('../actions/selection');
 
 function mapStateToProps(state,ownProps) {
 	const activeArticle=state.articles.filter((a)=>a.active)[0];
   return {
   	activeArticle,
     articles: state.articles,
+    selections: state.selections,
     corpus: state.corpus
   };
 }
 
 function mapDispatchToProps(dispatch,ownProps) {
-	const boundcorpusactions=bindActionCreators(CorpusActions, dispatch);
-	const boundarticlesactions=bindActionCreators(ArticlesActions, dispatch);
-	const boundarticleactions=bindActionCreators(ArticleActions, dispatch);
-	const bound=Object.assign({},boundcorpusactions,boundarticlesactions,boundarticleactions);
+	const boundcorpus=bindActionCreators(CorpusActions, dispatch);
+	const boundarticles=bindActionCreators(ArticlesActions, dispatch);
+	const boundarticle=bindActionCreators(ArticleActions, dispatch);
+  const boundselection=bindActionCreators(SelectionActions, dispatch);
+	const bound=Object.assign({},boundcorpus,boundarticles,boundarticle,boundselection);
   return bound; 
 }
 

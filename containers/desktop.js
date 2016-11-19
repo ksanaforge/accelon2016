@@ -1,8 +1,9 @@
 const React =require('react');
 const E=React.createElement;
-const MainTabs=require("../components/maintabs");
+const MainTabs=require("./maintabs");
 const ControlTabs=require("../components/controltabs");
-const CorpusViewOptions=require("../containers/corpusviewoptions");
+const CorpusViewOptions=require("./corpusviewoptions");
+const TocNav=require("./tocnav");
 
 const Desktop=React.createClass({
 	//console.log("desktop props",props,this.props)
@@ -11,7 +12,7 @@ const Desktop=React.createClass({
 		this.props.openCorpus("taisho");
 	}
 	,render(){
-		const props=Object.assign({},this.props,{viewOptions:CorpusViewOptions});
+		const props=Object.assign({},this.props,{viewOptions:CorpusViewOptions,nav:TocNav});
 		return E("div",{style:styles.container},
 			E("div",{style:styles.maintabs},E(MainTabs,props)),
 			E("div",{style:styles.controltabs},E(ControlTabs,this.props))

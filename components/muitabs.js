@@ -48,6 +48,7 @@ const Tabs=React.createClass({
 		}
 	}
 	,render(){
+
 		var tabEls = [], paneEls=[], _=this.context._;
 		for (var i=0;i<this.props.tabs.length;i++) {
 			const name=this.props.tabs[i][0];

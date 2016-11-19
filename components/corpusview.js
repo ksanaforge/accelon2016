@@ -57,43 +57,22 @@ const CorpusView=React.createClass({
 	}
 	,componentWillUnmount(){
 		this.cm.setValue("");
-		//this.viewLeaving&&this.viewLeaving(this.state.article);
-	}	,componentWillReceiveProps(nextProps){//cor changed
+	}
+	,componentWillReceiveProps(nextProps){//cor changed
 		if (nextProps.corpus!==this.props.corpus
 			||nextProps.address!==this.props.address
 			||nextProps.layout!==this.props.layout){
-			this.loadtext(nextProps);
+			if (nextProps.article.at===this.props.article.at) {
+				this.scrollToAddress(nextProps.address);
+			} else {
+				this.loadtext(nextProps);
+			}
 		}
 	}	
 	,clearSelection(){
 		const cursor=this.cm.getCursor();
 		this.cm.doc.setSelection(cursor,cursor);
 	}
-	/*
-	,goto(opts){
-		opts=opts||{};
-		const cor=opts.cor||this.cor;
-		if (opts.corpus!==cor.meta.name) return;
-		if (typeof opts.side!=="undefined" && this.props.side!==opts.side){
-			return;
-		}
-		const range=cor.parseRange(opts.address);
-		const article=cor.articleOf(range.start);
-		if (!article)return;
-
-		if (article.at==this.state.article.at){
-			this.scrollToAddress(opts.address);
-			return;
-		}
-
-		this.viewLeaving(this.state.article);
-		
-		cor.getArticleText(article.at,function(text){
-			if (!text)return;
-			this.layout(article,text,opts.address);
-		}.bind(this));
-	}
-	*/
 	,toLogicalPos(address){
 		return this.cor.toLogicalPos(this.state.linebreaks,address,this.getRawLine);		
 	}
@@ -124,7 +103,6 @@ const CorpusView=React.createClass({
 		const corpus=this.corpus,cor=this.cor,side=this.props.side;
 		const toLogicalRange=this.toLogicalRange;
 		this.props.onViewReady&&this.props.onViewReady({article,cor,corpus,side,cm:this.cm,toLogicalRange});
-		decorateBond.repaintBond.call(this);
 	}
 	,onLoaded(res){
 		res.address&&this.scrollToAddress(res.address);
@@ -146,7 +124,7 @@ const CorpusView=React.createClass({
 	,scrollToAddress(address){
 		const r=this.cor.toLogicalRange(this.state.linebreaks,address,this.getRawLine);
 		if (!r || r.start.line<0)return;
-		this.viewer.jumpToRange(r.start,r.end);
+		this.viewer.jumpToRange(r.start,r.end);		
 	}
 	,highlightAddress(address){
 		this.highlight&&this.highlight.clear();
@@ -241,15 +219,12 @@ const CorpusView=React.createClass({
 			const range=this.kRangeFromSel(cm,sel.head,sel.anchor);
 			const r=this.cor.parseRange(range);
 			const selectionText=cm.doc.getSelection();
-			/*
-			this.context.action("selection",
-				{cor:this.cor,corpus:this.corpus,
+			this.props.setSelection({corpus:this.props.corpus,id:this.props.id,
 					caretText:this.getCaretText(cm),selectionText,
-					article:this.state.article.articlename,
-					side:this.props.side,
-					start:r.start,end:r.end,range}
-			);
-			*/
+					startAddress:this.cor.stringify(r.start),
+					endAddress:this.cor.stringify(r.end),
+					address:this.cor.stringify(range),
+					start:r.start,end:r.end,range});
 		}
 	}
 	,onCursorActivity(cm){

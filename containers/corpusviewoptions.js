@@ -11,12 +11,19 @@ const CorpusViewOptions=(props)=>{
 		,E("br")
 		,E("button",{onClick:props.prevArticle},"prev")
 		,E("button",{onClick:props.nextArticle},"next")
+		,E("br")
+		,E("span",{},props.address)
 	)
 }
 
 function mapStateToProps(state,ownProps) {
 	const activeArticle=state.articles.filter((a)=>a.active)[0];
-	return {activeArticle};
+	if(!activeArticle) return {};
+
+	const selection=state.selections[activeArticle.id];
+	console.log(selection)
+	const address=selection?selection.startAddress:"";
+	return Object.assign({},activeArticle, {address} );
 }
 
 function mapDispatchToProps(dispatch,ownProps) {

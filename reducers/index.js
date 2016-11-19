@@ -1,11 +1,13 @@
 const { combineReducers } =require('redux');
-const counter=require('./counter');
 const corpus=require('./corpus');
 const articles=require('./articles');
+const selections=require('./selections');
+const caret=require('./caret');
 const rootReducer = combineReducers({
-	counter ,
 	corpus ,
-	articles 
+	articles ,
+	selections,
+	caret
 });
 
 module.exports=rootReducer;
