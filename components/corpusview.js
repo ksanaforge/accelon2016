@@ -21,22 +21,21 @@ const CorpusView=React.createClass({
 		corpus:PT.string.isRequired,
 		address:PT.string.isRequired,
 		text:PT.array.isRequired,
+		layout:PT.bool,
 		decorations:PT.array,
 		onViewReady:PT.func,
 		onViewLeaving:PT.func,
 		onCursorActivity:PT.func,
 		onViewport:PT.func
+
 	}
 	,getInitialState(){
-		return {text:"",startkpos:1,article:{},layout:'p',linebreaks:[],pagebreaks:[]};
+		return {text:"",startkpos:1,article:{},linebreaks:[],pagebreaks:[]};
 	}
 	,componentDidMount(){
 		/*
 		this.context.listen("goto",this.goto,this);
-		this.context.listen("toggleLayout",this.toggleLayout,this);
 		this.context.listen("highlightAddress",this.highlightAddress,this);
-		this.context.listen("nextArticle",this.nextArticle,this);
-		this.context.listen("prevArticle",this.prevArticle,this);
 		this.context.listen("charWidget",this.charWidget,this);
 		this.context.listen("lineWidget",this.lineWidget,this);
 		this.context.listen("addBond",decorateBond.addBond,this);
@@ -48,19 +47,22 @@ const CorpusView=React.createClass({
 		//var address=addressHashTag.getAddress(this.cor.meta.name);
 		//if (!address)  address=this.props.address;
 		//address&this.goto({address,cor:this.cor,corpus:this.cor.meta.name});
-		const {corpus,article,text,address}=this.props;
+		this.loadtext();
+	}
+	,loadtext(props){
+		props=props||this.props;
+		const {corpus,article,text,address,layout}=props;
 		this.cor=openCorpus(corpus);
-		this.layout(article,text,address);
+		this.layout(article,text,address,layout);
 	}
 	,componentWillUnmount(){
-		//this.context.unlistenAll();
+		this.cm.setValue("");
 		//this.viewLeaving&&this.viewLeaving(this.state.article);
 	}	,componentWillReceiveProps(nextProps){//cor changed
-		if (nextProps.corpus!==this.corpus
-			||nextProps.address!==this.props.address){
-			const {article,text,address,corpus}=nextProps;
-			this.cor=openCorpus(corpus);
-			this.layout(article,text,address);
+		if (nextProps.corpus!==this.props.corpus
+			||nextProps.address!==this.props.address
+			||nextProps.layout!==this.props.layout){
+			this.loadtext(nextProps);
 		}
 	}	
 	,clearSelection(){
@@ -152,11 +154,7 @@ const CorpusView=React.createClass({
 		const r=this.cor.toLogicalRange(this.state.linebreaks,address,this.getRawLine);
 		this.highlight=this.cm.markText(r.start,r.end,{className:"highlight",clearOnEnter:true});
 	}
-	,toggleLayout(opts){
-		const article=this.cor.articleOf(this.state.startkpos);
-		this.layout(article,this.state.text);
-	}
-	,layout(article,text,address){
+	,layout(article,text,address,playout){
 		const cor=this.cor;
 		const layouttag="p";
 
@@ -169,10 +167,18 @@ const CorpusView=React.createClass({
 		const changetext=function(layout){
 			const text=layout.lines.join("\n");
 			this.setState({text,linebreaks:layout.linebreaks,startkpos:article.start,
-				pagebreaks:layout.pagebreaks,article});
+				pagebreaks:layout.pagebreaks,article},()=>{
+					this.scrollToAddress(address);
+				}
+			);
 		}
 
-		if (this.state.layout=='') {
+		//TODO, put layouttag to article field
+		//pass in via props
+
+		if (!playout) {
+			changetext.call(this, cor.layoutText(text,article.start) );
+		} else {
 			cor.getBookField(layouttag,book,function(book_p){
 				if (!book_p) {
 					console.log(layouttag,book)
@@ -181,21 +187,7 @@ const CorpusView=React.createClass({
 				const p=cor.trimField(book_p,article.start,article.end);
 				changetext.call(this, cor.layoutText(text,article.start,p.pos) );
 			}.bind(this));
-		} else {
-			changetext.call(this, cor.layoutText(text,article.start) );
 		}
-	}
-	,gotoArticle(opts,nav){
-		const corpus=this.cor.meta.name;
-		if (opts.corpus!==corpus) return;
-		const r=this.cor.getArticle(this.state.article.at,nav);
-		if(r) this.goto({corpus,address:r.start});
-	}
-	,nextArticle(opts){
-		this.gotoArticle(opts,1);
-	}
-	,prevArticle(opts){
-		this.gotoArticle(opts,-1);
 	}
 	,charWidget(opts){
 		if (opts.corpus!=this.corpus)return;

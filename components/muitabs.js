@@ -4,6 +4,7 @@ const E=React.createElement;
 const PT=React.PropTypes;
 const tabsBarJustifiedClass = 'mui-tabs__bar--justified',
       isActiveClass = 'mui--is-active';
+const TabMenu=require("./tabmenu");
 
 const styles={
 	closebutton:{float:"right",color:"white",width:"1.1em",
@@ -53,8 +54,9 @@ const Tabs=React.createClass({
 			const label=this.props.tabs[i][1];
 			const isActive = (i === this.state.selected) ? true : false;
 			const closable=this.props.closable ;
-			tabEls.push(E("li",{key:i,className:(isActive) ? isActiveClass : '',
-				},E("a",{onClick:this.onTabClick,"data-i":i},label,
+			tabEls.push(E("li",{key:i,className:(isActive) ? isActiveClass : ''},
+				isActive&&this.props.panel&&E(TabMenu,{panel:this.props.panel,i}),
+				E("a",{onClick:this.onTabClick,"data-i":i},label,
 				isActive&&closable&&E(closeButton,{i,onClose:this.props.onClose})))
 			);
 

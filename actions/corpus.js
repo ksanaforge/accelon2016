@@ -8,7 +8,7 @@ const openCorpus=(corpus)=> {
   		if (err) {
   			dispatch({type: OPEN_CORPUS_FAILED,corpus,err});
   		} else {
-		  	dispatch({type: OPEN_CORPUS_SUCCESS,corpus,cor}); 
+		  	dispatch({type: OPEN_CORPUS_SUCCESS,corpus}); 
   		}
 		});
 	}

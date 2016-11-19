@@ -14,14 +14,14 @@ const CMView=React.createClass({
 		if (nextProps.text!==this.text) this.loadText(nextProps.text);
 	}
 	,loadText(newtext){
-		console.log("load text",newtext.length)
 		this.text=newtext;
 		this.cm.setValue(newtext);
 	}
 	,jumpToRange(from,to){
+		const cm=this.cm;
 		const cursor=cm.getCursor();
 		if (from.ch!==to.ch||from.line!==to.line) {
-			this.cm.markText(from,to,{className:"gotomarker",clearOnEnter:true});
+			cm.markText(from,to,{className:"gotomarker",clearOnEnter:true});
 		}
 		const linedown=(from.line+100>=cm.lineCount())?cm.linecount:from.line+100;
 		const vp=cm.getViewport();
@@ -30,6 +30,7 @@ const CMView=React.createClass({
 			cm.scrollIntoView({line:linedown,ch:from.ch});
 			cm.scrollIntoView(from,200);			
 		}
+		cm.focus();
 		cm.setCursor(from);
 	}
 	,scrollToText(t){
