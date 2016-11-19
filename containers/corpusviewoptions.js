@@ -21,7 +21,6 @@ function mapStateToProps(state,ownProps) {
 	if(!activeArticle) return {};
 
 	const selection=state.selections[activeArticle.id];
-	console.log(selection)
 	const address=selection?selection.startAddress:"";
 	return Object.assign({},activeArticle, {address} );
 }

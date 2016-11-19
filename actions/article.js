@@ -49,10 +49,11 @@ const updateArticleByAddress=(address)=>(dispatch,getState)=>{
 	if (!cor)return;//should be open
 
 	const article=cor.articleOf(address);
+	if (typeof address=="number") address=cor.stringify(address);
 	if (article.at!==active.article.at) {
 		_fetchArticle(active.corpus,address,dispatch,UPDATE_ARTICLE,active.id);
 	} else {//don't need to fetch 
-    dispatch({UPDATE_ARTICLE,corpus,address,id,
+    dispatch({type:UPDATE_ARTICLE,corpus:active.corpus,address,id:active.id,
             article,title:article.articlename,text:active.text});
 	}
 }

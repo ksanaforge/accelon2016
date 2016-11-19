@@ -7,11 +7,12 @@ const MainTabs=(props)=>{
 	const topmargin=props.topMargin||"0px";
 	var styles={
 		container:{ height: "-webkit-calc(100vh - "+topmargin+")"} ,
-		nav:{position:"absolute",zIndex:200}
+		navcontainer:{position:"relative",zIndex:200},
+		nav:{position:"absolute",right:19}
 	}
 	var selected=0;
 	const onSelectItem=(address)=>{
-		console.log("select item",address)
+		props.updateArticleByAddress(address);
 	}
 	const panes=props.articles.map((a,idx)=>{
 		var article=a;
@@ -24,7 +25,8 @@ const MainTabs=(props)=>{
 		const caretpos=selection?selection.start:article.article.start;
 		const navprops={caretpos,corpus:article.corpus,onSelectItem};
 		return E("div",{style:styles.container},
-			E("div",{style:styles.nav},E(props.nav,navprops)),
+			E("div",{style:styles.navcontainer},
+				E("div",{style:styles.nav},E(props.nav,navprops))),
 			E(CorpusView,viewprops)
 		);
 	});
