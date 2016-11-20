@@ -1,5 +1,5 @@
 const  { SET_SELECTION,CLEAR_SELECTION} = require('../actions/selection');
-const  { CLOSE_ARTICLE} = require('../actions/articles');
+const  {OPEN_AT, CLOSE_ARTICLE} = require('../actions/articles');
 
 module.exports=function selection(state = {} , action = {}) {
 	const A=action;
@@ -9,8 +9,10 @@ module.exports=function selection(state = {} , action = {}) {
       delete A.type;
   		return Object.assign({},state,{[A.id]:obj});
   	}
-  } else if (CLEAR_SELECTION===A.type) {
-  	return {};
+  } else if (OPEN_AT===A.type) {
+    const ranges=[A.article.start];
+    const caretpos=A.article.start;
+    return Object.assign({},state,{[A.id]:{caretpos,ranges,cursor:{line:0,ch:0}}});
   } else if (CLOSE_ARTICLE===A.type) {
     var newstate=Object.assign({},state);
     if (newstate[A.id]) delete newstate[A.id];

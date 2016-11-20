@@ -16,10 +16,11 @@ const MainTabs=(props)=>{
 	const panes=props.articles.map((a,idx)=>{
 		var article=a;
 		const focus=props.activeArticleTab==idx;
-		const viewprops=Object.assign({},article,{setSelection:props.setSelection,focus});
-		
-		const selection=props.selections[article.id];
-		const caretpos=selection?selection.start:article.article.start;
+		const ranges=props.selections[article.id].ranges;
+		const viewprops=Object.assign({},article,{ranges,setSelection:props.setSelection,focus});
+
+		const caretpos=props.selections[article.id].caretpos;
+
 		const navprops={caretpos,corpus:article.corpus,onSelectItem};
 		return E("div",{style:containerstyle},
 			E("div",{style:styles.navcontainer},

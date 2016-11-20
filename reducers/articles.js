@@ -5,8 +5,7 @@ module.exports=function articles(state = [] , action = {}) {
 	const A=action;
   if (OPEN_AT===A.type) { //TODO open at position
 		var newstate=state.slice();
-    const {corpus,title,address,article,text}=action;
-    var id='A'+Math.floor(Math.random()*10000000);
+    const {corpus,title,address,article,text,id}=action;
     var obj={title,corpus,address,article,text,id};
     newstate.push(obj);
 		return newstate;

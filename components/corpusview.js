@@ -22,7 +22,7 @@ const CorpusView=React.createClass({
 		onViewport:PT.func
 	}
 	,getInitialState(){
-		return {textobj:new String(""),linebreaks:[],pagebreaks:[]};
+		return {text:"",linebreaks:[],pagebreaks:[]};
 	}
 	,componentDidMount(){
 		/*
@@ -53,7 +53,7 @@ const CorpusView=React.createClass({
 		return (nextProps.corpus!==this.props.corpus
 			||nextProps.address!==this.props.address
 			||nextProps.layout!==this.props.layout
-			||nextState.textobj!==this.state.textobj);
+			||nextState.text!==this.state.text);
 	}
 	,componentWillReceiveProps(nextProps){//cor changed
 		if (nextProps.corpus!==this.props.corpus
@@ -146,9 +146,9 @@ const CorpusView=React.createClass({
 		var book=cor.bookOf(article.start);
 
 		const changetext=function(layout){
-			const textobj=new String(layout.lines.join("\n"));
+			const text=layout.lines.join("\n");
 
-			this.setState({textobj,linebreaks:layout.linebreaks,
+			this.setState({text,linebreaks:layout.linebreaks,
 				pagebreaks:layout.pagebreaks,article},()=>{
 					this.scrollToAddress(address);
 				}
@@ -219,17 +219,21 @@ const CorpusView=React.createClass({
 		const sels=cm.listSelections();	
 		if (sels.length>0){
 			const sel=sels[0];
-			const range=this.kRangeFromSel(cm,sel.head,sel.anchor);
-			const r=this.cor.parseRange(range);
+			var ranges=[];
+			for (let i=0;i<sels.length;i++) {
+				ranges.push(this.kRangeFromSel(cm,sel.head,sel.anchor));
+			}
+
 			const selectionText=cm.doc.getSelection();
-
-			this.props.setSelection({corpus:this.props.corpus,id:this.props.id,
+			const cursor=cm.getCursor();
+			const cursorrange=this.kRangeFromCursor(cm);
+			const r=this.cor.parseRange(cursorrange);
+			
+			this.props.setSelection({
+					corpus:this.props.corpus,id:this.props.id,
 					caretText:this.getCaretText(cm),selectionText,
-					startAddress:this.cor.stringify(r.start),
-					endAddress:this.cor.stringify(r.end),
-					address:this.cor.stringify(range),
-					start:r.start,end:r.end,range});
-
+					ranges, caretpos:r.start, cursor
+				});
 		}
 	}
 	,onCursorActivity(cm){
@@ -249,11 +253,11 @@ const CorpusView=React.createClass({
 		}
 	}
 	,render(){
-		if (!this.state.textobj.valueOf()) return E("div",{},"loading");
+		if (!this.state.text) return E("div",{},"loading");
 
 		const props=Object.assign({},this.props,
 			{ref:this.setCM,
-			textobj:this.state.textobj,
+			text:this.state.text,
 			onCursorActivity:this.onCursorActivity,
 			onCopy:this.onCopy,
 			onViewportChange:this.onViewportChange,

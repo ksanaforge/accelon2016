@@ -10,12 +10,14 @@ const toggleLayout=()=>(dispatch,getState)=>{
 	const active=getActiveArticle(getState());
 	active&&dispatch({type:TOGGLE_LAYOUT,id:active.id});
 };
+const newid=()=> 'a'+Math.floor(Math.random()*100000000);
 
 const _fetchArticle=(corpus,address,dispatch,type,id)=>{
 	ksanacorpus.openCorpus(corpus,(err,cor)=>{
 		if (!err) {
 			const article=cor.articleOf(address);
       if (article){
+      	id=id||newid();
         cor.getArticleTextTag( article.at, ["ptr","def","note"] , (res)=>{
           dispatch({type,corpus,address,id,
             article,title:article.articlename,text:res.text,fields:res.fields});

@@ -5,16 +5,16 @@ const CodeMirror=require("ksana-codemirror").Component;
 
 const CMView=React.createClass({
 	propTypes:{
-		textobj:PT.object.isRequired
+		text:PT.string.isRequired
 	}
 	,componentDidMount(){
-		this.loadText(this.props.textobj.valueOf());
+		this.loadText(this.props.text);
 	}
 	,shouldComponentUpdate(nextProps){
-		return nextProps.textobj!==this.props.textobj;
+		return nextProps.text!==this.props.text;
 	}
 	,componentWillReceiveProps(nextProps){
-		if (nextProps.textobj!==this.textobj) this.loadText(nextProps.textobj.valueOf());
+		if (nextProps.text!==this.text) this.loadText(nextProps.text);
 	}
 	,loadText(newtext){
 		this.text=newtext;
@@ -26,12 +26,17 @@ const CMView=React.createClass({
 		if (from.ch!==to.ch||from.line!==to.line) {
 			cm.markText(from,to,{className:"gotomarker",clearOnEnter:true});
 		}
-		const linedown=(from.line+100>=cm.lineCount())?cm.linecount:from.line+100;
 		const vp=cm.getViewport();
 		const vpm=cm.getOption("viewportMargin");
-		if (cursor.line>vp.to-vpm||cursor.line<vp.from-vpm) {
-			cm.scrollIntoView({line:linedown,ch:from.ch});
-			cm.scrollIntoView(from,200);			
+		const vpto=vp.to-vpm,vpfrom=vp.from-vpm;
+		let line=from.line;
+
+		if (vpto>from.line) { //scrolling up
+			line-=15; if (line<0) line=0;
+			cm.scrollIntoView({line,ch:from.ch});
+		} else {
+			line+=15; if(line>=cm.lineCount()) line=cm.lineCount()-1;
+			cm.scrollIntoView({line:from.line+15,ch:from.ch});
 		}
 		cm.focus();
 		cm.setCursor(from);
