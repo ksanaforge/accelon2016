@@ -23,13 +23,17 @@ const onLinkLeave=function(e){
 	},50);
 }
 const createLink=function(cm,cor,linech,end,text,target){
-	const dom=document.createElement("span");
-	dom.className="link";
-	dom.innerHTML=target;
-	dom.onmousedown=onLinkMouseDown;
-	dom.cor=cor;
-	//dom.onmouseenter=onLinkEnter;
-	//dom.onmouseleave=onLinkLeave;
-	cm.setBookmark(linech,{widget:dom,handleMouseEvents:true});
+	if (linech.ch==end.ch && linech.line==end.line) {
+		const dom=document.createElement("span");
+		dom.className="notelink";
+		dom.onmousedown=onLinkMouseDown;
+		dom.cor=cor;
+		dom.innerHTML=target;
+		cm.setBookmark(linech,{widget:dom,handleMouseEvents:true});
+	} else {
+		cm.markText(linech,end,{className:"link"});
+		//dom.innerHTML=text;
+	}
+
 }
 module.exports=createLink;
