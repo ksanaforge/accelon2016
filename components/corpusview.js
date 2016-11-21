@@ -42,9 +42,26 @@ const CorpusView=React.createClass({
 	}
 	,loadtext(props){
 		props=props||this.props;
-		const {corpus,article,text,address,layout}=props;
+		const {corpus,article,fields,text,address,layout}=props;
 		this.cor=openCorpus(corpus);
 		this.layout(article,text,address,layout);
+	}
+	,decorate(){
+		for (let field in this.props.fields) {
+			const pos=this.props.fields[field].pos, value=this.props.fields[field].value;
+			const decorator=this.props.decorators[field];
+			if (!decorator) continue;
+
+			for (let i=0;i<pos.length;i++) {
+					const r=this.toLogicalRange(pos[i]);
+					decorator(this.cm,this.cor,r.start,r.end,i+1,value[i]);
+			}
+		}
+	}
+	,textReady(){
+		console.log("text ready")
+		this.scrollToAddress(this.props.address);
+		this.decorate();
 	}
 	,componentWillUnmount(){
 		this.cm.setValue("");
@@ -89,13 +106,6 @@ const CorpusView=React.createClass({
 		if (!text) return this.props.article.start;
 		return this.cor.fromLogicalPos(text,linech.ch,lb,firstline,this.getRawLine);
 	}
-	,decorate(){
-		if (!this.props.decorations)return;
-		this.props.decorations.forEach(function(d){
-			decorations[d]&&decorations[d](this.cor,this.state.article,
-				this.cm,this.toLogicalPos);
-		}.bind(this));
-	}
 	/*
 	,viewLeaving(article){
 		const corpus=this.corpus,cor=this.cor,side=this.props.side;
@@ -114,8 +124,7 @@ const CorpusView=React.createClass({
 	}
 	*/
 	,getRawLine(line){
-		if (!this.state.text)return "";
-		return this.state.text[line];
+		return this.props.text[line];
 	}
 	,lineWidget(opts){
 		if (opts.corpus!==this.corpus)return;
@@ -135,7 +144,7 @@ const CorpusView=React.createClass({
 		const r=this.cor.toLogicalRange(this.state.linebreaks,address,this.getRawLine);
 		this.highlight=this.cm.markText(r.start,r.end,{className:"highlight",clearOnEnter:true});
 	}
-	,layout(article,text,address,playout){
+	,layout(article,rawlines,address,playout){
 		const cor=this.cor;
 		const layouttag="p";
 
@@ -150,7 +159,7 @@ const CorpusView=React.createClass({
 
 			this.setState({text,linebreaks:layout.linebreaks,
 				pagebreaks:layout.pagebreaks,article},()=>{
-					this.scrollToAddress(address);
+					this.textReady();
 				}
 			);
 		}
@@ -159,7 +168,7 @@ const CorpusView=React.createClass({
 		//pass in via props
 
 		if (!playout) {
-			changetext.call(this, cor.layoutText(text,article.start) );
+			changetext.call(this, cor.layoutText(rawlines,article.start) );
 		} else {
 			cor.getBookField(layouttag,book,function(book_p){
 				if (!book_p) {
@@ -167,7 +176,7 @@ const CorpusView=React.createClass({
 					debugger;
 				}
 				const p=cor.trimField(book_p,article.start,article.end);
-				changetext.call(this, cor.layoutText(text,article.start,p.pos) );
+				changetext.call(this, cor.layoutText(rawlines,article.start,p.pos) );
 			}.bind(this));
 		}
 	}
@@ -228,11 +237,10 @@ const CorpusView=React.createClass({
 			const cursor=cm.getCursor();
 			const cursorrange=this.kRangeFromCursor(cm);
 			const r=this.cor.parseRange(cursorrange);
-			
 			this.props.setSelection({
 					corpus:this.props.corpus,id:this.props.id,
 					caretText:this.getCaretText(cm),selectionText,
-					ranges, caretpos:r.start, cursor
+					ranges, caretpos:r.start, cursor:{line:cursor.line,ch:cursor.ch}
 				});
 		}
 	}

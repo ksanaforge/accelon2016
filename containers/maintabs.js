@@ -12,13 +12,14 @@ const MainTabs=(props)=>{
 	const containerstyle={ height: "-webkit-calc(100vh - "+topmargin+")"} ;
 
 	const onSelectItem=(address)=>props.updateArticleByAddress(address);
-
+	const decorators=props.decorators;
 	const panes=props.articles.map((a,idx)=>{
 		var article=a;
 		const focus=props.activeArticleTab==idx;
 		const ranges=props.selections[article.id].ranges;
-		const viewprops=Object.assign({},article,{ranges,setSelection:props.setSelection,focus});
-
+		const viewprops=Object.assign({},article,
+			{ranges,setSelection:props.setSelection,focus,decorators});
+		
 		const caretpos=props.selections[article.id].caretpos;
 
 		const navprops={caretpos,corpus:article.corpus,onSelectItem};

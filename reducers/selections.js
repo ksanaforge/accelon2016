@@ -6,7 +6,7 @@ module.exports=function selection(state = {} , action = {}) {
   if (SET_SELECTION===A.type) {
   	if (A.corpus){
   		const obj=Object.assign({},A);
-      delete A.type;
+      delete obj.type;
   		return Object.assign({},state,{[A.id]:obj});
   	}
   } else if (OPEN_AT===A.type) {

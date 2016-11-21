@@ -17,8 +17,9 @@ const _fetchArticle=(corpus,address,dispatch,type,id)=>{
 		if (!err) {
 			const article=cor.articleOf(address);
       if (article){
+      	const articleFields=cor.meta.articleFields||[];
       	id=id||newid();
-        cor.getArticleTextTag( article.at, ["ptr","def","note"] , (res)=>{
+        cor.getArticleTextTag( article.at, articleFields , (res)=>{
           dispatch({type,corpus,address,id,
             article,title:article.articlename,text:res.text,fields:res.fields});
         });

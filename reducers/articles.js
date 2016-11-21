@@ -5,8 +5,8 @@ module.exports=function articles(state = [] , action = {}) {
 	const A=action;
   if (OPEN_AT===A.type) { //TODO open at position
 		var newstate=state.slice();
-    const {corpus,title,address,article,text,id}=action;
-    var obj={title,corpus,address,article,text,id};
+    const {corpus,title,address,article,text,fields,id}=action;
+    var obj={title,corpus,address,article,text,fields,id};
     newstate.push(obj);
 		return newstate;
   } else if (CLOSE_ARTICLE===A.type) {

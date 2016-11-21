@@ -8,8 +8,8 @@ const rootReducer = combineReducers({
 	corpus ,
 	articles ,
 	activeArticleTab ,
-	selections,
-	caret
+	selections
+//	caret
 });
 
 module.exports=rootReducer;
