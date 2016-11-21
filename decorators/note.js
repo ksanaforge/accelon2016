@@ -16,21 +16,21 @@ const onNoteLeave=function(e){
 
 	const target=e.target;
 	leavetimer=setTimeout(function(){
-		e.target.innerHTML=e.target.dataset.text;
+		e.target.innerHTML=e.target.dataset.id;
 	},50);
 }
 
-const note=function(cm,cor,linech,end,text,target){
+const note=function({cm,cor,start,end,id,target}){
 	const dom=document.createElement("span");
 	dom.className="note";
-	dom.innerHTML=text;
-	dom.dataset.text=text;
+	dom.innerHTML=id;
+	dom.dataset.id=id;
 	dom.dataset.target=target;
 	dom.onmousedown=onNoteMouseDown;
 	dom.onmouseenter=onNoteEnter;
 	dom.onmouseleave=onNoteLeave;
 	dom.cor=cor;
-	cm.setBookmark(linech,{widget:dom,handleMouseEvents:true});
+	cm.setBookmark(start,{widget:dom,handleMouseEvents:true});
 }
 
 module.exports=note;

@@ -17,8 +17,9 @@ const MainTabs=(props)=>{
 		var article=a;
 		const focus=props.activeArticleTab==idx;
 		const ranges=props.selections[article.id].ranges;
-		const viewprops=Object.assign({},article,
-			{ranges,setSelection:props.setSelection,focus,decorators});
+		const viewprops=Object.assign({},article,{rawlines:article.text},
+			{updateArticleByAddress:props.updateArticleByAddress,
+			ranges,setSelection:props.setSelection,focus,decorators});
 		
 		const caretpos=props.selections[article.id].caretpos;
 

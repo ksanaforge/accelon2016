@@ -3,21 +3,14 @@ const E=React.createElement;
 const PT=React.PropTypes;
 const CMView=require("./cmview");
 const {openCorpus}=require("ksana-corpus");
-/*
-const addressHashTag=require("../units/addresshashtag");
-const decorations=require("../decorations/");
-const decorateBond=require("../decorations/bond");
-*/
+
 const CorpusView=React.createClass({
 	propTypes:{
 		corpus:PT.string.isRequired,
 		address:PT.string.isRequired,
-		text:PT.array.isRequired,
+		rawlines:PT.array.isRequired,
 		layout:PT.bool,
-		focus:PT.bool, //currectly visible
-		decorations:PT.array,
-		onViewReady:PT.func,
-		onViewLeaving:PT.func,
+		focus:PT.bool, //in active tab
 		onCursorActivity:PT.func,
 		onViewport:PT.func
 	}
@@ -25,32 +18,21 @@ const CorpusView=React.createClass({
 		return {text:"",linebreaks:[],pagebreaks:[]};
 	}
 	,componentDidMount(){
-
-		/*
-		this.context.listen("highlightAddress",this.highlightAddress,this);
-		this.context.listen("charWidget",this.charWidget,this);
-		this.context.listen("lineWidget",this.lineWidget,this);
-		this.context.listen("addBond",decorateBond.addBond,this);
-		this.context.listen("removeBond",decorateBond.removeBond,this);
-		this.context.listen("setActiveBond",decorateBond.setActiveBond,this);
-		this.context.listen("clearSelection",this.clearSelection,this);
-		*/
-		//if (!this.cor) return;
-		//var address=addressHashTag.getAddress(this.cor.meta.name);
-		//if (!address)  address=this.props.address;
-		//address&this.goto({address,cor:this.cor,corpus:this.cor.meta.name});
 		this.loadtext();
+		//prepare actions for decorators
+		for (let i in this.props) {
+			if (typeof this.props[i]==="function") this.actions[i]=this.props[i];
+		}
 	}
 	,loadtext(props){
 		props=props||this.props;
-		const {corpus,article,fields,text,address,layout}=props;
+		const {corpus,article,fields,rawlines,address,layout}=props;
 		this.cor=openCorpus(corpus);
-		this.ready=false;
-		this.layout(article,text,address,layout);
+		this.layout(article,rawlines,address,layout);
 	}
 	,markinview:{}//fast check if mark already render, assuming no duplicate mark in same range
+	,actions:{} 
 	,decorate(fromkpos,tokpos){
-		if (!this.ready)return;
 		for (let field in this.props.fields) {
 			const pos=this.props.fields[field].pos, value=this.props.fields[field].value;
 			const decorator=this.props.decorators[field];
@@ -62,13 +44,13 @@ const CorpusView=React.createClass({
 				if (this.markinview[range.kRange+field]) continue; 
 				const r=this.toLogicalRange(pos[i]);
 				
-				decorator(this.cm,this.cor,r.start,r.end,i+1,value[i]);
+				decorator({cm:this.cm,cor:this.cor,start:r.start,end:r.end,
+					id:i+1,target:value[i],actions:this.actions});
 				this.markinview[range.kRange+field]=true;
 			}
 		}
 	}
 	,textReady(){
-		this.ready=true;
 		this.scrollToAddress(this.props.address);
 	}
 	,componentWillUnmount(){
@@ -114,25 +96,8 @@ const CorpusView=React.createClass({
 		if (!text) return this.props.article.start;
 		return this.cor.fromLogicalPos(text,linech.ch,lb,firstline,this.getRawLine);
 	}
-	/*
-	,viewLeaving(article){
-		const corpus=this.corpus,cor=this.cor,side=this.props.side;
-		decorateBond.hideBonds();
-		this.props.onViewLeaving&&this.props.onViewLeaving({article,cor,corpus,side,cm:this.cm});
-	}
-	,viewReady(article){
-		const corpus=this.corpus,cor=this.cor,side=this.props.side;
-		const toLogicalRange=this.toLogicalRange;
-		this.props.onViewReady&&this.props.onViewReady({article,cor,corpus,side,cm:this.cm,toLogicalRange});
-	}
-	,onLoaded(res){
-		res.address&&this.scrollToAddress(res.address);
-		this.decorate();
-		this.viewReady(res.article);
-	}
-	*/
 	,getRawLine(line){
-		return this.props.text[line];
+		return this.props.rawlines[line];
 	}
 	,lineWidget(opts){
 		if (opts.corpus!==this.corpus)return;
@@ -171,17 +136,12 @@ const CorpusView=React.createClass({
 				}.bind(this)
 			);
 		}
-
-		//TODO, put layouttag to article field
-		//pass in via props
-
 		if (!playout) {
 			changetext.call(this, cor.layoutText(rawlines,article.start) );
 		} else {
 			cor.getBookField(layouttag,book,function(book_p){
 				if (!book_p) {
-					console.log(layouttag,book)
-					debugger;
+					console.error(layouttag,book)
 				}
 				const p=cor.trimField(book_p,article.start,article.end);
 				changetext.call(this, cor.layoutText(rawlines,article.start,p.pos) );
@@ -262,10 +222,12 @@ const CorpusView=React.createClass({
 	,onViewportChange(cm,from,to){
 		clearTimeout(this.viewporttimer);
 		this.viewporttimer=setTimeout(function(){
+			console.log("viewport changed")
 			const vp=cm.getViewport();
 			const from=this.fromLogicalPos({line:vp.from,ch:0});
 			const to=this.fromLogicalPos({line:vp.to,ch:0});
 			this.decorate(from,to);
+			this.onViewport&&this.onViewport(cm,vp.from,vp.to,from,to); //extra params start and end kpos
 		}.bind(this),50);
 	}
 	,setCM(cmviewer){
@@ -276,7 +238,6 @@ const CorpusView=React.createClass({
 	}
 	,render(){
 		if (!this.state.text) return E("div",{},"loading");
-
 		const props=Object.assign({},this.props,
 			{ref:this.setCM,
 			text:this.state.text,

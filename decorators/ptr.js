@@ -1,7 +1,9 @@
+
 const onPtrMouseDown=function(e){
 	const target=e.target;
 	const address=parseInt(target.dataset.target,10);
 	e.stopPropagation();
+	target.action(address);
 }
 
 var entertimer,leavetimer;
@@ -23,19 +25,20 @@ const onPtrLeave=function(e){
 
 	const target=e.target;
 	leavetimer=setTimeout(function(){
-		e.target.innerHTML=e.target.dataset.text;
+		e.target.innerHTML=e.target.dataset.id;
 	},50);
 }
-const createPtr=function(cm,cor,linech,end,text,target){
+const createPtr=function({cm,cor,start,end,id,target,actions}){
 	const dom=document.createElement("span");
 	dom.className="ptr";
-	dom.innerHTML=text;
-	dom.dataset.text=text;
+	dom.innerHTML=id;
+	dom.dataset.id=id;
 	dom.dataset.target=target;
 	dom.onmousedown=onPtrMouseDown;
 	dom.cor=cor;
+	dom.action=actions.updateArticleByAddress;
 	dom.onmouseenter=onPtrEnter;
 	dom.onmouseleave=onPtrLeave;
-	cm.setBookmark(linech,{widget:dom,handleMouseEvents:true});
+	cm.setBookmark(start,{widget:dom,handleMouseEvents:true});
 }
 module.exports=createPtr;
