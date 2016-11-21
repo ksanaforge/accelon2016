@@ -25,6 +25,7 @@ const CorpusView=React.createClass({
 		return {text:"",linebreaks:[],pagebreaks:[]};
 	}
 	,componentDidMount(){
+
 		/*
 		this.context.listen("highlightAddress",this.highlightAddress,this);
 		this.context.listen("charWidget",this.charWidget,this);
@@ -44,24 +45,31 @@ const CorpusView=React.createClass({
 		props=props||this.props;
 		const {corpus,article,fields,text,address,layout}=props;
 		this.cor=openCorpus(corpus);
+		this.ready=false;
 		this.layout(article,text,address,layout);
 	}
-	,decorate(){
+	,markinview:{}//fast check if mark already render, assuming no duplicate mark in same range
+	,decorate(fromkpos,tokpos){
+		if (!this.ready)return;
 		for (let field in this.props.fields) {
 			const pos=this.props.fields[field].pos, value=this.props.fields[field].value;
 			const decorator=this.props.decorators[field];
 			if (!decorator) continue;
 
 			for (let i=0;i<pos.length;i++) {
-					const r=this.toLogicalRange(pos[i]);
-					decorator(this.cm,this.cor,r.start,r.end,i+1,value[i]);
+				const range=this.cor.parseRange(pos[i]);
+				if (range.start<fromkpos || range.end>tokpos) continue;
+				if (this.markinview[range.kRange+field]) continue; 
+				const r=this.toLogicalRange(pos[i]);
+				
+				decorator(this.cm,this.cor,r.start,r.end,i+1,value[i]);
+				this.markinview[range.kRange+field]=true;
 			}
 		}
 	}
 	,textReady(){
-		console.log("text ready")
+		this.ready=true;
 		this.scrollToAddress(this.props.address);
-		this.decorate();
 	}
 	,componentWillUnmount(){
 		this.cm.setValue("");
@@ -158,9 +166,9 @@ const CorpusView=React.createClass({
 			const text=layout.lines.join("\n");
 
 			this.setState({text,linebreaks:layout.linebreaks,
-				pagebreaks:layout.pagebreaks,article},()=>{
+				pagebreaks:layout.pagebreaks,article},function(){
 					this.textReady();
-				}
+				}.bind(this)
 			);
 		}
 
@@ -252,7 +260,13 @@ const CorpusView=React.createClass({
 		}.bind(this),300);
 	}
 	,onViewportChange(cm,from,to){
-		//decorateBond.onViewportChange.call(this,cm,from,to);
+		clearTimeout(this.viewporttimer);
+		this.viewporttimer=setTimeout(function(){
+			const vp=cm.getViewport();
+			const from=this.fromLogicalPos({line:vp.from,ch:0});
+			const to=this.fromLogicalPos({line:vp.to,ch:0});
+			this.decorate(from,to);
+		}.bind(this),50);
 	}
 	,setCM(cmviewer){
 		if (cmviewer) {
