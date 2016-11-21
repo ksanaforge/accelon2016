@@ -3,16 +3,17 @@ const E=React.createElement;
 const PT=React.PropTypes;
 const CMView=require("./cmview");
 const {openCorpus}=require("ksana-corpus");
-
+const selectionActivity=require("./selectionactivity");
 const CorpusView=React.createClass({
 	propTypes:{
 		corpus:PT.string.isRequired,
 		address:PT.string.isRequired,
 		rawlines:PT.array.isRequired,
-		layout:PT.bool,
+		layout:PT.bool, //layout with p?
 		focus:PT.bool, //in active tab
 		onCursorActivity:PT.func,
-		onViewport:PT.func
+		onViewport:PT.func,
+		onCopyText:PT.func //custom copy handler
 	}
 	,getInitialState(){
 		return {text:"",linebreaks:[],pagebreaks:[]};
@@ -54,6 +55,7 @@ const CorpusView=React.createClass({
 		this.scrollToAddress(this.props.address);
 	}
 	,componentWillUnmount(){
+		this.cm.getAllMarks().forEach((m)=>m.clear()); //might not need this
 		this.cm.setValue("");
 	}
 	,shouldComponentUpdate(nextProps,nextState){
@@ -63,21 +65,15 @@ const CorpusView=React.createClass({
 			||nextState.text!==this.state.text);
 	}
 	,componentWillReceiveProps(nextProps){//cor changed
-		if (nextProps.corpus!==this.props.corpus
-			||nextProps.address!==this.props.address
-			||nextProps.layout!==this.props.layout){
-
-			if (nextProps.article.at===this.props.article.at
-				&& nextProps.layout==this.props.layout
-				&&nextProps.corpus==this.props.corpus) {
+		const {corpus,address,layout,article}=this.props;
+		if (nextProps.corpus!==corpus||nextProps.address!==address||nextProps.layout!==layout){
+			if (nextProps.article.at===article.at&&nextProps.layout===layout&&nextProps.corpus===corpus) {
 				this.scrollToAddress(nextProps.address);
 			} else {
 				this.loadtext(nextProps);
 			}
 		}
-		if (this.cm && nextProps.focus) {
-			this.cm.focus();
-		}
+		if (this.cm && nextProps.focus) this.cm.focus();
 	}	
 	,clearSelection(){
 		const cursor=this.cm.getCursor();
@@ -99,60 +95,37 @@ const CorpusView=React.createClass({
 	,getRawLine(line){
 		return this.props.rawlines[line];
 	}
-	,lineWidget(opts){
-		if (opts.corpus!==this.corpus)return;
-		const linech=this.toLogicalPos(opts.address);
-		if (linech.line==-1)return;
-		if (this.linewidget) this.linewidget.clear();
-		this.linewidget=this.cm.setBookmark(linech,{widget:opts.widget,handleMouseEvents:true});
-	}
 	,scrollToAddress(address){
 		const r=this.cor.toLogicalRange(this.state.linebreaks,address,this.getRawLine);
 		if (!r || r.start.line<0)return;
 		if (this.viewer) this.viewer.jumpToRange(r.start,r.end);		
 	}
-	,highlightAddress(address){
-		this.highlight&&this.highlight.clear();
-		if (!address) return;
-		const r=this.cor.toLogicalRange(this.state.linebreaks,address,this.getRawLine);
-		this.highlight=this.cm.markText(r.start,r.end,{className:"highlight",clearOnEnter:true});
-	}
 	,layout(article,rawlines,address,playout){
 		const cor=this.cor;
 		const layouttag="p";
 
-		if (!address){
-			//scroll to the selection after layout
+		if (!address){ //scroll to the selection after layout
 			address=this.kRangeFromCursor(this.cm);
 		}
 		var book=cor.bookOf(article.start);
 
-		const changetext=function(layout){
-			const text=layout.lines.join("\n");
-
-			this.setState({text,linebreaks:layout.linebreaks,
-				pagebreaks:layout.pagebreaks,article},function(){
-					this.textReady();
-				}.bind(this)
-			);
+		const changetext=function({lines,pagebreaks,linebreaks}){
+			const text=lines.join("\n");
+			this.setState({linebreaks,pagebreaks,article,text}, this.textReady );
 		}
+
 		if (!playout) {
 			changetext.call(this, cor.layoutText(rawlines,article.start) );
 		} else {
-			cor.getBookField(layouttag,book,function(book_p){
+			cor.getBookField(layouttag,book,(book_p)=>{
 				if (!book_p) {
-					console.error(layouttag,book)
+					console.error(layouttag,book);
+					return;
 				}
 				const p=cor.trimField(book_p,article.start,article.end);
 				changetext.call(this, cor.layoutText(rawlines,article.start,p.pos) );
-			}.bind(this));
+			});
 		}
-	}
-	,charWidget(opts){
-		if (opts.corpus!=this.corpus)return;
-		const linech=this.toLogicalPos(opts.address);
-		if (this.charwidget)this.charwidget.clear();
-		this.charwidget=this.cm.setBookmark(linech,{widget:opts.widget,handleMouseEvents:true});
 	}
 	,kRangeFromSel(cm,from,to){
 		if (!from||!to)return 0;
@@ -176,59 +149,30 @@ const CorpusView=React.createClass({
 		/*1p178a0103-15 copy and paste incorrect*/
 		/* TODO,  address error crossing a page, has line 30 */
 		const krange=this.kRangeFromCursor(cm);
-		evt.target.value="@"+this.cor.stringify(krange)+';';
-		evt.target.select();//reselect the hidden textarea
-	}
-	,getCaretText(cm){ //get caretText for checking dictionary
-		const from=cm.getCursor();
-		var ch=from.ch;
-		if (ch>2) ch-=2; //include two char before
-		//should check punc backward
-		var caretText=cm.doc.getRange({line:from.line,ch},{line:from.line+1,ch:256});
-		caretText=caretText.replace(/\r?\n/g,"");
-		const m=caretText.match(/^[.？,。，！；「」『』—－：、（）｛｝【】《》]*(.*?)[.？,。，！；「」『』—－：、（）｛｝【】《》]/);
-		if (m){
-			caretText=m[1];
-		}
-		return caretText;
-	}
-	,detectSelection(cm){
-		const sels=cm.listSelections();	
-		if (sels.length>0){
-			const sel=sels[0];
-			var ranges=[];
-			for (let i=0;i<sels.length;i++) {
-				ranges.push(this.kRangeFromSel(cm,sel.head,sel.anchor));
-			}
-
-			const selectionText=cm.doc.getSelection();
-			const cursor=cm.getCursor();
-			const cursorrange=this.kRangeFromCursor(cm);
-			const r=this.cor.parseRange(cursorrange);
-			this.props.setSelection({
-					corpus:this.props.corpus,id:this.props.id,
-					caretText:this.getCaretText(cm),selectionText,
-					ranges, caretpos:r.start, cursor:{line:cursor.line,ch:cursor.ch}
-				});
+		if (this.props.onCopyText) { //for excerpt copy
+			evt.target.value=this.props.onCopyText({cm,value:evt.target.value,krange,cor:this.cor});
+			evt.target.select();
+		} else { //default copy address
+			evt.target.value="@"+this.cor.stringify(krange)+';';
+			evt.target.select();//reselect the hidden textarea
 		}
 	}
 	,onCursorActivity(cm){
 		clearTimeout(this.cursortimer);
-		this.cursortimer=setTimeout(function(){
-			this.detectSelection(cm);
-			this.props.onCursorChanged&&this.props.onCursorChanged(cm);
-		}.bind(this),300);
+		this.cursortimer=setTimeout(()=>{
+			selectionActivity.call(this,cm);
+			this.props.onCursorActivity&&this.props.onCursorActivity(cm);
+		},300);
 	}
 	,onViewportChange(cm,from,to){
 		clearTimeout(this.viewporttimer);
-		this.viewporttimer=setTimeout(function(){
-			console.log("viewport changed")
+		this.viewporttimer=setTimeout(()=>{
 			const vp=cm.getViewport();
 			const from=this.fromLogicalPos({line:vp.from,ch:0});
 			const to=this.fromLogicalPos({line:vp.to,ch:0});
 			this.decorate(from,to);
 			this.onViewport&&this.onViewport(cm,vp.from,vp.to,from,to); //extra params start and end kpos
-		}.bind(this),50);
+		},50);
 	}
 	,setCM(cmviewer){
 		if (cmviewer) {
