@@ -27,7 +27,8 @@ const selectionActivity=function(cm){
 		this.props.setSelection({
 				corpus:this.props.corpus,id:this.props.id,
 				caretText:getCaretText(cm),selectionText,
-				ranges, caretpos:r.start, cursor:{line:cursor.line,ch:cursor.ch}
+				ranges, caretpos:r.start, caretposH:this.cor.stringify(r.start),
+				cursor:{line:cursor.line,ch:cursor.ch}
 			});
 	}
 }

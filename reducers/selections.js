@@ -12,7 +12,8 @@ module.exports=function selection(state = {} , action = {}) {
   } else if (OPEN_AT===A.type) {
     const ranges=[A.article.start];
     const caretpos=A.article.start;
-    return Object.assign({},state,{[A.id]:{caretpos,ranges,cursor:{line:0,ch:0}}});
+    const caretposH=A.article.startH;
+    return Object.assign({},state,{[A.id]:{caretpos,caretposH,ranges,cursor:{line:0,ch:0}}});
   } else if (CLOSE_ARTICLE===A.type) {
     var newstate=Object.assign({},state);
     if (newstate[A.id]) delete newstate[A.id];
