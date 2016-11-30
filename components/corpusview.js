@@ -35,6 +35,7 @@ const CorpusView=React.createClass({
 	,actions:{} 
 	,decorate(fromkpos,tokpos){
 		for (let field in this.props.fields) {
+			if (!this.props.fields[field]) continue;
 			const pos=this.props.fields[field].pos, value=this.props.fields[field].value;
 			const decorator=this.props.decorators[field];
 			if (!decorator) continue;

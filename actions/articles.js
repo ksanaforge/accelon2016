@@ -6,7 +6,7 @@ const {_fetchArticle}=require("./article");
 const openAt= (opts) => (dispatch,getState) => {
   _fetchArticle(opts.corpus,opts.address,dispatch,OPEN_AT);
   //cause flickering
-  dispatch({type:SET_ACTIVE_TAB,index:getState().articles.length});
+  dispatch({type:SET_ACTIVE_TAB,index:getState().articles.length-1});
 }
 
 const findArticle=(articles,id)=>{

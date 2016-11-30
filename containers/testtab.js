@@ -5,7 +5,7 @@ const E=React.createElement;
 //const { connect } = require('react-redux');
 
 const testtab=function(props){
-	const onClick=()=>props.openAt({corpus:"yinshun",address:"59p9.0301"});
+	const onClick=()=>props.openAt({corpus:"yinshun",address:"4p1.0101"});//address:"59p9.0301"
 	return E("div",{},
 		E("button",{onClick},"Open article")
 	);

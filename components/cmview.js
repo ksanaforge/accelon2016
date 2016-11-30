@@ -29,15 +29,13 @@ const CMView=React.createClass({
 		const vp=cm.getViewport();
 		const vpm=cm.getOption("viewportMargin");
 		const vpto=vp.to-vpm,vpfrom=vp.from-vpm;
-		let line=from.line;
+		var line=from.line;
 
-		if (vpto>from.line) { //scrolling up
-			line-=15; if (line<0) line=0;
-			cm.scrollIntoView({line,ch:from.ch});
-		} else {
-			line+=15; if(line>=cm.lineCount()) line=cm.lineCount()-1;
-			cm.scrollIntoView({line:from.line+15,ch:from.ch});
-		}
+		cm.scrollIntoView({line:0,ch:0});
+		line+=10;
+		if(line>=cm.lineCount()-1)line=cm.lineCount()-1;
+		cm.scrollIntoView({line,ch:0});
+
 		cm.focus();
 		cm.setCursor(from);
 	}
