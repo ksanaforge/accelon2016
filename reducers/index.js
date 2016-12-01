@@ -1,15 +1,22 @@
 const { combineReducers } =require('redux');
-const corpus=require('./corpus');
+const corpora=require('./corpora');
 const articles=require('./articles');
-const activeArticleTab=require('./activetab');
+const activeArticle=require('./activetab');
 const selections=require('./selections');
-const caret=require('./caret');
+const querys=require("./querys");
+const activeQuery=require("./activequery");
+const activeCorpus=require("./activecorpus");
 const rootReducer = combineReducers({
-	corpus ,
+	corpora ,
+	activeCorpus,
+
 	articles ,
-	activeArticleTab ,
-	selections
-//	caret
+	activeArticle ,
+
+	querys,
+	activeQuery,
+
+	selections,
 });
 
 module.exports=rootReducer;

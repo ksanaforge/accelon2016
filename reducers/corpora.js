@@ -1,6 +1,6 @@
 const  { OPEN_CORPUS_SUCCESS,OPEN_CORPUS_FAILED } = require('../actions/corpus');
 
-module.exports=function counter(state = {} , action = {}) {
+module.exports=function Corpora(state = {} , action = {}) {
   switch (action.type) {
   case OPEN_CORPUS_SUCCESS:
   	var r=Object.assign({},state);

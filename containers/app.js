@@ -5,15 +5,21 @@ const CorpusActions=require('../actions/corpus');
 const ArticlesActions=require('../actions/articles');
 const ArticleActions=require('../actions/article');
 const SelectionActions=require('../actions/selection');
+const SearchActions=require('../actions/search');
 
 function mapStateToProps(state,ownProps) {
-	const activeArticle=state.articles[state.activeArticleTab];
+	const article=state.articles[state.activeArticle];
+	const query=state.querys[state.activeQuery];
+	const corpus=state.corpora[state.activeCorpus];
   return {
+    corpora: state.corpora,
     articles: state.articles,
-    activeArticleTab:state.activeArticleTab,
+    activeArticle:state.activeArticle,
+    activeQuery:state.activeQuery,
+    activeCorpus:state.activeCorpus,
     selections: state.selections,
-    corpus: state.corpus,
-    activeArticle
+    querys:state.querys,
+    article,query,corpus    
   };
 }
 
@@ -22,7 +28,8 @@ function mapDispatchToProps(dispatch,ownProps) {
 	const boundarticles=bindActionCreators(ArticlesActions, dispatch);
 	const boundarticle=bindActionCreators(ArticleActions, dispatch);
   const boundselection=bindActionCreators(SelectionActions, dispatch);
-	const bound=Object.assign({},boundcorpus,boundarticles,boundarticle,boundselection);
+  const boundsearch=bindActionCreators(SearchActions, dispatch);
+	const bound=Object.assign({},boundcorpus,boundarticles,boundarticle,boundselection,boundsearch);
   return bound; 
 }
 

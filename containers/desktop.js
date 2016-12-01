@@ -8,8 +8,9 @@ const TocNav=require("./tocnav");
 const Desktop=React.createClass({
 	//console.log("desktop props",props,this.props)
 	componentDidMount(){
-		this.props.openCorpus("yinshun");
-		this.props.openCorpus("taisho");
+		this.props.stockcorpora.forEach((corpus)=>{
+			this.props.openCorpus(corpus.name);	
+		});
 	}
 	,render(){
 		const props=Object.assign({},this.props,{viewOptions:CorpusViewOptions,nav:TocNav});

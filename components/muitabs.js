@@ -7,15 +7,16 @@ const tabsBarJustifiedClass = 'mui-tabs__bar--justified',
 const TabMenu=require("./tabmenu");
 
 const styles={
-	closebutton:{float:"right",color:"white",width:"1.1em",
-	fontSize:"125%",background:"#ff3f3f",borderRadius:"50%"}
+	closebutton:{float:"right",color:"white",width:"1.1em",marginTop:"3px",
+	fontSize:"125%",background:"#ff7f7f",borderRadius:"50%"} //in case css is not set
 }
+
 const closeButton=(props)=>{
 	const onClick=(e)=>{
 		const i=parseInt(e.target.dataset.idx,10);
 		props.onClose(i);
 	}
-	return E("span",{style:styles.closebutton,onClick,"data-idx":props.i},"×");
+	return E("span",{className:"closebutton",onClick,"data-idx":props.i},"×");
 }
 const Tabs=React.createClass({
 	getInitialState(){
