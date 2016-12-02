@@ -14,7 +14,9 @@ TOCNav=React.createClass({
 		return {toc:[]};
 	}
 	,loadTOC:function(kpos){
+		if (!this.props.corpus)return;
 		const cor=openCorpus(this.props.corpus);
+		if (!cor)return;
 		cor.getSubTOC(kpos,function(tocs){
 			this.setState({toc:tocs[0]||[]});
 		}.bind(this));

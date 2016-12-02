@@ -10,7 +10,7 @@ const kcs=require("ksana-corpus-search");
 function _search(dispatch,getState,qarr,idx){
   const q=qarr[idx];
   if (!q) return;
-  var timer=setInterval(()=>{
+  var searchtimer=setInterval(()=>{
   	const corpus=getState().activeCorpus;
   	if (!corpus)return;
 
@@ -21,11 +21,13 @@ function _search(dispatch,getState,qarr,idx){
       console.log("wait searching",getState().searching);
       return;
     }
-    clearInterval(timer);
+    clearInterval(searchtimer);
     dispatch({type:SEARCHING,q,idx});
 
     kcs.search(cor,q,function(result){
-      dispatch({type:SEARCH_DONE, qarr , q , result}); 
+    	const {matches,matchcount,phrasepostings,timer}=result;
+    	console.log(timer)
+      dispatch({type:SEARCH_DONE, qarr, q , matches,matchcount,phrasepostings,timer }); 
     });
   },100);
 }

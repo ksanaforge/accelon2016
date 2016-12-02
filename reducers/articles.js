@@ -1,7 +1,15 @@
 const  { OPEN_AT,FETCH_FAILED,SET_ACTIVE_ARTICLE,CLOSE_ARTICLE} = require('../actions/articles');
 const {TOGGLE_LAYOUT,UPDATE_ARTICLE }=require("../actions/article");
 
-module.exports=function articles(state = [] , action = {}) {
+const rightButton=require("../components/tabclonebutton");
+const initialArticles=[
+  {view:require("../components/corpusview")
+  ,corpus:"",article:{}
+  ,title:"ResultView",id:'resultview',text:["a","b"],rightButton,address:"1p1"}
+]
+
+
+module.exports=function articles(state = initialArticles , action = {}) {
 	const A=action;
   if (OPEN_AT===A.type) { //TODO open at position
 		var newstate=state.slice();

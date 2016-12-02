@@ -19,6 +19,10 @@ const CorpusView=React.createClass({
 		return {text:"",linebreaks:[],pagebreaks:[]};
 	}
 	,componentDidMount(){
+		if (!this.props.corpus) {
+			if(this.props.text) this.setState({text:this.props.text.join("\n")});
+			return;
+		}
 		this.loadtext();
 		//prepare actions for decorators
 		for (let i in this.props) {
@@ -53,6 +57,7 @@ const CorpusView=React.createClass({
 		}
 	}
 	,textReady(){
+		console.log("text ready")
 		this.scrollToAddress(this.props.address);
 	}
 	,componentWillUnmount(){
@@ -87,6 +92,7 @@ const CorpusView=React.createClass({
 		return this.cor.toLogicalRange(this.state.linebreaks,range,this.getRawLine);
 	}
 	,fromLogicalPos(linech){
+		if (!this.cor)return;
 		const firstline=this.cor.bookLineOf(this.props.article.start); //first of of the article
 		const text=this.cm.doc.getLine(linech.line);
 		const lb=this.state.linebreaks[linech.line];
@@ -129,6 +135,7 @@ const CorpusView=React.createClass({
 		}
 	}
 	,kRangeFromSel(cm,from,to){
+		if (!this.cor)return;
 		if (!from||!to)return 0;
 		const f=this.cor.fromLogicalPos.bind(this.cor);
 		const firstline=this.cor.bookLineOf(this.props.article.start); //first of of the article
@@ -159,6 +166,7 @@ const CorpusView=React.createClass({
 		}
 	}
 	,onCursorActivity(cm){
+		if (!this.cor) return;
 		clearTimeout(this.cursortimer);
 		this.cursortimer=setTimeout(()=>{
 			selectionActivity.call(this,cm);

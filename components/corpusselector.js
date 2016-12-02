@@ -21,8 +21,11 @@ const CorpusSelector=React.createClass({
 	}
 	,renderItem(item,idx){
 		var style={};
-		if (this.props.selected==idx) style.background="highlight"
-
+		if (this.props.selected==idx) {
+			style.background="highlight"
+			style.pointerEvents="none"
+			style.cursor="default"
+		}
 		return E("li",{key:idx,"data-idx":idx,style},
 			E("a",{href:"#",onClick:this.selectItem},item.label));
 	}
@@ -38,7 +41,7 @@ const CorpusSelector=React.createClass({
 		return E("div",{className:"mui-dropdown"},
 		E("button",{className:"mui-btn mui-btn--primary",onClick:this.toggleOpen},
 			this.selectedCorpus(), this.state.open?E("span",{className:"mui-caret"}):null),
-		E("ul",{className:ulclass},
+		E("ul",{className:ulclass,style:{zIndex:200}},
 			this.props.corpora.map(this.renderItem)
 			)
 		)

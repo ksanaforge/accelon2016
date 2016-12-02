@@ -2,6 +2,7 @@ const React =require('react');
 const E=React.createElement;
 const MUITabs=require("../components/muitabs");
 const CorpusView=require("../components/corpusview");
+const TabCloseButton=require("../components/tabclosebutton");
 const styles={
 	navcontainer:{position:"relative",zIndex:200},
 	nav:{position:"absolute",right:19}
@@ -13,9 +14,10 @@ const MainTabs=(props)=>{
 
 	const onSelectItem=(address)=>props.updateArticleByAddress(address);
 	const decorators=props.decorators;
+	var rightButtons=[];
 	const panes=props.articles.map((a,idx)=>{
 		var article=a;
-		const focus=props.activeArticleTab==idx;
+		const focus=props.activeArticle==idx;
 		const ranges=props.selections[article.id].ranges;
 		const viewprops=Object.assign({},article,{rawlines:article.text},
 			{updateArticleByAddress:props.updateArticleByAddress,
@@ -23,15 +25,17 @@ const MainTabs=(props)=>{
 		
 		const caretpos=props.selections[article.id].caretpos;
 
+		rightButtons.push(article.rightButton||TabCloseButton);
+		
 		const navprops={caretpos,corpus:article.corpus,onSelectItem};
 		return E("div",{style:containerstyle},
 			E("div",{style:styles.navcontainer},
-				E("div",{style:styles.nav},E(props.nav,navprops))),
-			E(CorpusView,viewprops)
+				E("div",{style:styles.nav},E(article.nav||props.nav,navprops))),
+			E(article.view||CorpusView,viewprops)
 		);
 	});
 
-	const tabs=props.articles.map((a)=>[a.id,a.title]);
+	var tabs=props.articles.map((a)=>[a.id,a.title]);
 
 	const onSelectTab=(newtab,oldtab)=>{
 		const tab=props.articles[newtab];
@@ -39,12 +43,14 @@ const MainTabs=(props)=>{
 		props.setActiveArticle(tab.id );
 		return true; //do not change tab now
 	}
-	const onClose=(i)=>{
-		props.closeArticle(props.articles[i].id);
+	const onRightButtonClick=(i)=>{
+		if (!props.articles[i].rightButton) {
+			props.closeArticle(props.articles[i].id);	
+		}
 	}
 	return E("div",{},
-		E(MUITabs,{onSelectTab,tabs,panes,selected:props.activeArticleTab,
-			closable:true,onClose,panel:props.viewOptions})
+		E(MUITabs,{onSelectTab,tabs,panes,selected:props.activeArticle,rightButtons,
+			closable:true,onRightButtonClick,panel:props.viewOptions})
 	)
 }
 

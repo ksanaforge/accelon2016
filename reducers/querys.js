@@ -1,7 +1,7 @@
 const {SEARCH_DONE}=require("../actions/search");
 const {NEXT_OCCUR,PREV_OCCUR}=require("../actions/occur");
 
-var querys="聖求經\n菩薩道\n如來當然";
+var querys="菩薩道\n如來 當然";
 
 querys= (localStorage.getItem("accelon2016_querys")||querys).split("\n");
 const initialState=querys.map((q)=>({q,count:0,matches:[],now:-1}));

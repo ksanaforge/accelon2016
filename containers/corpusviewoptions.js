@@ -36,7 +36,7 @@ const CorpusViewOptions=React.createClass({
 });
 
 function mapStateToProps(state,ownProps) {
-	const activeArticle=state.articles[state.activeArticleTab];
+	const activeArticle=state.articles[state.activeArticle];
 	const caretposH=state.selections[activeArticle.id].caretposH;
 	return Object.assign({},activeArticle, {caretposH} );
 }

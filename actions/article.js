@@ -4,7 +4,7 @@ const ksanacorpus=require("ksana-corpus");
 const TOGGLE_LAYOUT = 'TOGGLE_LAYOUT';
 const UPDATE_ARTICLE='UPDATE_ARTICLE';
 
-const getActiveArticle=(state)=>state.articles[state.activeArticleTab];
+const getActiveArticle=(state)=>state.articles[state.activeArticle];
 
 const toggleLayout=()=>(dispatch,getState)=>{
 	const active=getActiveArticle(getState());

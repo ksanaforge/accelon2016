@@ -11,20 +11,15 @@ const styles={
 	fontSize:"125%",background:"#ff7f7f",borderRadius:"50%"} //in case css is not set
 }
 
-const closeButton=(props)=>{
-	const onClick=(e)=>{
-		const i=parseInt(e.target.dataset.idx,10);
-		props.onClose(i);
-	}
-	return E("span",{className:"closebutton",onClick,"data-idx":props.i},"×");
-}
+
 const Tabs=React.createClass({
 	getInitialState(){
 		return {selected:0}
 	}
 	,propTypes:{
 		panes:PT.array.isRequired,
-		tabs:PT.array.isRequired
+		tabs:PT.array.isRequired,
+		rightButtons:PT.array
 	}
 	,childContextTypes:{
 		getActiveTab:PT.func
@@ -33,6 +28,9 @@ const Tabs=React.createClass({
 		if (typeof nextProps.selected!=="undefined" && nextProps.selected!==this.state.selected) {
 			this.setState({selected:nextProps.selected});
 		}
+	}
+	,getDefaultProps(){
+		return {rightButtons:[]}
 	}
 	,getActiveTab(name){
 		return this.props.tabs[this.state.selected][0];
@@ -49,17 +47,16 @@ const Tabs=React.createClass({
 		}
 	}
 	,render(){
-
 		var tabEls = [], paneEls=[], _=this.context._;
 		for (var i=0;i<this.props.tabs.length;i++) {
 			const name=this.props.tabs[i][0];
 			const label=this.props.tabs[i][1];
 			const isActive = (i === this.state.selected) ? true : false;
-			const closable=this.props.closable ;
+			const rightButton=this.props.rightButtons[i] ;
 			tabEls.push(E("li",{key:i,className:(isActive) ? isActiveClass : ''},
 				isActive&&this.props.panel&&E(TabMenu,{panel:this.props.panel,i}),
 				E("a",{onClick:this.onTabClick,"data-i":i},label,
-				isActive&&closable&&E(closeButton,{i,onClose:this.props.onClose})))
+					isActive&&rightButton?E(rightButton,{i,onClick:this.props.onRightButtonClick}):null))
 			);
 
 			var className = 'mui-tabs__pane ';

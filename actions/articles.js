@@ -4,9 +4,9 @@ const FETCH_FAILED = 'FETCH_FAILED';
 const CLOSE_ARTICLE = 'CLOSE_ARTICLE';
 const {_fetchArticle}=require("./article");
 const openAt= (opts) => (dispatch,getState) => {
+  var index=getState().articles.length;
   _fetchArticle(opts.corpus,opts.address,dispatch,OPEN_AT);
-  //cause flickering
-  dispatch({type:SET_ACTIVE_TAB,index:getState().articles.length-1});
+  dispatch({type:SET_ACTIVE_TAB,index});  
 }
 
 const findArticle=(articles,id)=>{
@@ -17,7 +17,9 @@ const findArticle=(articles,id)=>{
 }
 const setActiveArticle=(id)=> (dispatch,getState)=>{
 	const index=findArticle(getState().articles,id);
-	if (index>-1) dispatch({type:SET_ACTIVE_TAB,index});
+	if (index>-1) {
+		dispatch({type:SET_ACTIVE_TAB,index});
+	}
 };
 
 const closeArticle=(id)=> (dispatch,getState)=>{
@@ -27,7 +29,9 @@ const closeArticle=(id)=> (dispatch,getState)=>{
 	dispatch({type:CLOSE_ARTICLE,id});
 
 	if (articles.length-1==index) index--;
-	if (index>-1) dispatch({type:SET_ACTIVE_TAB,index});
+	if (index>-1) {
+		dispatch({type:SET_ACTIVE_TAB,index});
+	}
 }
 
 module.exports={
