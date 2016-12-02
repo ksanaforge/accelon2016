@@ -5,25 +5,36 @@ const CodeMirror=require("ksana-codemirror").Component;
 const styles={
 	container:{height:150}
 }
-const SearchBox=(props)=>{
-	var prevline=-1,changetimer=null;
-	const onCursorActivity=(cm)=>{
-		const cursor=cm.getCursor();
-		if (cursor.line!==prevline) props.onLineChanged(cm.getValue(),cursor.line);
-		prevline=cursor.line;
+const SearchBox=React.createClass({
+	prevline:-1
+	,changetimer:null
+	,shouldComponentUpdate(nextProps) {
+		return nextProps.querys!==this.cm.getValue();
 	}
-	const onChange=(cm)=>{
-		clearTimeout(changetimer);
-		changetimer=setTimeout(()=>{
+	,onCursorActivity(cm){
+		const cursor=cm.getCursor();
+		if (cursor.line!==this.prevline) this.props.onLineChanged(cm.getValue(),cursor.line);
+		this.prevline=cursor.line;
+	}
+	,onChange(cm){
+		clearTimeout(this.changetimer);
+		this.changetimer=setTimeout(()=>{
 			const cursor=cm.getCursor();
-			props.onLineChanged(cm.getValue(),cursor.line);
+			this.props.onLineChanged(cm.getValue(),cursor.line);
 		},300);
 	}
-	
-	return E("div",{style:styles.container},
-		E(CodeMirror,{theme:"ambiance",value:props.querys,style:styles.box
-			,onCursorActivity,onChange
-			,scrollbarStyle:"null"})
-	);
-}
+	,getCM(cm){
+		this.cm=cm.getCodeMirror();
+		if (this.props.getCM) this.props.getCM(this.cm);
+	}
+	,render(){
+		return E("div",{style:styles.container},
+			E(CodeMirror,{ref:this.getCM,
+				theme:"ambiance",value:this.props.querys,style:styles.box
+				,onCursorActivity:this.onCursorActivity,onChange:this.onChange
+				,scrollbarStyle:"null"})
+		);
+
+	}
+});
 module.exports=SearchBox;

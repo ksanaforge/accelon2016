@@ -17,11 +17,11 @@ const MainTabs=(props)=>{
 	var rightButtons=[];
 	const panes=props.articles.map((a,idx)=>{
 		var article=a;
-		const focus=props.activeArticle==idx;
+		const active=props.activeArticle==idx;
 		const ranges=props.selections[article.id].ranges;
 		const viewprops=Object.assign({},article,{rawlines:article.text},
 			{updateArticleByAddress:props.updateArticleByAddress,
-			ranges,setSelection:props.setSelection,focus,decorators});
+			ranges,setSelection:props.setSelection,active,decorators});
 		
 		const caretpos=props.selections[article.id].caretpos;
 

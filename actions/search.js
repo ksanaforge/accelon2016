@@ -2,9 +2,9 @@ const SEARCHING = 'SEARCHING';
 const SEARCH_DONE = 'SEARCH_DONE';
 const SET_ACTIVE_QUERY='SET_ACTIVE_QUERY';
 const SET_ACTIVE_CORPUS='SET_ACTIVE_CORPUS';
-//const {SET_HIGHLIGHT,updateHighlight}=require("./occur");
+const {SET_HIGHLIGHT,updateHighlight,updateResultView}=require("./occur");
 const {openCorpus}=require("ksana-corpus");
-
+const {_fetchArticle}=require("./article");
 const kcs=require("ksana-corpus-search");
 
 function _search(dispatch,getState,qarr,idx){
@@ -22,25 +22,39 @@ function _search(dispatch,getState,qarr,idx){
       return;
     }
     clearInterval(searchtimer);
-    dispatch({type:SEARCHING,q,idx});
+    console.log("searching",q,idx)
+    dispatch({type:SEARCHING,corpus,q,idx});
 
     kcs.search(cor,q,function(result){
     	const {matches,matchcount,phrasepostings,timer}=result;
     	console.log(timer)
-      dispatch({type:SEARCH_DONE, qarr, q , matches,matchcount,phrasepostings,timer }); 
+      dispatch({type:SEARCH_DONE, corpus,qarr, q ,
+        matches,matchcount,phrasepostings,timer,n:idx });
+
+      if (matches.length) {
+        const address=cor.stringify(matches[0][0]);
+        _fetchArticle(corpus,address,dispatch,"UPDATE_ARTICLE","resultview");
+      }
+
     });
   },100);
 }
 
-function search(qarr,idx) {
+function search(qarr,n) {
   return (dispatch,getState) => {
-    _search(dispatch,getState,qarr,idx);
+    const query=getState().querys[n];
+    if (!query || query&&query.now==-1 || query.q!==qarr[n]) {
+      _search(dispatch,getState,qarr,n);
+    } else {
+      dispatch({type:SET_ACTIVE_QUERY,n});
+      updateResultView(query,dispatch);
+    }
   };
 }
-
+/*
 function setActiveQuery(n){
   return (dispatch,getState) => {
-  	dispatch({type:SET_ACTIVE_QUERY,n})
+  	dispatch({type:SET_ACTIVE_QUERY,n});
     const query=getState().querys[n];
     if (query && query.matches) {
       const m=query.matches[query.now];
@@ -51,7 +65,7 @@ function setActiveQuery(n){
     }
   }
 }
-
+*/
 function findAll(qarr){
   return (dispatch,getState) => {
     const querys=getState().querys;
@@ -64,4 +78,4 @@ function findAll(qarr){
     dispatch({type:SET_ACTIVE_QUERY,n:0});
   };
 }
-module.exports={search,setActiveQuery,findAll,SEARCH_DONE,SEARCHING,SET_ACTIVE_QUERY};
+module.exports={search,findAll,SEARCH_DONE,SEARCHING,SET_ACTIVE_QUERY};

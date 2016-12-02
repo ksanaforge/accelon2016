@@ -6,7 +6,6 @@ const CorpusViewOptions=require("./corpusviewoptions");
 const TocNav=require("./tocnav");
 
 const Desktop=React.createClass({
-	//console.log("desktop props",props,this.props)
 	componentDidMount(){
 		this.props.stockcorpora.forEach((corpus)=>{
 			this.props.openCorpus(corpus.name);	

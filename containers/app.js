@@ -6,6 +6,7 @@ const ArticlesActions=require('../actions/articles');
 const ArticleActions=require('../actions/article');
 const SelectionActions=require('../actions/selection');
 const SearchActions=require('../actions/search');
+const OccurActions=require('../actions/occur');
 
 function mapStateToProps(state,ownProps) {
 	const article=state.articles[state.activeArticle];
@@ -29,7 +30,9 @@ function mapDispatchToProps(dispatch,ownProps) {
 	const boundarticle=bindActionCreators(ArticleActions, dispatch);
   const boundselection=bindActionCreators(SelectionActions, dispatch);
   const boundsearch=bindActionCreators(SearchActions, dispatch);
-	const bound=Object.assign({},boundcorpus,boundarticles,boundarticle,boundselection,boundsearch);
+  const boundoccur=bindActionCreators(OccurActions, dispatch);
+	const bound=Object.assign({},boundcorpus,boundarticles,
+    boundarticle,boundselection,boundsearch,boundoccur);
   return bound; 
 }
 

@@ -1,6 +1,6 @@
 const  { OPEN_AT,FETCH_FAILED,SET_ACTIVE_ARTICLE,CLOSE_ARTICLE} = require('../actions/articles');
 const {TOGGLE_LAYOUT,UPDATE_ARTICLE }=require("../actions/article");
-
+const {SEARCH_DONE}=require("../actions/search");
 const rightButton=require("../components/tabclonebutton");
 const initialArticles=[
   {view:require("../components/corpusview")
@@ -21,9 +21,9 @@ module.exports=function articles(state = initialArticles , action = {}) {
     return state.filter((o)=>o.id!==A.id);
   } else if (TOGGLE_LAYOUT===A.type) {
     return state.map((o)=>(o.id==A.id)?Object.assign({},o,{layout:!o.layout}):o);
-  }  else if (UPDATE_ARTICLE===A.type) {
-    const {title,address,article,text}=action;
-    return state.map((o)=>(o.id==A.id)?Object.assign({},o,{title,address,article,text}):o);
+  } else if (UPDATE_ARTICLE===A.type) {
+    const {title,address,article,text,corpus}=action;
+    return state.map((o)=>(o.id==A.id)?Object.assign({},o,{corpus,title,address,article,text}):o);
   } else {
   	return state;
   }

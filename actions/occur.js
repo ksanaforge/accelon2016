@@ -1,5 +1,6 @@
-const SET_HIGHLIGHT='SET_HIGHLIGHT',PREV_OCCUR="PREV_OCCUR",NEXT_OCCUR="NEXT_OCCUR";
-
+const SET_HIGHLIGHT='SET_HIGHLIGHT',SET_OCCUR="SET_OCCUR";
+const {_fetchArticle}=require("./article");
+const {openCorpus}=require("ksana-corpus");
 function updateHighlight(querys,n,dispatch) {
 	setTimeout(()=>{
 		const query=querys[n];
@@ -10,20 +11,38 @@ function updateHighlight(querys,n,dispatch) {
 		}
 	},1);
 }
+const updateResultView=function(query,dispatch){
+	if (!query || !query.matches || !query.matches.length)  return;
+  const corpus=query.corpus;
+  if (!corpus)return;
+  const cor=openCorpus(corpus);
+  if (!cor) return;
+
+  const address=cor.stringify(query.matches[query.now][0]);
+  _fetchArticle(corpus,address,dispatch,"UPDATE_ARTICLE","resultview");
+}
+
+const nextprev=(dispatch,getState,adv)=>{
+	const activeQuery=getState().activeQuery;
+	const query=getState().querys[activeQuery];
+	if (!query)return;
+
+	var now=query.now+adv;
+	if (now<0) now=query.matches.length-1;
+	if (now>=query.matches.length) now=0;
+
+	dispatch({type:SET_OCCUR,n:activeQuery,now});
+	query.now=now;
+	updateResultView(query,dispatch);
+}
+
 function nextOccur() {
-	return (dispatch,getState) => {
-  	const activeQuery=getState().activeQuery;
-		dispatch({type:NEXT_OCCUR,n:activeQuery});
-		updateHighlight(getState().querys,activeQuery,dispatch);
-	}
+	return (dispatch,getState) => nextprev(dispatch,getState,1);
 }
 function prevOccur(){
-	return (dispatch,getState) => {
-  	const activeQuery=getState().activeQuery;
-		dispatch({type:PREV_OCCUR,n:activeQuery});
-		updateHighlight(getState().querys,activeQuery,dispatch);
-	}
+	return (dispatch,getState) => nextprev(dispatch,getState,-1);
 }
 
 
-module.exports={SET_HIGHLIGHT,NEXT_OCCUR,PREV_OCCUR,nextOccur,prevOccur,updateHighlight};
+module.exports={SET_HIGHLIGHT,SET_OCCUR,nextOccur,prevOccur,updateHighlight
+,updateResultView};

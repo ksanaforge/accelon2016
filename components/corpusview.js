@@ -10,7 +10,7 @@ const CorpusView=React.createClass({
 		address:PT.string.isRequired,
 		rawlines:PT.array.isRequired,
 		layout:PT.bool, //layout with p?
-		focus:PT.bool, //in active tab
+		active:PT.bool, //in active tab
 		onCursorActivity:PT.func,
 		onViewport:PT.func,
 		onCopyText:PT.func //custom copy handler
@@ -57,7 +57,6 @@ const CorpusView=React.createClass({
 		}
 	}
 	,textReady(){
-		console.log("text ready")
 		this.scrollToAddress(this.props.address);
 	}
 	,componentWillUnmount(){
@@ -79,7 +78,9 @@ const CorpusView=React.createClass({
 				this.loadtext(nextProps);
 			}
 		}
-		if (this.cm && nextProps.focus) this.cm.focus();
+		if (this.cm && nextProps.active){
+			//this.cm.focus();
+		} 
 	}	
 	,clearSelection(){
 		const cursor=this.cm.getCursor();
