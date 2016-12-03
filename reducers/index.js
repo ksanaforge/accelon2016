@@ -6,6 +6,8 @@ const selections=require('./selections');
 const querys=require("./querys");
 const activeQuery=require("./activequery");
 const activeCorpus=require("./activecorpus");
+const excerpts=require("./excerpts");
+
 const rootReducer = combineReducers({
 	corpora ,
 	activeCorpus,
@@ -17,6 +19,7 @@ const rootReducer = combineReducers({
 	activeQuery,
 
 	selections,
+	excerpts
 });
 
 module.exports=rootReducer;

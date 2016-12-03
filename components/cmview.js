@@ -32,7 +32,7 @@ const CMView=React.createClass({
 		var line=from.line;
 
 		cm.scrollIntoView({line:0,ch:0});
-		line+=10;
+		line+=5;
 		if(line>=cm.lineCount()-1)line=cm.lineCount()-1;
 		cm.scrollIntoView({line,ch:0});
 

@@ -3,7 +3,7 @@ const E=React.createElement;
 const PT=React.PropTypes;
 const SearchBox=require("../components/searchbox");
 const CorpusSelector=require("../components/corpusselector");
-const ResultNav=require("../components/resultnav");
+const OccurNav=require("../components/occurnav");
 const RangeSelector=require("../components/rangeselector");
 const SearchTab=React.createClass({
 	propTypes:{
@@ -34,7 +34,7 @@ const SearchTab=React.createClass({
 			E(CorpusSelector,{selected:0,
 				selectCorpus:this.selectCorpus,corpora:this.props.stockcorpora}),
 			E(SearchBox,{querys,onLineChanged:this.onLineChanged,getCM:this.getCM}),
-			E(ResultNav,navprops),
+			E(OccurNav,navprops),
 			E(RangeSelector)
 		)
 	}

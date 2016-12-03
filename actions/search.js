@@ -5,6 +5,7 @@ const SET_ACTIVE_CORPUS='SET_ACTIVE_CORPUS';
 const {SET_HIGHLIGHT,updateHighlight,updateResultView}=require("./occur");
 const {openCorpus}=require("ksana-corpus");
 const {_fetchArticle}=require("./article");
+const {listExcerpts}=require("./excerpts");
 const kcs=require("ksana-corpus-search");
 
 function _search(dispatch,getState,qarr,idx){
@@ -22,20 +23,20 @@ function _search(dispatch,getState,qarr,idx){
       return;
     }
     clearInterval(searchtimer);
-    console.log("searching",q,idx)
     dispatch({type:SEARCHING,corpus,q,idx});
 
     kcs.search(cor,q,function(result){
-    	const {matches,matchcount,phrasepostings,timer}=result;
-    	console.log(timer)
+    	const {matches,count,phrasepostings,timer}=result;
       dispatch({type:SEARCH_DONE, corpus,qarr, q ,
-        matches,matchcount,phrasepostings,timer,n:idx });
+        matches,count,phrasepostings,timer,n:idx });
 
       if (matches.length) {
-        const address=cor.stringify(matches[0][0]);
-        _fetchArticle(corpus,address,dispatch,"UPDATE_ARTICLE","resultview");
-      }
-
+        cor.fromTPos(matches[0],function({kpos}){
+          const address=cor.stringify(kpos[0]);
+          _fetchArticle(corpus,address,dispatch,"UPDATE_ARTICLE","resultview");
+          listExcerpts(cor,result,dispatch,getState().excerpts);
+        });
+      }      
     });
   },100);
 }
@@ -47,7 +48,7 @@ function search(qarr,n) {
       _search(dispatch,getState,qarr,n);
     } else {
       dispatch({type:SET_ACTIVE_QUERY,n});
-      updateResultView(query,dispatch);
+      updateResultView(query,dispatch,getState().excerpts);
     }
   };
 }

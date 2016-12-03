@@ -78,9 +78,7 @@ const CorpusView=React.createClass({
 				this.loadtext(nextProps);
 			}
 		}
-		if (this.cm && nextProps.active){
-			//this.cm.focus();
-		} 
+		if (this.cm && nextProps.active)this.cm.focus();
 	}	
 	,clearSelection(){
 		const cursor=this.cm.getCursor();

@@ -1,5 +1,6 @@
 const SET_HIGHLIGHT='SET_HIGHLIGHT',SET_OCCUR="SET_OCCUR";
 const {_fetchArticle}=require("./article");
+const {listExcerpts}=require("./excerpts");
 const {openCorpus}=require("ksana-corpus");
 function updateHighlight(querys,n,dispatch) {
 	setTimeout(()=>{
@@ -11,15 +12,18 @@ function updateHighlight(querys,n,dispatch) {
 		}
 	},1);
 }
-const updateResultView=function(query,dispatch){
+const updateResultView=function(query,dispatch,stateExcerpts){
 	if (!query || !query.matches || !query.matches.length)  return;
   const corpus=query.corpus;
   if (!corpus)return;
   const cor=openCorpus(corpus);
   if (!cor) return;
 
-  const address=cor.stringify(query.matches[query.now][0]);
-  _fetchArticle(corpus,address,dispatch,"UPDATE_ARTICLE","resultview");
+  cor.fromTPos(query.matches[query.now],function({kpos}){
+	  const address=cor.stringify(kpos[0]);
+	  _fetchArticle(corpus,address,dispatch,"UPDATE_ARTICLE","resultview");
+	  listExcerpts(cor,query,dispatch,stateExcerpts);
+  });
 }
 
 const nextprev=(dispatch,getState,adv)=>{
@@ -33,7 +37,7 @@ const nextprev=(dispatch,getState,adv)=>{
 
 	dispatch({type:SET_OCCUR,n:activeQuery,now});
 	query.now=now;
-	updateResultView(query,dispatch);
+	updateResultView(query,dispatch,getState().excerpts);
 }
 
 function nextOccur() {

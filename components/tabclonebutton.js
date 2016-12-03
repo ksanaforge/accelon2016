@@ -6,7 +6,7 @@ const TabCloneButton=(props)=>{
 		const i=parseInt(e.target.dataset.idx,10);
 		props.onClick(i);
 	}
-	return E("span",{className:"clonebutton",onClick,"data-idx":props.i},"©");
+	return E("span",{className:"clonebutton",onClick,"data-idx":props.i},"⚲");
 }
 
 module.exports=TabCloneButton;

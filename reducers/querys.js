@@ -13,9 +13,9 @@ module.exports=function querys(state = initialState, action = {}) {
   		for (var i=0;i<action.qarr.length;i++) {
   			const q=action.qarr[i];
   			if (q==action.q) {
-  				var count=action.matches.length;
-  				if (action.matches.length==0) count=-1;
-  				querys.push({corpus:action.corpus,q,matches:action.matches,count,now:0});
+  				querys.push({corpus:action.corpus,q
+            ,matches:action.matches,count:action.count
+            ,now:0,phrasepostings:action.phrasepostings});
   				continue;
   			}
   			const at=state.filter((item)=>item.q==q);

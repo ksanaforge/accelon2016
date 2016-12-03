@@ -24,6 +24,7 @@ const SearchBox=React.createClass({
 		},300);
 	}
 	,getCM(cm){
+		if(!cm) return;
 		this.cm=cm.getCodeMirror();
 		if (this.props.getCM) this.props.getCM(this.cm);
 	}
