@@ -26,7 +26,8 @@ const MainTabs=(props)=>{
 			{updateArticleByAddress:props.updateArticleByAddress,
 			ranges,setSelection:props.setSelection,active,decorators});
 		const excerptprops=Object.assign({}, props.excerpts,
-			{updateArticleByAddress:props.updateArticleByAddress});
+			{corpus:article.corpus,updateArticleByAddress:props.updateArticleByAddress
+				,goOccur:props.goOccur});
 		const caretpos=props.selections[article.id].caretpos;
 
 		rightButtons.push(article.rightButton||TabCloseButton);

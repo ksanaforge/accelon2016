@@ -46,7 +46,16 @@ function nextOccur() {
 function prevOccur(){
 	return (dispatch,getState) => nextprev(dispatch,getState,-1);
 }
-
+function goOccur(now){
+	return (dispatch,getState) =>{
+		const activeQuery=getState().activeQuery;
+		const query=getState().querys[activeQuery];
+		if (!query)return;
+		dispatch({type:SET_OCCUR,n:activeQuery,now});
+		query.now=now;
+		updateResultView(query,dispatch,getState().excerpts);	
+	}
+}
 
 module.exports={SET_HIGHLIGHT,SET_OCCUR,nextOccur,prevOccur,updateHighlight
-,updateResultView};
+,updateResultView,goOccur};

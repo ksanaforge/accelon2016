@@ -13,8 +13,8 @@ const listExcerpts=function(cor,query,dispatch,stateExcerpts){
 		tpos.push(query.matches[at]);
 	}
 
-	fetchExcerpts(cor,{tpos},function(excerpts){
-		dispatch({type:SHOW_EXCERPT, excerpts, batch, query})
+	fetchExcerpts(cor,{tpos,line:3,phrasepostings:query.phrasepostings},function(excerpts){
+		dispatch({type:SHOW_EXCERPT, excerpts, batch, query, hitperbatch})
 	});
 }
-module.exports={listExcerpts,SHOW_EXCERPT};
+module.exports={listExcerpts,SHOW_EXCERPT,hitperbatch};

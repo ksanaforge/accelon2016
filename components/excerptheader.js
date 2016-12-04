@@ -5,8 +5,10 @@ const styles={
 	jump:{color:"yellow",cursor:"pointer"}
 }
 const ExcerptHeader=(props)=>{
-	const onClick=(e)=>console.log("o")
+	const onClick=(e)=>{
+		props.goOccur(props.now);
+	}
 	return E("div",{style:styles.container},
-		"----Group"+props.title+"-----",E("span",{style:styles.jump,onClick},"open"));
+		"----摘要"+props.title+"-----",E("span",{style:styles.jump,onClick},"open"));
 }
 module.exports=ExcerptHeader;
