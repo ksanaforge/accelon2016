@@ -33,17 +33,20 @@ const ExcerptView=React.createClass({
 		this.group.push(linecount); //terminator
 		return text;		
 	}
+	,linewidgethandles:[]
 	,addGroupHeader(){
 		const goOccur=this.props.goOccur;
 		setTimeout(()=>{
 			const start=this.props.hitperbatch*this.props.batch;
 			const totalline=this.cm.lineCount();
+			this.linewidgethandles.forEach((lw)=>lw.clear());
 			this.group.forEach((line,idx)=>{
 				if (this.group[idx]==totalline)return;//last group is only for terminator
 				const now=start+idx;
 				var domnode=document.createElement("span");
 				ReactDOM.render( E(ExcerptHeader,{title:idx+1,now,goOccur}), domnode);
-				this.cm.doc.addLineWidget(line,domnode,{above:true,handleMouseEvents:true});
+				linewidgethandle=this.cm.doc.addLineWidget(line,domnode,{above:true,handleMouseEvents:true});
+				this.linewidgethandles.push(linewidgethandle);
 			});
 		},100);
 	}
@@ -58,9 +61,9 @@ const ExcerptView=React.createClass({
 				const hits=excerpt.phrasehits[j].hits;
 				const phraselengths=this.props.query.phrasepostings[j].lengths;
 				const linecharr=hits.map((hit,idx)=>{
-					const phrasewidth=phraselengths[idx]||phraselengths;
+					const phraselength=phraselengths[idx]||phraselengths;//should be kpos width
 					var from=cor.toLogicalPos(excerpt.linebreaks,hit,getrawline);
-					var to=cor.toLogicalPos(excerpt.linebreaks,hit+phrasewidth,getrawline);
+					var to=cor.toLogicalPos(excerpt.linebreaks,hit+phraselength,getrawline);
 					from.line+=this.group[i];
 					to.line+=this.group[i];
 					this.cm.markText(from,to,{className:"hl hl"+j});
