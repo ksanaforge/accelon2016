@@ -40,6 +40,7 @@ const ExcerptView=React.createClass({
 			const start=this.props.hitperbatch*this.props.batch;
 			const totalline=this.cm.lineCount();
 			this.linewidgethandles.forEach((lw)=>lw.clear());
+			this.linewidgethandles=[];
 			this.group.forEach((line,idx)=>{
 				if (this.group[idx]==totalline)return;//last group is only for terminator
 				const now=start+idx;
@@ -81,6 +82,9 @@ const ExcerptView=React.createClass({
 	,componentDidMount(){
 		this.markText();
 		this.highlight();
+	}
+	,componentWillUnmount(){
+		linewidgethandles.map((w)=>w.clear());//just incase
 	}
 	,componentWillReceiveProps(nextProps) {
 		if (nextProps.excerpts!==this.props.excerpts) {
