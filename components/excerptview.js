@@ -33,23 +33,22 @@ const ExcerptView=React.createClass({
 		this.group.push(linecount); //terminator
 		return text;		
 	}
+	,cursorline:0
 	,linewidgethandles:[]
 	,addGroupHeader(){
 		const goOccur=this.props.goOccur;
-		setTimeout(()=>{
-			const start=this.props.hitperbatch*this.props.batch;
-			const totalline=this.cm.lineCount();
-			this.linewidgethandles.forEach((lw)=>lw.clear());
-			this.linewidgethandles=[];
-			this.group.forEach((line,idx)=>{
-				if (this.group[idx]==totalline)return;//last group is only for terminator
-				const now=start+idx;
-				var domnode=document.createElement("span");
-				ReactDOM.render( E(ExcerptHeader,{title:idx+1,now,goOccur}), domnode);
-				linewidgethandle=this.cm.doc.addLineWidget(line,domnode,{above:true,handleMouseEvents:true});
-				this.linewidgethandles.push(linewidgethandle);
-			});
-		},100);
+		const start=this.props.hitperbatch*this.props.batch;
+		const totalline=this.cm.lineCount()-1;
+		this.linewidgethandles.forEach((lw)=>lw.clear());
+		this.linewidgethandles=[];
+		this.group.forEach((line,idx)=>{
+			if (this.group[idx]==totalline)return;//last group is only for terminator
+			const now=start+idx;
+			var domnode=document.createElement("span");
+			ReactDOM.render( E(ExcerptHeader,{title:idx+1,now,goOccur}), domnode);
+			linewidgethandle=this.cm.doc.addLineWidget(line,domnode,{above:true,handleMouseEvents:true});
+			this.linewidgethandles.push(linewidgethandle);
+		});
 	}
 	,highlight(){
 		if (!this.props.corpus||!this.state.text)return;
@@ -84,11 +83,12 @@ const ExcerptView=React.createClass({
 		this.highlight();
 	}
 	,componentWillUnmount(){
-		linewidgethandles.map((w)=>w.clear());//just incase
+		this.linewidgethandles.map((w)=>w.clear());//just incase
 	}
 	,componentWillReceiveProps(nextProps) {
 		if (nextProps.excerpts!==this.props.excerpts) {
 			this.setState({text:this.buildGroupText(nextProps.excerpts)});
+			this.cursorline=0;
 		}
 	}
 	,shouldComponentUpdate(nextProps,nextState){
@@ -100,9 +100,25 @@ const ExcerptView=React.createClass({
 	,gobatch(batch) {
 		this.props.goOccur(batch*this.props.hitperbatch);
 	}
+	,getGroupByLine(line){
+		for (let i=1;i<this.group.length;i++) {
+			if (this.group[i]>line) return i-1;
+		}
+		return 0;
+	}
+	,onCursorActivity(cm){
+		const line=cm.getCursor().line;
+		const prevgroup=this.getGroupByLine(this.cursorline);
+		const group=this.getGroupByLine(line);
+		if (group!==prevgroup) {
+			this.props.goOccur(this.props.hitperbatch*this.props.batch + group);
+		}
+		this.cursorline=line;
+	}
 	,render(){
 		return E("div",{style:{position:"relative"}},
-			E(CodeMirror,{ref:this.getCM,value:this.state.text,theme:"ambiance"}),
+			E(CodeMirror,{ref:this.getCM,value:this.state.text,theme:"ambiance"
+				,onCursorActivity:this.onCursorActivity}),
 			E("div",{style:styles.nav},E(ExcerptNav,
 				{batch:this.props.batch,count:this.props.query.count,
 					hitperbatch:this.props.hitperbatch,gobatch:this.gobatch}))

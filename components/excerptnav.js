@@ -24,8 +24,9 @@ const ExcerptNav=React.createClass({
 		var remain=maxbutton;
 		var start=this.props.batch ,end=this.props.batch;
 		while ( remain ) {
-			if (remain&&start) {remain--;start--}
+			if (start) {remain--;start--}
 			if (remain&&end<batchcount) {remain--;end++}
+			if (end>=batchcount)break;
 		}
 		return {start,end};
 	}

@@ -1,6 +1,6 @@
 const SHOW_EXCERPT="SHOW_EXCERPT";
 const {fetchExcerpts}=require("ksana-corpus-search/excerpt");
-const hitperbatch=10;
+const hitperbatch=20;
 
 const listExcerpts=function(cor,query,dispatch,stateExcerpts){
 	const batch=Math.floor( (query.now||0) / hitperbatch);
