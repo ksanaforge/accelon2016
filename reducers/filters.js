@@ -1,4 +1,4 @@
-const {ADD_FILTER_GROUP,REMOVE_FILTER_GROUP,CLEAR_FILTER}=require("../actions/filter");
+const {UPDATE_EXCLUDE}=require("../actions/filter");
 const {UPDATE_HITS}=require("../actions/grouping");
 const {OPEN_CORPUS_SUCCESS}=require("../actions/corpus");
 
@@ -7,12 +7,17 @@ module.exports=function articlegroup(state = {} , action = {}) {
 	var newstate=state;
 	if (OPEN_CORPUS_SUCCESS===A.type){
 		if (!state[A.corpus]) {
-			newstate=Object.assign({},state,{[A.corpus]:{hits:[],include:[]}});
+			newstate=Object.assign({},state,{[A.corpus]:{hits:[],exclude:[]}});
 		}
 	} else if (UPDATE_HITS===A.type)  {
-		const include=state[A.corpus].include;
+		const exclude=state[A.corpus].exclude;
 		const hits=A.hits;
-		newstate=Object.assign({},state,{[A.corpus]:{hits,include}});
+		newstate=Object.assign({},state,{[A.corpus]:{hits,exclude}});
+	} else if (UPDATE_EXCLUDE===A.type) {
+		const exclude=state[A.corpus].exclude.slice();
+		exclude[A.group]=A.value;
+		const hits=state[A.corpus].hits;
+		newstate=Object.assign({},state,{[A.corpus]:{hits,exclude}});		
 	}
 
 	return newstate;

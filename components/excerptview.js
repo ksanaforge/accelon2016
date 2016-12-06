@@ -116,11 +116,12 @@ const ExcerptView=React.createClass({
 		this.cursorline=line;
 	}
 	,render(){
+		const count=(this.props.query.filtered||{}).length||0;
 		return E("div",{style:{position:"relative"}},
 			E(CodeMirror,{ref:this.getCM,value:this.state.text,theme:"ambiance"
 				,onCursorActivity:this.onCursorActivity}),
 			E("div",{style:styles.nav},E(ExcerptNav,
-				{batch:this.props.batch,count:this.props.query.count,
+				{batch:this.props.batch,count,
 					hitperbatch:this.props.hitperbatch,gobatch:this.gobatch}))
 		);
 	}

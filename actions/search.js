@@ -7,6 +7,8 @@ const {groupHits}=require("./grouping");
 const {openCorpus}=require("ksana-corpus");
 const {_fetchArticle}=require("./article");
 const {listExcerpts}=require("./excerpts");
+const {filterMatch}=require("./filter");
+
 const kcs=require("ksana-corpus-search");
 
 function _search(dispatch,getState,qarr,idx){
@@ -27,18 +29,15 @@ function _search(dispatch,getState,qarr,idx){
     dispatch({type:SEARCHING,corpus,q,idx});
 
     kcs.search(cor,q,function(result){
-    	const {matches,count,phrasepostings,timer}=result;
+    	const {matches,phrasepostings,timer}=result;
+      const exclude=(getState().filters[corpus]||{}).exclude;
+      const filtered=filterMatch(corpus,matches,exclude);
       dispatch({type:SEARCH_DONE, corpus,qarr, q ,
-        matches,count,phrasepostings,timer,n:idx });
-
-      if (matches.length) {
-        cor.fromTPos(matches[0],function({kpos}){
-          const address=cor.stringify(kpos[0]);
-          _fetchArticle(corpus,address,dispatch,"UPDATE_ARTICLE","resultview");
-          listExcerpts(cor,result,dispatch,getState().excerpts);
-          groupHits(corpus,result,dispatch);
-        });
-      }      
+        matches,filtered,phrasepostings,timer,n:idx });
+      
+      groupHits(corpus,result,dispatch);
+      const query=getState().querys[getState().activeQuery];
+      updateResultView(query,dispatch,getState().excerpts);
     });
   },100);
 }
@@ -51,7 +50,8 @@ function search(qarr,n) {
     } else {
       dispatch({type:SET_ACTIVE_QUERY,n});
       updateResultView(query,dispatch,getState().excerpts);
-      
+      const corpus=getState().activeCorpus;
+      groupHits(corpus,query,dispatch);
     }
   };
 }

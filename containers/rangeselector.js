@@ -19,14 +19,18 @@ const RangeSelector=React.createClass({
 		//return (nextProps.activeCorpus &&nextProps.activeCorpus!==this.props.activeCorpus);
 		return true;
 	}
+	,setExclude(group,value){
+		this.props.setExclude(group,value);
+	}
 	,rendergroup(g,key){
 		const hit=this.props.filter.hits[key] || 0;
+		const exclude=this.props.filter.exclude[key] || false;
 		var br=false;
 		if (g.substr(0,2)=="\\n") {
 			g=g.substr(2);
 			br=true;
 		}
-		return E(filterItem,{label:g,hit,key,br});
+		return E(filterItem,{label:g,hit,exclude,key,br,idx:key,setExclude:this.setExclude});
 	}
 	,render(){ 
 		return E("div",{style:styles.container},this.state.groupNames.map(this.rendergroup));	

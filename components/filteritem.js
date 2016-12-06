@@ -17,13 +17,19 @@ const humanhit=function(hit){
 const filterItem=React.createClass({
 	propTypes:{
 		label:PT.string.isRequired,
-		hit:PT.number
+		hit:PT.number.isRequired,
+		exclude:PT.bool.isRequired,
+		setExclude:PT.func.isRequired,
+		idx:PT.number.isRequired
 	},
-	render(){
+	setExclude(e){
+		this.props.setExclude(this.props.idx,!this.props.exclude);
+	}
+	,render(){
 		return E("span",{},
 			this.props.br?E("br"):E("span"),
 		  E("span",{style:styles.container},"　",
-				E("input",{type:"checkbox"}),
+				E("input",{type:"checkbox",checked:!this.props.exclude,onChange:this.setExclude}),
 				E("span",{style:styles.label},this.props.label)," ",
 				E("span",{style:styles.hit}, humanhit(this.props.hit))
 			)

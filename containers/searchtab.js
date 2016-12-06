@@ -28,8 +28,11 @@ const SearchTab=React.createClass({
 	}
 	,render(){
 		const querys=this.props.querys.map((query)=>query.q).join("\n");
-		const query=this.props.querys[this.props.activeQuery];
-		const navprops=Object.assign({},query,{onNext:this.onNext,onPrev:this.onPrev});
+		const query=this.props.querys[this.props.activeQuery]||{};
+		const navprops=Object.assign({},{
+			now:query.now,
+			count:(query.filtered||[]).length,
+			onNext:this.onNext,onPrev:this.onPrev});
 		return E("div",{},
 			E(CorpusSelector,{selected:0,
 				selectCorpus:this.selectCorpus,corpora:this.props.stockcorpora}),

@@ -7,12 +7,14 @@ const ArticleActions=require('../actions/article');
 const SelectionActions=require('../actions/selection');
 const SearchActions=require('../actions/search');
 const OccurActions=require('../actions/occur');
+const FilterActions=require('../actions/filter');
 
 function mapStateToProps(state,ownProps) {
 	const article=state.articles[state.activeArticle];
 	const query=state.querys[state.activeQuery];
 	const corpus=state.corpora[state.activeCorpus];
   const filter=state.filters[state.activeCorpus]||{};
+  
   return {
     corpora: state.corpora,
     articles: state.articles,
@@ -34,8 +36,9 @@ function mapDispatchToProps(dispatch,ownProps) {
   const boundselection=bindActionCreators(SelectionActions, dispatch);
   const boundsearch=bindActionCreators(SearchActions, dispatch);
   const boundoccur=bindActionCreators(OccurActions, dispatch);
+  const boundfilter=bindActionCreators(FilterActions, dispatch);
 	const bound=Object.assign({},boundcorpus,boundarticles,
-    boundarticle,boundselection,boundsearch,boundoccur);
+    boundarticle,boundselection,boundsearch,boundoccur,boundfilter);
   return bound; 
 }
 
