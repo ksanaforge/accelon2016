@@ -51,10 +51,10 @@ function prevOccur(){
 function goOccur(now){
 	return (dispatch,getState) =>{
 		const activeQuery=getState().activeQuery;
-		const query=getState().querys[activeQuery];
+		var query=getState().querys[activeQuery];
 		if (!query)return;
 		dispatch({type:SET_OCCUR,n:activeQuery,now});
-		query.now=now;
+		query=getState().querys[activeQuery];
 		updateResultView(query,dispatch,getState().excerpts);	
 	}
 }

@@ -23,7 +23,6 @@ const setExclude=(group,value)=>(dispatch,getState)=>{
 	dispatch({type:SET_FILTERED, filtered, n });
 	
 	const query=getState().querys[ getState().activeQuery];
-
 	if (query) updateResultView(query,dispatch,getState().excerpts);
 }
 

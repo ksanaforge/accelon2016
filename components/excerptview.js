@@ -88,7 +88,6 @@ const ExcerptView=React.createClass({
 	,componentWillReceiveProps(nextProps) {
 		if (nextProps.excerpts!==this.props.excerpts) {
 			this.setState({text:this.buildGroupText(nextProps.excerpts)});
-			this.cursorline=0;
 		}
 	}
 	,shouldComponentUpdate(nextProps,nextState){
