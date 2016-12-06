@@ -7,6 +7,7 @@ const styles={
 	container:{whiteSpace: "break-word", display:"inline-block"}
 }
 const humanhit=function(hit){
+	if (!hit)return "";
 	if (hit<1000) return Math.floor(hit)+"";
 	else if (hit<1000000) {
 		return (hit/1000).toFixed(2)+"k";

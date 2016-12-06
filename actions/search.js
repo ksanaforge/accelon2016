@@ -3,6 +3,7 @@ const SEARCH_DONE = 'SEARCH_DONE';
 const SET_ACTIVE_QUERY='SET_ACTIVE_QUERY';
 const SET_ACTIVE_CORPUS='SET_ACTIVE_CORPUS';
 const {SET_HIGHLIGHT,updateHighlight,updateResultView}=require("./occur");
+const {groupHits}=require("./grouping");
 const {openCorpus}=require("ksana-corpus");
 const {_fetchArticle}=require("./article");
 const {listExcerpts}=require("./excerpts");
@@ -35,6 +36,7 @@ function _search(dispatch,getState,qarr,idx){
           const address=cor.stringify(kpos[0]);
           _fetchArticle(corpus,address,dispatch,"UPDATE_ARTICLE","resultview");
           listExcerpts(cor,result,dispatch,getState().excerpts);
+          groupHits(corpus,result,dispatch);
         });
       }      
     });
@@ -49,6 +51,7 @@ function search(qarr,n) {
     } else {
       dispatch({type:SET_ACTIVE_QUERY,n});
       updateResultView(query,dispatch,getState().excerpts);
+      
     }
   };
 }

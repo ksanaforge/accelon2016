@@ -1,6 +1,8 @@
-const SET_HIGHLIGHT='SET_HIGHLIGHT',SET_OCCUR="SET_OCCUR";
+const SET_HIGHLIGHT='SET_HIGHLIGHT',SET_OCCUR="SET_OCCUR" ;
 const {_fetchArticle}=require("./article");
 const {listExcerpts}=require("./excerpts");
+const {groupHits}=require("./grouping");
+
 const {openCorpus}=require("ksana-corpus");
 function updateHighlight(querys,n,dispatch) {
 	setTimeout(()=>{
@@ -12,6 +14,7 @@ function updateHighlight(querys,n,dispatch) {
 		}
 	},1);
 }
+
 const updateResultView=function(query,dispatch,stateExcerpts){
 	if (!query || !query.matches || !query.matches.length)  return;
   const corpus=query.corpus;
@@ -23,6 +26,7 @@ const updateResultView=function(query,dispatch,stateExcerpts){
 	  const address=cor.stringify(kpos[0]);
 	  _fetchArticle(corpus,address,dispatch,"UPDATE_ARTICLE","resultview");
 	  listExcerpts(cor,query,dispatch,stateExcerpts);
+	  groupHits(corpus,query,dispatch);
   });
 }
 

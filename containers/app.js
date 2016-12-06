@@ -12,7 +12,7 @@ function mapStateToProps(state,ownProps) {
 	const article=state.articles[state.activeArticle];
 	const query=state.querys[state.activeQuery];
 	const corpus=state.corpora[state.activeCorpus];
-
+  const filter=state.filters[state.activeCorpus]||{};
   return {
     corpora: state.corpora,
     articles: state.articles,
@@ -22,7 +22,8 @@ function mapStateToProps(state,ownProps) {
     selections: state.selections,
     querys:state.querys,
     excerpts:state.excerpts,
-    article,query,corpus    
+    article,query,corpus,
+    filter
   };
 }
 
