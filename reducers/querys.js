@@ -30,6 +30,7 @@ module.exports=function querys(state = initialState, action = {}) {
       if (!query)return state;
       var now=query.now;
       if (now>=action.filtered.length) now=action.filtered.length-1;
+      if (now<0)now=0;
       newstate[action.n]=Object.assign({},query,{filtered:action.filtered,now});
       return newstate;
   	case SET_OCCUR:

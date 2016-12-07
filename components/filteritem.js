@@ -21,8 +21,8 @@ const filterItem=React.createClass({
 		exclude:PT.bool.isRequired,
 		setExclude:PT.func.isRequired,
 		idx:PT.number.isRequired
-	},
-	setExclude(e){
+	}
+	,setExclude(e){
 		this.props.setExclude(this.props.idx,!this.props.exclude);
 	}
 	,render(){

@@ -15,17 +15,21 @@ function updateHighlight(querys,n,dispatch) {
 }
 
 const updateResultView=function(query,dispatch,stateExcerpts){
-	if (!query || !query.filtered || !query.filtered.length)  return;
+	if (!query || !query.filtered)  return;
   const corpus=query.corpus;
   if (!corpus)return;
   const cor=openCorpus(corpus);
   if (!cor) return;
-
-  cor.fromTPos(query.filtered[query.now],function({kpos}){
-	  const address=cor.stringify(kpos[0]);
-	  _fetchArticle(corpus,address,dispatch,"UPDATE_ARTICLE","resultview");
-	  listExcerpts(cor,query,dispatch,stateExcerpts);
-  });
+  var now=query.now;
+  if (!query.filtered.length) {
+		 listExcerpts(cor,query,dispatch,stateExcerpts);
+  } else {
+	  cor.fromTPos(query.filtered[now],function({kpos}){
+		  const address=cor.stringify(kpos[0]);
+		  _fetchArticle(corpus,address,dispatch,"UPDATE_ARTICLE","resultview");
+		  listExcerpts(cor,query,dispatch,stateExcerpts);
+	  });  	
+  }
 }
 
 const nextprev=(dispatch,getState,adv)=>{

@@ -3,7 +3,8 @@ const E=React.createElement;
 const {openCorpus}=require("ksana-corpus");
 const filterItem=require("../components/filteritem");
 const styles={
-	container:{overflowY:"auto",height:"49vh"}
+	container:{overflowY:"auto",height:"49vh"},
+	btn:{marginLeft:"10px"}
 }
 const RangeSelector=React.createClass({
 	getInitialState(){
@@ -14,10 +15,6 @@ const RangeSelector=React.createClass({
 			const cor=openCorpus(nextProps.activeCorpus);
 			this.setState({groupNames:cor.groupNames()});
 		}
-	}
-	,shouldComponentUpdate(nextProps){
-		//return (nextProps.activeCorpus &&nextProps.activeCorpus!==this.props.activeCorpus);
-		return true;
 	}
 	,setExclude(group,value){
 		this.props.setExclude(group,value);
@@ -32,8 +29,17 @@ const RangeSelector=React.createClass({
 		}
 		return E(filterItem,{label:g,hit,exclude,key,br,idx:key,setExclude:this.setExclude});
 	}
+	,selectall(){
+		this.props.includeAll();
+	}
+	,deselectall(){
+		this.props.excludeAll();
+	}
 	,render(){ 
-		return E("div",{style:styles.container},this.state.groupNames.map(this.rendergroup));	
+		return E("div",{style:styles.container},
+			E("button",{style:styles.btn,onClick:this.selectall},"Select All"),
+			E("button",{style:styles.btn,onClick:this.deselectall},"Deselect All"),
+			this.state.groupNames.map(this.rendergroup));	
 	}
 	
 });
