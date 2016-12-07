@@ -1,4 +1,5 @@
-const  { OPEN_AT,FETCH_FAILED,SET_ACTIVE_ARTICLE,CLOSE_ARTICLE} = require('../actions/articles');
+const {OPEN_AT,FETCH_FAILED,SET_ACTIVE_ARTICLE,CLOSE_ARTICLE,CLONE_ARTICLE} 
+  = require('../actions/articles');
 const {TOGGLE_LAYOUT,UPDATE_ARTICLE }=require("../actions/article");
 const {SEARCH_DONE}=require("../actions/search");
 const rightButton=require("../components/tabclonebutton");
@@ -16,6 +17,7 @@ module.exports=function articles(state = initialArticles , action = {}) {
     const {corpus,title,address,article,text,fields,id}=action;
     var obj={title,corpus,address,article,text,fields,id};
     newstate.push(obj);
+    debugger;
 		return newstate;
   } else if (CLOSE_ARTICLE===A.type) {
     return state.filter((o)=>o.id!==A.id);
@@ -24,6 +26,15 @@ module.exports=function articles(state = initialArticles , action = {}) {
   } else if (UPDATE_ARTICLE===A.type) {
     const {title,address,article,text,corpus}=action;
     return state.map((o)=>(o.id==A.id)?Object.assign({},o,{corpus,title,address,article,text}):o);
+  } else if (CLONE_ARTICLE===A.type) {
+    var articles=state.filter((o)=>o.id===A.clonefrom);
+    if (!articles.length)return state;
+    const article=articles[0];
+
+    var newstate=state.slice();
+    obj=Object.assign({},article,{id:A.id,view:null,rightButton:null});
+    newstate.push(obj);
+    return newstate;
   } else {
   	return state;
   }

@@ -1,10 +1,11 @@
 const  { SET_SELECTION,CLEAR_SELECTION} = require('../actions/selection');
-const  {OPEN_AT, CLOSE_ARTICLE} = require('../actions/articles');
+const  {OPEN_AT, CLOSE_ARTICLE, CLONE_ARTICLE} = require('../actions/articles');
 
 const emptySelection=function(A){
-  const ranges=[A.article.start];
-  const caretpos=A.article.start;
-  const caretposH=A.article.startH;
+  var article=A.article||{start:0,startH:""};
+  const ranges=[article.start];
+  const caretpos=article.start;
+  const caretposH=article.startH;
   return {[A.id]:{caretpos,caretposH,ranges,cursor:{line:0,ch:0}}};  
 }
 const initialState=emptySelection({id:"resultview",article:{start:1}});
@@ -17,7 +18,7 @@ module.exports=function selection(state = initialState , action = {}) {
       delete obj.type;
   		return Object.assign({},state,{[A.id]:obj});
   	}
-  } else if (OPEN_AT===A.type) {
+  } else if (OPEN_AT===A.type||CLONE_ARTICLE===A.type) {
     return Object.assign({},state,emptySelection(A));
   } else if (CLOSE_ARTICLE===A.type) {
     var newstate=Object.assign({},state);

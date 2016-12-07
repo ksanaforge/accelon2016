@@ -62,4 +62,4 @@ const updateArticleByAddress=(address)=>(dispatch,getState)=>{
 	}
 }
 module.exports={TOGGLE_LAYOUT,UPDATE_ARTICLE,
-	toggleLayout,nextArticle,prevArticle,_fetchArticle,updateArticleByAddress};
+	toggleLayout,nextArticle,prevArticle,_fetchArticle,updateArticleByAddress,newid};

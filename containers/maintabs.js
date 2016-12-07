@@ -13,7 +13,7 @@ const MainTabs=(props)=>{
 	const topmargin=props.topMargin||"0px";
 	//prevent vertical scrollbar by 49.8vh, not 50.vh
 	const resultstyle={ height: "-webkit-calc(49.8vh - "+parseFloat(topmargin,10)/2+"em )"} ;
-	const containerstyle={ height: "-webkit-calc(100vh - "+topmargin+")"} ;
+	const containerstyle={ height: "-webkit-calc(99.6vh - "+topmargin+")"} ;
 
 	const onSelectItem=(address)=>props.updateArticleByAddress(address);
 	const decorators=props.decorators;
@@ -52,6 +52,8 @@ const MainTabs=(props)=>{
 	const onRightButtonClick=(i)=>{
 		if (!props.articles[i].rightButton) {
 			props.closeArticle(props.articles[i].id);	
+		} else { //clone button
+			props.cloneArticle(props.articles[i].id);
 		}
 	}
 	return E("div",{},

@@ -2,7 +2,9 @@ const OPEN_AT = 'OPEN_AT';
 const SET_ACTIVE_TAB = 'SET_ACTIVE_TAB';
 const FETCH_FAILED = 'FETCH_FAILED';
 const CLOSE_ARTICLE = 'CLOSE_ARTICLE';
-const {_fetchArticle}=require("./article");
+const CLONE_ARTICLE = 'CLONE_ARTICLE';
+const {newid,_fetchArticle}=require("./article");
+
 const openAt= (opts) => (dispatch,getState) => {
   var index=getState().articles.length;
   _fetchArticle(opts.corpus,opts.address,dispatch,OPEN_AT);
@@ -34,6 +36,12 @@ const closeArticle=(id)=> (dispatch,getState)=>{
 	}
 }
 
+const cloneArticle=(clonefrom)=>(dispatch,getState)=>{
+	dispatch({type:CLONE_ARTICLE,id:newid(),clonefrom});
+	const articles=getState().articles;
+	const index=articles.length-1;
+	dispatch({type:SET_ACTIVE_TAB,index});
+}
 module.exports={
-  OPEN_AT,FETCH_FAILED,SET_ACTIVE_TAB,CLOSE_ARTICLE
-  ,openAt,setActiveArticle,closeArticle};
+  OPEN_AT,FETCH_FAILED,SET_ACTIVE_TAB,CLOSE_ARTICLE,CLONE_ARTICLE
+  ,openAt,setActiveArticle,closeArticle,cloneArticle};
