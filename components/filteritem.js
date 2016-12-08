@@ -2,17 +2,22 @@ const React =require('react');
 const E=React.createElement;
 const PT=React.PropTypes;
 const styles={
-	label:{color:"lightblue"},
-	hit:{color:"#ff7f7f",fontSize:"75%",fontWeight:700},
+	label:{},
+	hit:{},
 	container:{whiteSpace: "break-word", display:"inline-block"}
 }
 const humanhit=function(hit){
 	if (!hit)return "";
-	if (hit<1000) return Math.floor(hit)+"";
-	else if (hit<1000000) {
-		return (hit/1000).toFixed(2)+"k";
+	if (hit<1000) {
+		if (hit<10) return Math.floor(hit)+"";
+		return Math.floor(hit)+"";
+	} else if (hit<1000000) {
+		const k=hit/1000;
+		if (k<10) return k.toFixed(2)+"k";
+		else if (k<100) return k.toFixed(1)+"k";
+		return Math.floor(k)+"k"
 	}
-	return "爆";
+	return "1M+";
 }
 const filterItem=React.createClass({
 	propTypes:{
@@ -20,18 +25,26 @@ const filterItem=React.createClass({
 		hit:PT.number.isRequired,
 		exclude:PT.bool.isRequired,
 		setExclude:PT.func.isRequired,
+		goGroup:PT.func.isRequired,
+		goHit:PT.func.isRequired,
 		idx:PT.number.isRequired
 	}
 	,setExclude(e){
 		this.props.setExclude(this.props.idx,!this.props.exclude);
+	}
+	,labelClick(e){
+		this.props.goGroup(this.props.idx);
+	}
+	,hitClick(e){
+		this.props.goHit(this.props.idx);
 	}
 	,render(){
 		return E("span",{},
 			this.props.br?E("br"):E("span"),
 		  E("span",{style:styles.container},"　",
 				E("input",{type:"checkbox",checked:!this.props.exclude,onChange:this.setExclude}),
-				E("span",{style:styles.label},this.props.label)," ",
-				E("span",{style:styles.hit}, humanhit(this.props.hit))
+				E("span",{className:"filterlabel",onClick:this.labelClick},this.props.label)," ",
+				E("span",{className:this.props.exclude?"disablefilterhit":"filterhit",onClick:this.hitClick}, humanhit(this.props.hit))
 			)
 		)
 	}
