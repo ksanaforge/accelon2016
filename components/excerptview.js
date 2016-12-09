@@ -34,18 +34,29 @@ const ExcerptView=React.createClass({
 	}
 	,cursorline:0
 	,linewidgethandles:[]
+	,excerptTitle(now){
+		const cor=openCorpus(this.props.corpus);
+		const tpos=this.props.query.filtered[now];
+		const address=cor.fromTPos(tpos).kpos[0];
+		var addressH=cor.stringify(address);
+		addressH=addressH.substr(0,addressH.length-2);
+		const title=cor.articleOf(address).articlename + " "+addressH;
+		return title;
+	}
 	,addGroupHeader(){
 		const goOccur=this.props.goOccur;
 		const batch=Math.floor(this.props.now/this.props.hitperbatch);
 		const start=this.props.hitperbatch*batch;
 		const totalline=this.cm.lineCount()-1;
+		if (!this.props.corpus)return;
 		this.linewidgethandles.forEach((lw)=>lw.clear());
 		this.linewidgethandles=[];
 		this.group.forEach((line,idx)=>{
 			if (this.group[idx]==totalline)return;//last group is only for terminator
 			const now=start+idx;
+			const title=this.excerptTitle(now);
 			var domnode=document.createElement("span");
-			ReactDOM.render( E(ExcerptHeader,{title:idx+1,now,goOccur}), domnode);
+			ReactDOM.render( E(ExcerptHeader,{title,now,goOccur}), domnode);
 			linewidgethandle=this.cm.doc.addLineWidget(line,domnode,{above:true,handleMouseEvents:true});
 			this.linewidgethandles.push(linewidgethandle);
 		});
@@ -83,16 +94,19 @@ const ExcerptView=React.createClass({
 		if (group!==this.props.now) {
 			this.cm.setCursor({line});
 		}
+		this.ready=true;
 	}
 	,componentDidMount(){
 		this.markText();
 		this.highlight();
+		this.ready=true;
 	}
 	,componentWillUnmount(){
 		this.linewidgethandles.map((w)=>w.clear());//just incase
 	}
 	,componentWillReceiveProps(nextProps) {
 		if (nextProps.excerpts!==this.props.excerpts) {
+			this.ready=false;
 			this.setState({text:this.buildGroupText(nextProps.excerpts)});
 		}
 	}
@@ -112,6 +126,7 @@ const ExcerptView=React.createClass({
 		return 0;
 	}
 	,onCursorActivity(cm){
+		if (!this.ready)return;
 		const line=cm.getCursor().line;
 		const group=this.getGroupByLine(line);
 		const batch=Math.floor(this.props.now / this.props.hitperbatch);

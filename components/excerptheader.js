@@ -8,7 +8,6 @@ const ExcerptHeader=(props)=>{
 	const onClick=(e)=>{
 		//props.goOccur(props.now);
 	}
-	return E("div",{style:styles.container},
-		"----摘要"+props.title+"----");
+	return E("div",{style:styles.container},props.title);
 }
 module.exports=ExcerptHeader;
