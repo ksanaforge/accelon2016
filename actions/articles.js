@@ -38,7 +38,6 @@ const closeArticle=(id)=> (dispatch,getState)=>{
 
 const cloneArticle=(clonefrom)=>(dispatch,getState)=>{
 	const address=getState().selections[clonefrom].caretposH;
-	console.log(address)
 	dispatch({type:CLONE_ARTICLE,id:newid(),clonefrom,address});
 
 	const articles=getState().articles;

@@ -18,7 +18,7 @@ const listExcerpts=function(cor,query,dispatch,stateExcerpts){
 	}
 
 	fetchExcerpts(cor,{tpos,line:3,phrasepostings:query.phrasepostings},function(excerpts){
-		dispatch({type:SHOW_EXCERPT, excerpts, batch, query, hitperbatch})
+		dispatch({type:SHOW_EXCERPT, excerpts, query, hitperbatch})
 	});
 }
 module.exports={listExcerpts,SHOW_EXCERPT,hitperbatch};

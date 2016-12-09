@@ -41,9 +41,10 @@ const nextprev=(dispatch,getState,adv)=>{
 	if (now<0) now=query.filtered.length-1;
 	if (now>=query.filtered.length) now=0;
 
-	dispatch({type:SET_OCCUR,n:activeQuery,now});
 	query.now=now;
 	updateResultView(query,dispatch,getState().excerpts);
+
+	dispatch({type:SET_OCCUR,n:activeQuery,now});
 }
 
 function nextOccur() {
@@ -57,9 +58,12 @@ function goOccur(now){
 		const activeQuery=getState().activeQuery;
 		var query=getState().querys[activeQuery];
 		if (!query)return;
-		dispatch({type:SET_OCCUR,n:activeQuery,now});
 		query=getState().querys[activeQuery];
+		query.now=now;
 		updateResultView(query,dispatch,getState().excerpts);	
+	//set_occur after updateresultview , 
+	//otherwise onCursorActivity will be trigger before content is updated.
+		dispatch({type:SET_OCCUR,n:activeQuery,now});
 	}
 }
 

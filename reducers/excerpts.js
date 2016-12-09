@@ -10,12 +10,11 @@ const initialState={
 	excerpts:[]
 	,query:{count:0}
 	,hitperbatch
-	,batch:0
 };
 module.exports=function Excerpt(state = initialState , action = {}) {
   if (SHOW_EXCERPT===action.type) {
   	return {excerpts:action.excerpts,query:action.query,
-  		batch:action.batch,hitperbatch:action.hitperbatch};
+  		hitperbatch:action.hitperbatch};
   } else {
   	return state;
   }

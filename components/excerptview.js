@@ -14,7 +14,6 @@ const ExcerptView=React.createClass({
 	propTypes:{
 		excerpts:PT.array.isRequired,
 		query:PT.object.isRequired,
-		batch:PT.number.isRequired,
 		hitperbatch:PT.number.isRequired,
 		goOccur:PT.func.isRequired
 	}
@@ -37,7 +36,8 @@ const ExcerptView=React.createClass({
 	,linewidgethandles:[]
 	,addGroupHeader(){
 		const goOccur=this.props.goOccur;
-		const start=this.props.hitperbatch*this.props.batch;
+		const batch=Math.floor(this.props.now/this.props.hitperbatch);
+		const start=this.props.hitperbatch*batch;
 		const totalline=this.cm.lineCount()-1;
 		this.linewidgethandles.forEach((lw)=>lw.clear());
 		this.linewidgethandles=[];
@@ -77,6 +77,12 @@ const ExcerptView=React.createClass({
 	,componentDidUpdate(){
 		this.markText();
 		this.highlight();
+		const caretline=this.cm.getCursor().line;
+		const line=this.group[this.props.now % this.props.hitperbatch];
+		const group=this.getGroupByLine(caretline);
+		if (group!==this.props.now) {
+			this.cm.setCursor({line});
+		}
 	}
 	,componentDidMount(){
 		this.markText();
@@ -91,7 +97,7 @@ const ExcerptView=React.createClass({
 		}
 	}
 	,shouldComponentUpdate(nextProps,nextState){
-		return (this.props.excerpts!==nextProps.excerpts)
+		return (this.props.excerpts!==nextProps.excerpts||this.props.now!==nextProps.now);
 	}
 	,getCM(cm){
 		if (cm) this.cm=cm.getCodeMirror();
@@ -107,21 +113,21 @@ const ExcerptView=React.createClass({
 	}
 	,onCursorActivity(cm){
 		const line=cm.getCursor().line;
-		const prevgroup=this.getGroupByLine(this.cursorline);
 		const group=this.getGroupByLine(line);
-		if (group!==prevgroup) {
-			this.props.goOccur(this.props.hitperbatch*this.props.batch + group);
+		const batch=Math.floor(this.props.now / this.props.hitperbatch);
+		const newnow=this.props.hitperbatch*batch + group;
+		if (newnow!==this.props.now) {
+			this.props.goOccur(newnow);
 		}
-		this.cursorline=line;
 	}
 	,render(){
 		const count=(this.props.query.filtered||{}).length||0;
+		const batch=Math.floor(this.props.now/this.props.hitperbatch);
 		return E("div",{style:{position:"relative"}},
 			E(CodeMirror,{ref:this.getCM,value:this.state.text,theme:"ambiance"
 				,onCursorActivity:this.onCursorActivity}),
 			E("div",{style:styles.nav},E(ExcerptNav,
-				{batch:this.props.batch,count,
-					hitperbatch:this.props.hitperbatch,gobatch:this.gobatch}))
+				{batch,count,hitperbatch:this.props.hitperbatch,gobatch:this.gobatch}))
 		);
 	}
 })
