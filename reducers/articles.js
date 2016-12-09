@@ -32,7 +32,8 @@ module.exports=function articles(state = initialArticles , action = {}) {
     const article=articles[0];
 
     var newstate=state.slice();
-    obj=Object.assign({},article,{id:A.id,view:null,rightButton:null});
+    const address=A.address||article.address;
+    obj=Object.assign({},article,{id:A.id,view:null,rightButton:null,address});
     newstate.push(obj);
     return newstate;
   } else {
