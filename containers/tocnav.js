@@ -22,7 +22,9 @@ TOCNav=React.createClass({
 		}.bind(this));
 	}
 	,componentWillReceiveProps(nextProps){
-		if (nextProps.caretpos!==this.props.caretpos) this.loadTOC(nextProps.caretpos);
+		if (nextProps.caretpos!==this.props.caretpos) {
+			this.loadTOC(nextProps.caretpos);
+		}
 	}
 	,componentDidMount() {
 		this.loadTOC(this.props.caretpos);

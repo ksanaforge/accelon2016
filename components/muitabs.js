@@ -19,7 +19,9 @@ const Tabs=React.createClass({
 	,propTypes:{
 		panes:PT.array.isRequired,
 		tabs:PT.array.isRequired,
-		rightButtons:PT.array
+		rightButtons:PT.array,
+		onLabelEnter:PT.func,
+		onLabelLeave:PT.func,
 	}
 	,childContextTypes:{
 		getActiveTab:PT.func
@@ -46,6 +48,11 @@ const Tabs=React.createClass({
 			this.setState({selected});
 		}
 	}
+	,onLabelEnter(e){
+		if (!this.props.onLabelEnter) return;
+		const i=parseInt(e.target.parentElement.dataset.i);
+		this.props.onLabelEnter(i,e.target.offsetLeft,e.target.offsetHeight);
+	}
 	,render(){
 		var tabEls = [], paneEls=[], _=this.context._;
 		for (var i=0;i<this.props.tabs.length;i++) {
@@ -55,7 +62,8 @@ const Tabs=React.createClass({
 			const rightButton=this.props.rightButtons[i] ;
 			tabEls.push(E("li",{key:i,className:(isActive) ? isActiveClass : ''},
 				isActive&&this.props.panel&&E(TabMenu,{panel:this.props.panel,i}),
-				E("a",{onClick:this.onTabClick,"data-i":i},label,
+				E("a",{onClick:this.onTabClick,"data-i":i},
+					E("span",{onMouseEnter:this.onLabelEnter,onMouseLeave:this.props.onLabelLeave},label),
 					isActive&&rightButton?E(rightButton,{i,onClick:this.props.onRightButtonClick}):null))
 			);
 
