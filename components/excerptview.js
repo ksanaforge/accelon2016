@@ -91,7 +91,7 @@ const ExcerptView=React.createClass({
 		const caretline=this.cm.getCursor().line;
 		const line=this.group[this.props.now % this.props.hitperbatch];
 		const group=this.getGroupByLine(caretline);
-		if (group!==this.props.now) {
+		if (line!==caretline && line<this.cm.lineCount()) {
 			this.cm.setCursor({line});
 		}
 		this.ready=true;
@@ -104,14 +104,28 @@ const ExcerptView=React.createClass({
 	,componentWillUnmount(){
 		this.linewidgethandles.map((w)=>w.clear());//just incase
 	}
+	,excerptchanged(nextProps){
+		if (!this.props.excerpts || !nextProps.excerpts
+			||!this.props.excerpts.length || !nextProps.excerpts.length) return true;
+
+		const nextFirst=nextProps.excerpts[0].linetpos[0];
+		const first=this.props.excerpts[0].linetpos[0];
+
+		const nextlast=nextProps.excerpts[nextProps.excerpts.length-1].linetpos[0];
+		const last=this.props.excerpts[this.props.excerpts.length-1].linetpos[0];
+
+		return (nextFirst!==first && nextlast!==last);
+	}
 	,componentWillReceiveProps(nextProps) {
-		if (nextProps.excerpts!==this.props.excerpts) {
+		if (this.excerptchanged(nextProps) && nextProps.excerpts.length) {
+			debugger;
 			this.ready=false;
 			this.setState({text:this.buildGroupText(nextProps.excerpts)});
 		}
 	}
 	,shouldComponentUpdate(nextProps,nextState){
-		return (this.props.excerpts!==nextProps.excerpts||this.props.now!==nextProps.now);
+		const r= (this.excerptchanged(nextProps)||this.props.now!==nextProps.now);
+		return r;
 	}
 	,getCM(cm){
 		if (cm) this.cm=cm.getCodeMirror();
