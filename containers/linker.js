@@ -9,8 +9,8 @@ function mapStateToProps(state,ownProps) {
   return {
     corpora: state.corpora,
     selections: state.selections,
-    rightarticle:state.linkarticle.right,
-    leftarticle:state.linkarticle.left,
+    rightarticle:state.articles[1],
+    leftarticle:state.articles[2],
   };
 }
 

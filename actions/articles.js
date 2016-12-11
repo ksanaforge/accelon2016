@@ -1,5 +1,6 @@
 const OPEN_AT = 'OPEN_AT';
 const SET_ACTIVE_TAB = 'SET_ACTIVE_TAB';
+const SET_ACTIVE_ARTICLE = 'SET_ACTIVE_ARTICLE'; //for linker mode
 const FETCH_FAILED = 'FETCH_FAILED';
 const CLOSE_ARTICLE = 'CLOSE_ARTICLE';
 const CLONE_ARTICLE = 'CLONE_ARTICLE';
@@ -45,5 +46,5 @@ const cloneArticle=(clonefrom)=>(dispatch,getState)=>{
 	dispatch({type:SET_ACTIVE_TAB,index});
 }
 module.exports={
-  OPEN_AT,FETCH_FAILED,SET_ACTIVE_TAB,CLOSE_ARTICLE,CLONE_ARTICLE
+  OPEN_AT,FETCH_FAILED,SET_ACTIVE_TAB,SET_ACTIVE_ARTICLE,CLOSE_ARTICLE,CLONE_ARTICLE
   ,openAt,setActiveArticle,closeArticle,cloneArticle};

@@ -3,7 +3,7 @@ const E=React.createElement;
 const LinkerTab=require("../components/linkertab");
 const CorpusView=require("../components/corpusview");
 const {openCorpus}=require("ksana-corpus");
-const {OPEN_RIGHT,OPEN_LEFT}=require("../actions/linkarticle");
+const {OPEN_AT}=require("../actions/articles");
 const LinkerDesktop=React.createClass({
 	getInitialState(){
 		return {ready:false}
@@ -11,8 +11,8 @@ const LinkerDesktop=React.createClass({
 	,componentWillReceiveProps(nextProps){
 		if (!this.state.ready&&nextProps.corpora[nextProps.corpus1] && nextProps.corpora[nextProps.corpus2]) {
 			if (!nextProps.rightarticle && !nextProps.leftarticle) {
-				this.props.fetchArticle(nextProps.corpus1,"59p9.0301",OPEN_LEFT);
-				this.props.fetchArticle(nextProps.corpus2,"",OPEN_RIGHT);				
+				this.props.fetchArticle(nextProps.corpus1,"59p9.0301",OPEN_AT);
+				this.props.fetchArticle(nextProps.corpus2,"",OPEN_AT);
 			}
 
 			if (nextProps.leftarticle&&nextProps.rightarticle) {

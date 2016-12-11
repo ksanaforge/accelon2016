@@ -1,12 +1,15 @@
 const { combineReducers } =require('redux');
 
 const corpora=require("./corpora");
-const linkarticle=require("./linkarticle");
+const articles=require("./articles");
 const selections=require("./selections");
+const activeArticle=require('./activearticle');
+
 const rootReducer = combineReducers({
 	corpora,
-	linkarticle,
-	selections
+	articles,
+	selections,
+	activeArticle
 });
 
 module.exports=rootReducer;

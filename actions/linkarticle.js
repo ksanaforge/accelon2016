@@ -1,3 +1,0 @@
-const OPEN_RIGHT="OPEN_RIGHT", OPEN_LEFT="OPEN_LEFT";
-
-module.exports={OPEN_LEFT,OPEN_RIGHT};

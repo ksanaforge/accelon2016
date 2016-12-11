@@ -29,8 +29,8 @@ const _fetchArticle=(corpus,address,dispatch,type,id)=>{
 		}
 	});
 }
-const fetchArticle=(corpus,address,type)=>(dispatch,getState)=>{
-	_fetchArticle(corpus,address,dispatch,type,"");
+const fetchArticle=(corpus,address,type,id)=>(dispatch,getState)=>{
+	_fetchArticle(corpus,address,dispatch,type,id);
 }
 
 const nextprevArticle=(dispatch,getState,nav)=>{
