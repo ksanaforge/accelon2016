@@ -17,7 +17,6 @@ module.exports=function articles(state = initialArticles , action = {}) {
     const {corpus,title,address,article,text,fields,id}=action;
     var obj={title,corpus,address,article,text,fields,id};
     newstate.push(obj);
-    debugger;
 		return newstate;
   } else if (CLOSE_ARTICLE===A.type) {
     return state.filter((o)=>o.id!==A.id);

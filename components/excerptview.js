@@ -40,7 +40,7 @@ const ExcerptView=React.createClass({
 		const address=cor.fromTPos(tpos).kpos[0];
 		var addressH=cor.stringify(address);
 		addressH=addressH.substr(0,addressH.length-2);
-		const title=cor.articleOf(address).articlename + " "+addressH;
+		const title=(now+1)+"."+cor.articleOf(address).articlename + " "+addressH;
 		return title;
 	}
 	,addGroupHeader(){
@@ -118,7 +118,6 @@ const ExcerptView=React.createClass({
 	}
 	,componentWillReceiveProps(nextProps) {
 		if (this.excerptchanged(nextProps) && nextProps.excerpts.length) {
-			debugger;
 			this.ready=false;
 			this.setState({text:this.buildGroupText(nextProps.excerpts)});
 		}
