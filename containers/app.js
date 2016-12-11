@@ -1,6 +1,5 @@
 const { bindActionCreators } =require('redux');
 const { connect } = require('react-redux');
-const Desktop =require('./desktop');
 const CorpusActions=require('../actions/corpus');
 const ArticlesActions=require('../actions/articles');
 const ArticleActions=require('../actions/article');
@@ -8,7 +7,7 @@ const SelectionActions=require('../actions/selection');
 const SearchActions=require('../actions/search');
 const OccurActions=require('../actions/occur');
 const FilterActions=require('../actions/filter');
-
+const Desktop =require('./desktop');
 function mapStateToProps(state,ownProps) {
 	const article=state.articles[state.activeArticle];
 	const query=state.querys[state.activeQuery];

@@ -21,13 +21,16 @@ const _fetchArticle=(corpus,address,dispatch,type,id)=>{
       	id=id||newid();
         cor.getArticleTextTag( article.at, articleFields , (res)=>{
           dispatch({type,corpus,address,id,
-            article,title:article.articlename,text:res.text,fields:res.fields});
+            article,title:article.articlename,rawlines:res.text,fields:res.fields});
         });
       } else {
         dispatch({type: FETCH_FAILED,corpus,address});
       }
 		}
 	});
+}
+const fetchArticle=(corpus,address,type)=>(dispatch,getState)=>{
+	_fetchArticle(corpus,address,dispatch,type,"");
 }
 
 const nextprevArticle=(dispatch,getState,nav)=>{
@@ -58,8 +61,8 @@ const updateArticleByAddress=(address)=>(dispatch,getState)=>{
 		_fetchArticle(active.corpus,address,dispatch,UPDATE_ARTICLE,active.id);
 	} else {//don't need to fetch 
     dispatch({type:UPDATE_ARTICLE,corpus:active.corpus,address,id:active.id,
-            article,title:article.articlename,text:active.text});
+            article,title:article.articlename,rawlines:active.rawlines});
 	}
 }
-module.exports={TOGGLE_LAYOUT,UPDATE_ARTICLE,
+module.exports={TOGGLE_LAYOUT,UPDATE_ARTICLE,fetchArticle,
 	toggleLayout,nextArticle,prevArticle,_fetchArticle,updateArticleByAddress,newid};

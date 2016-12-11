@@ -9,6 +9,7 @@ const CorpusView=React.createClass({
 		corpus:PT.string.isRequired,
 		address:PT.string.isRequired,
 		rawlines:PT.array.isRequired,
+		article:PT.object.isRequired,
 		layout:PT.bool, //layout with p?
 		active:PT.bool, //in active tab
 		onCursorActivity:PT.func,
@@ -143,6 +144,7 @@ const CorpusView=React.createClass({
 		return this.cor.makeKRange(s,e);
 	}
 	,kRangeFromCursor(cm){
+		if (!cm)return;
 		const sels=cm.listSelections();
 		if (!sels.length) return null;
 

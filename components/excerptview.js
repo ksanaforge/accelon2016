@@ -38,10 +38,14 @@ const ExcerptView=React.createClass({
 		const cor=openCorpus(this.props.corpus);
 		const tpos=this.props.query.filtered[now];
 		const address=cor.fromTPos(tpos).kpos[0];
-		var addressH=cor.stringify(address);
-		addressH=addressH.substr(0,addressH.length-2);
-		const title=(now+1)+"."+cor.articleOf(address).articlename + " "+addressH;
-		return title;
+		if (address) {
+			var addressH=cor.stringify(address);
+			addressH=addressH.substr(0,addressH.length-2);
+			const title=(now+1)+"."+cor.articleOf(address).articlename + " "+addressH;
+			return title;			
+		} else {
+			return "";
+		}
 	}
 	,addGroupHeader(){
 		const goOccur=this.props.goOccur;

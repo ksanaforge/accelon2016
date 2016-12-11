@@ -41,10 +41,14 @@ const Tabs=React.createClass({
 		return {getActiveTab:this.getActiveTab};
 	}
 	,onTabClick(e){
-		const selected=parseInt(e.target.dataset.i,10);	
+		var domnode=e.target;
+		if (!domnode.dataset.i) domnode=domnode.parentElement;
+		const selected=parseInt(domnode.dataset.i,10);	
 		if (!this.props.onSelectTab) this.setState({selected});
 
-		if (this.props.onSelectTab&&!this.props.onSelectTab(selected,this.state.selected)){
+		if (this.props.onSelectTab){
+			if (!this.props.onSelectTab(selected,this.state.selected)) this.setState({selected});
+		} else {
 			this.setState({selected});
 		}
 	}

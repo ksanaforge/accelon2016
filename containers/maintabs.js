@@ -34,7 +34,7 @@ const MainTabs=React.createClass({
 			var article=a;
 			const active=props.activeArticle==idx;
 			const ranges=props.selections[article.id].ranges;
-			const viewprops=Object.assign({},article,{rawlines:article.text},
+			const viewprops=Object.assign({},article,{rawlines:article.rawlines},
 				{updateArticleByAddress:props.updateArticleByAddress,
 				ranges,setSelection:props.setSelection,active,decorators:props.decorators});
 			const excerptprops=Object.assign({}, props.excerpts,

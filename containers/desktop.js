@@ -12,6 +12,12 @@ const Desktop=React.createClass({
 		});
 	}
 	,render(){
+		const styles={
+			container:{display:"flex",width:"100%"},
+			maintabs:{flex:this.props.leftFlex||6},
+			controltabs:{flex:this.props.rightFlex||4}
+		}
+
 		const props=Object.assign({},this.props,{viewOptions:CorpusViewOptions,nav:TocNav});
 		return E("div",{style:styles.container},
 			E("div",{style:styles.maintabs},E(MainTabs,props)),
@@ -20,10 +26,5 @@ const Desktop=React.createClass({
 	}
 });
 
-const styles={
-	container:{display:"flex",width:"100%"},
-	maintabs:{flex:6},
-	controltabs:{flex:3}
-}
 
 module.exports=Desktop;
