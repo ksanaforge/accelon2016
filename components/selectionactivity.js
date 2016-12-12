@@ -24,7 +24,7 @@ const selectionActivity=function(cm){
 		const cursor=cm.getCursor();
 		const cursorrange=this.kRangeFromCursor(cm);
 		const r=this.cor.parseRange(cursorrange);
-		this.props.setSelection({
+		this.props.setSelection&&this.props.setSelection({
 				corpus:this.props.corpus,id:this.props.id,
 				caretText:getCaretText(cm),selectionText,
 				ranges, caretpos:r.start, caretposH:this.cor.stringify(r.start),

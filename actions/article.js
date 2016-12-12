@@ -49,13 +49,19 @@ const nextArticle=()=>(dispatch,getState)=>{
 const prevArticle=()=>(dispatch,getState)=>{
 	nextprevArticle(dispatch,getState,-1);
 };
-const updateArticleByAddress=(address)=>(dispatch,getState)=>{
-	const active=getActiveArticle(getState());
-	if (!active)return;
+const updateArticleByAddress=(address,aart)=>(dispatch,getState)=>{
+	const active=(typeof aart=="undefined")?getActiveArticle(getState()):getState().articles[aart];
+
+	if (!active) {
+		console.error("no such article")
+		return;
+	}
+
 	const cor=ksanacorpus.openCorpus(active.corpus);
 	if (!cor)return;//should be open
 
 	const article=cor.articleOf(address);
+
 	if (typeof address=="number") address=cor.stringify(address);
 	if (article.at!==active.article.at) {
 		_fetchArticle(active.corpus,address,dispatch,UPDATE_ARTICLE,active.id);

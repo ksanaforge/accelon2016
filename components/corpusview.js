@@ -14,7 +14,9 @@ const CorpusView=React.createClass({
 		active:PT.bool, //in active tab
 		onCursorActivity:PT.func,
 		onViewport:PT.func,
-		onCopyText:PT.func //custom copy handler
+		onCopyText:PT.func, //custom copy handler
+		setSelection:PT.func, //used by selectionactivity
+		updateArticleByAddress:PT.func
 	}
 	,getInitialState(){
 		return {text:"",linebreaks:[],pagebreaks:[]};

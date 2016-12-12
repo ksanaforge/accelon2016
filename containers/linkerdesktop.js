@@ -35,8 +35,13 @@ const LinkerDesktop=React.createClass({
 			corpustab:{flex:16,display:"flex"},
 			linkertab:{flex:2}
 		}
-		const props1=Object.assign({},this.props,this.props.leftarticle);
-		const props2=Object.assign({},this.props,this.props.rightarticle);
+		const actions={
+			decorators:this.props.decorators,
+			updateArticleByAddress:this.props.updateArticleByAddress,
+			setSelection:this.props.setSelection
+		}
+		const props1=Object.assign({},actions,this.props.leftarticle);
+		const props2=Object.assign({},actions,this.props.rightarticle);
 		return E("div",{style:styles.container},
 			E("div",{style:styles.corpustab},
 				E("div",{style:styles.lefttab},E(CorpusView,props1)),

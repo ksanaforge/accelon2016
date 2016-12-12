@@ -3,7 +3,10 @@ const onPtrMouseDown=function(e){
 	const target=e.target;
 	const address=parseInt(target.dataset.target,10);
 	e.stopPropagation();
-	target.action(address);
+	if (!target.action) {
+		console.error("action updateArticleByAddress not defined");
+	}
+	target.action&&target.action(address);
 }
 
 var entertimer,leavetimer;

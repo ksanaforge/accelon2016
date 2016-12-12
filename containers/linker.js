@@ -11,6 +11,7 @@ function mapStateToProps(state,ownProps) {
     selections: state.selections,
     rightarticle:state.articles[1],
     leftarticle:state.articles[2],
+    articles:state.articles
   };
 }
 

@@ -2,7 +2,10 @@ const onDefMouseDown=function(e){
 	const target=e.target;
 	const address=parseInt(target.dataset.target,10);
 	e.stopPropagation();
-	target.action(address);
+	if (!target.action) {
+		console.error("action updateArticleByAddress not defined");
+	}
+	target.action&&target.action(address);
 }
 const createDef=function({cm,cor,start,end,id,target,actions}){
 	const dom=document.createElement("span");
