@@ -1,6 +1,5 @@
 /*actions for active article*/
 const ksanacorpus=require("ksana-corpus");
-
 const TOGGLE_LAYOUT = 'TOGGLE_LAYOUT';
 const UPDATE_ARTICLE='UPDATE_ARTICLE';
 
@@ -33,8 +32,15 @@ const fetchArticle=(corpus,address,type,id)=>(dispatch,getState)=>{
 	_fetchArticle(corpus,address,dispatch,type,id);
 }
 
-const nextprevArticle=(dispatch,getState,nav)=>{
-	const active=getActiveArticle(getState());
+const nextprevArticle=(dispatch,getState,now,nav)=>{
+	var active=now;
+	if (typeof now=="number") {
+		active=getState().articles[now];
+	}
+	if (typeof now=="undefined") {
+		active=getActiveArticle(getState());	
+	}
+	
 	if (!active)return;
 	const cor=ksanacorpus.openCorpus(active.corpus);
 	if (!cor)return;//should be open
@@ -43,12 +49,19 @@ const nextprevArticle=(dispatch,getState,nav)=>{
 	const address=cor.stringify(next.start);
 	_fetchArticle(active.corpus,address,dispatch,UPDATE_ARTICLE,active.id)
 };
-const nextArticle=()=>(dispatch,getState)=>{
-	nextprevArticle(dispatch,getState,1);
+const nextArticle=(now)=>(dispatch,getState)=>{
+	nextprevArticle(dispatch,getState,now,1);
 }
-const prevArticle=()=>(dispatch,getState)=>{
-	nextprevArticle(dispatch,getState,-1);
+const prevArticle=(now)=>(dispatch,getState)=>{
+	nextprevArticle(dispatch,getState,now,-1);
 };
+const goArticle=(corpus,narticle,id)=>(dispatch,getState)=>{
+	ksanacorpus.openCorpus(corpus,(err,cor)=>{
+		const article=cor.getArticle(narticle);
+		if (!article)return;
+		_fetchArticle(corpus,article.start,dispatch,UPDATE_ARTICLE,id);
+	});
+}
 const updateArticleByAddress=(address,aart)=>(dispatch,getState)=>{
 	const active=(typeof aart=="undefined")?getActiveArticle(getState()):getState().articles[aart];
 
@@ -70,5 +83,5 @@ const updateArticleByAddress=(address,aart)=>(dispatch,getState)=>{
             article,title:article.articlename,rawlines:active.rawlines});
 	}
 }
-module.exports={TOGGLE_LAYOUT,UPDATE_ARTICLE,fetchArticle,
+module.exports={TOGGLE_LAYOUT,UPDATE_ARTICLE,fetchArticle,goArticle,
 	toggleLayout,nextArticle,prevArticle,_fetchArticle,updateArticleByAddress,newid};
