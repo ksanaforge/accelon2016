@@ -4,7 +4,7 @@ const OPEN_AT = 'OPEN_AT';
 const FETCH_FAILED = 'FETCH_FAILED';
 const CLOSE_ARTICLE = 'CLOSE_ARTICLE';
 const CLONE_ARTICLE = 'CLONE_ARTICLE';
-const {newid,_fetchArticle}=require("./article");
+const {findArticle,newid,_fetchArticle}=require("./article");
 
 const openAt= (opts) => (dispatch,getState) => {
   var index=getState().articles.length;
@@ -12,12 +12,6 @@ const openAt= (opts) => (dispatch,getState) => {
   dispatch({type:SET_ACTIVE_TAB,index});  
 }
 
-const findArticle=(articles,id)=>{
-	for (let i=0;i<articles.length;i++) {
-		if (articles[i].id==id) return i;
-	}
-	return -1;
-}
 const setActiveArticle=(id)=> (dispatch,getState)=>{
 	const index=findArticle(getState().articles,id);
 	if (index>-1) {

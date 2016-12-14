@@ -38,6 +38,7 @@ const LinkerDesktop=React.createClass({
 		const actions={
 			decorators:this.props.decorators,
 			updateArticleByAddress:this.props.updateArticleByAddress,
+			openLink:this.props.openLink,
 			setSelection:this.props.setSelection
 		}
 		const props1=Object.assign({},actions,this.props.leftarticle);

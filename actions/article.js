@@ -62,8 +62,45 @@ const goArticle=(corpus,narticle,id)=>(dispatch,getState)=>{
 		_fetchArticle(corpus,article.start,dispatch,UPDATE_ARTICLE,id);
 	});
 }
+const findArticleByCorpus=(articles,corpus)=>{
+	for (let i=0;i<articles.length;i++) {
+		if (articles[i].corpus==corpus) return i;
+	}
+	return -1;
+}
+const findArticle=(articles,id)=>{
+	for (let i=0;i<articles.length;i++) {
+		if (articles[i].id==id) return i;
+	}
+	return -1;
+}
+
+
+const openLink=(fulladdress)=>(dispatch,getState)=>{
+	const r=fulladdress.split("@");
+	if (r.length!==2)return;
+	const articles=getState().articles;
+	const address=r[1];
+	const corpus=r[0];
+	const at=findArticleByCorpus(articles,corpus);
+	if (at<0) return;
+	const id=articles[at].id;
+	_fetchArticle(corpus,address,dispatch,UPDATE_ARTICLE,id);
+}
+
 const updateArticleByAddress=(address,aart)=>(dispatch,getState)=>{
-	const active=(typeof aart=="undefined")?getActiveArticle(getState()):getState().articles[aart];
+	var active;
+	const articles=getState().articles;
+	if (typeof aart=="undefined") {
+		active=getActiveArticle(getState());
+	} else {
+		if (typeof aart=="string")	 {
+			const at=findArticle(articles,aart);
+			if (at>=0) active=articles[at];
+		} else {
+			active=articles[aart];
+		}
+	}
 
 	if (!active) {
 		console.error("no such article")
@@ -83,5 +120,6 @@ const updateArticleByAddress=(address,aart)=>(dispatch,getState)=>{
             article,title:article.articlename,rawlines:active.rawlines});
 	}
 }
-module.exports={TOGGLE_LAYOUT,UPDATE_ARTICLE,fetchArticle,goArticle,
+module.exports={TOGGLE_LAYOUT,UPDATE_ARTICLE,fetchArticle,goArticle,openLink,
+	findArticle,
 	toggleLayout,nextArticle,prevArticle,_fetchArticle,updateArticleByAddress,newid};

@@ -1,19 +1,32 @@
 const onLinkMouseDown=function(e){
 	const target=e.target;
-	const address=parseInt(target.dataset.target,10);
+	const fulladdress=e.target.target;
 	e.stopPropagation();
+	if (!target.action) {
+		console.error("action openLink is not defined");
+	}
+	target.action&&target.action(fulladdress);	
 }
-const createLink=function({cm,cor,start,end,id,target}){
+
+const createLink=function({cm,cor,start,end,id,target,actions}){
 	if (start.ch==end.ch && start.line==end.line) {
 		const dom=document.createElement("span");
 		dom.className="notelink";
 		dom.onmousedown=onLinkMouseDown;
+		dom.action=actions.updateArticleByAddress;
 		dom.cor=cor;
 		dom.innerHTML=target;
 		cm.setBookmark(start,{widget:dom,handleMouseEvents:true});
 	} else {
-		cm.markText(start,end,{className:"link"});
-		//dom.onmousedown=onLinkMouseDown;
+		const dom=document.createElement("span");
+		dom.className="link";
+		dom.onmousedown=onLinkMouseDown;
+		dom.action=actions.openLink;
+		dom.cor=cor;
+		dom.innerHTML=cm.getRange(start,end);
+		dom.target=target;
+		cm.markText(start,end,{replacedWith:dom,handleMouseEvents:true});
+		//.onmousedown=onLinkMouseDown;
 	}
 
 }

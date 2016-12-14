@@ -53,8 +53,8 @@ const CorpusView=React.createClass({
 				if (this.markinview[range.kRange+field]) continue; 
 				const r=this.toLogicalRange(pos[i]);
 				
-				decorator({cm:this.cm,cor:this.cor,start:r.start,end:r.end,
-					id:i+1,target:value[i],actions:this.actions});
+				decorator({cm:this.cm,cor:this.cor,start:r.start,end:r.end,corpus:this.props.corpus,
+					tabid:this.props.id,id:i+1,target:value[i],actions:this.actions});
 				this.markinview[range.kRange+field]=true;
 			}
 		}

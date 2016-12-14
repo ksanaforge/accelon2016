@@ -6,7 +6,7 @@ const onPtrMouseDown=function(e){
 	if (!target.action) {
 		console.error("action updateArticleByAddress not defined");
 	}
-	target.action&&target.action(address);
+	target.action&&target.action(address,target.tabid);
 }
 
 var entertimer,leavetimer;
@@ -31,7 +31,7 @@ const onPtrLeave=function(e){
 		e.target.innerHTML=e.target.dataset.id;
 	},50);
 }
-const createPtr=function({cm,cor,start,end,id,target,actions}){
+const createPtr=function({cm,cor,start,end,id,tabid,target,actions}){
 	const dom=document.createElement("span");
 	dom.className="ptr";
 	dom.innerHTML=id;
@@ -39,6 +39,7 @@ const createPtr=function({cm,cor,start,end,id,target,actions}){
 	dom.dataset.target=target;
 	dom.onmousedown=onPtrMouseDown;
 	dom.cor=cor;
+	dom.tabid=tabid;
 	dom.action=actions.updateArticleByAddress;
 	dom.onmouseenter=onPtrEnter;
 	dom.onmouseleave=onPtrLeave;

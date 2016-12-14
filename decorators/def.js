@@ -3,11 +3,11 @@ const onDefMouseDown=function(e){
 	const address=parseInt(target.dataset.target,10);
 	e.stopPropagation();
 	if (!target.action) {
-		console.error("action updateArticleByAddress not defined");
+		console.error("action updateArticleByAddress is not defined");
 	}
-	target.action&&target.action(address);
+	target.action&&target.action(address,target.tabid);
 }
-const createDef=function({cm,cor,start,end,id,target,actions}){
+const createDef=function({cm,cor,corpus,start,end,id,tabid,target,actions}){
 	const dom=document.createElement("span");
 	dom.className="def";
 	dom.innerHTML=id;
@@ -15,6 +15,7 @@ const createDef=function({cm,cor,start,end,id,target,actions}){
 	dom.onmousedown=onDefMouseDown;
 	dom.action=actions.updateArticleByAddress;
 	dom.cor=cor;
+	dom.tabid=tabid;
 	cm.setBookmark(start,{widget:dom,handleMouseEvents:true});
 }
 
