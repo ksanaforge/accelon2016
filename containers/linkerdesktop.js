@@ -11,8 +11,8 @@ const LinkerDesktop=React.createClass({
 	,componentWillReceiveProps(nextProps){
 		if (!this.state.ready&&nextProps.corpora[nextProps.corpus1] && nextProps.corpora[nextProps.corpus2]) {
 			if (!nextProps.rightarticle && !nextProps.leftarticle) {
-				this.props.fetchArticle(nextProps.corpus1,"59p9.0301",OPEN_AT);
-				this.props.fetchArticle(nextProps.corpus2,"",OPEN_AT);
+				this.props.fetchArticle(nextProps.corpus1,nextProps.address1,OPEN_AT);
+				this.props.fetchArticle(nextProps.corpus2,nextProps.address2,OPEN_AT);
 			}
 
 			if (nextProps.leftarticle&&nextProps.rightarticle) {

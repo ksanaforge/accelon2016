@@ -36,11 +36,13 @@ const CorpusView=React.createClass({
 		props=props||this.props;
 		const {corpus,article,fields,rawlines,address,layout}=props;
 		this.cor=openCorpus(corpus);
+		this.markinview={};
 		this.layout(article,rawlines,address,layout);
 	}
 	,markinview:{}//fast check if mark already render, assuming no duplicate mark in same range
 	,actions:{} 
 	,decorate(fromkpos,tokpos){
+		var decorated=0;
 		for (let field in this.props.fields) {
 			if (!this.props.fields[field]) continue;
 			const pos=this.props.fields[field].pos, value=this.props.fields[field].value;
@@ -51,8 +53,8 @@ const CorpusView=React.createClass({
 				const range=this.cor.parseRange(pos[i]);
 				if (range.start<fromkpos || range.end>tokpos) continue;
 				if (this.markinview[range.kRange+field]) continue; 
+
 				const r=this.toLogicalRange(pos[i]);
-				
 				decorator({cm:this.cm,cor:this.cor,start:r.start,end:r.end,corpus:this.props.corpus,
 					tabid:this.props.id,id:i+1,target:value[i],actions:this.actions});
 				this.markinview[range.kRange+field]=true;
@@ -98,7 +100,7 @@ const CorpusView=React.createClass({
 		const firstline=this.cor.bookLineOf(this.props.article.start); //first of of the article
 		const text=this.cm.doc.getLine(linech.line);
 		const lb=this.state.linebreaks[linech.line];
-		if (!text) return this.props.article.start;
+		if (typeof text==="undefined") return this.props.article.end;
 		return this.cor.fromLogicalPos(text,linech.ch,lb,firstline,this.getRawLine);
 	}
 	,getRawLine(line){

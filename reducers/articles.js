@@ -23,8 +23,8 @@ module.exports=function articles(state = initialArticles , action = {}) {
   } else if (TOGGLE_LAYOUT===A.type) {
     return state.map((o)=>(o.id==A.id)?Object.assign({},o,{layout:!o.layout}):o);
   } else if (UPDATE_ARTICLE===A.type) {
-    const {title,address,article,rawlines,corpus}=action;
-    return state.map((o)=>(o.id==A.id)?Object.assign({},o,{corpus,title,address,article,rawlines}):o);
+    const {title,address,article,rawlines,corpus,fields}=action;
+    return state.map((o)=>(o.id==A.id)?Object.assign({},o,{corpus,title,address,article,rawlines,fields}):o);
   } else if (CLONE_ARTICLE===A.type) {
     var articles=state.filter((o)=>o.id===A.clonefrom);
     if (!articles.length)return state;

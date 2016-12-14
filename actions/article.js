@@ -1,8 +1,7 @@
 /*actions for active article*/
-const ksanacorpus=require("ksana-corpus");
+const {openCorpus,parseLink}=require("ksana-corpus");
 const TOGGLE_LAYOUT = 'TOGGLE_LAYOUT';
 const UPDATE_ARTICLE='UPDATE_ARTICLE';
-
 const getActiveArticle=(state)=>state.articles[state.activeArticle];
 
 const toggleLayout=()=>(dispatch,getState)=>{
@@ -12,14 +11,14 @@ const toggleLayout=()=>(dispatch,getState)=>{
 const newid=()=> 'a'+Math.floor(Math.random()*100000000);
 
 const _fetchArticle=(corpus,address,dispatch,type,id)=>{
-	ksanacorpus.openCorpus(corpus,(err,cor)=>{
+	openCorpus(corpus,(err,cor)=>{
 		if (!err) {
 			const article=cor.articleOf(address);
       if (article){
       	const articleFields=cor.meta.articleFields||[];
       	id=id||newid();
         cor.getArticleTextTag( article.at, articleFields , (res)=>{
-          dispatch({type,corpus,address,id,
+      	    dispatch({type,corpus,address,id,
             article,title:article.articlename,rawlines:res.text,fields:res.fields});
         });
       } else {
@@ -42,7 +41,7 @@ const nextprevArticle=(dispatch,getState,now,nav)=>{
 	}
 	
 	if (!active)return;
-	const cor=ksanacorpus.openCorpus(active.corpus);
+	const cor=openCorpus(active.corpus);
 	if (!cor)return;//should be open
 	const next=cor.getArticle(active.article.at,nav)
 	if (!next) return;
@@ -77,15 +76,15 @@ const findArticle=(articles,id)=>{
 
 
 const openLink=(fulladdress)=>(dispatch,getState)=>{
-	const r=fulladdress.split("@");
-	if (r.length!==2)return;
-	const articles=getState().articles;
-	const address=r[1];
-	const corpus=r[0];
-	const at=findArticleByCorpus(articles,corpus);
-	if (at<0) return;
-	const id=articles[at].id;
-	_fetchArticle(corpus,address,dispatch,UPDATE_ARTICLE,id);
+	parseLink(fulladdress,function({corpus,address}){
+		const r=fulladdress.split("@");
+		if (r.length!==2)return;
+		const articles=getState().articles;
+		const at=findArticleByCorpus(articles,corpus);
+		if (at<0) return;
+		const id=articles[at].id;
+		_fetchArticle(corpus,address,dispatch,UPDATE_ARTICLE,id);
+	});
 }
 
 const updateArticleByAddress=(address,aart)=>(dispatch,getState)=>{
@@ -107,7 +106,7 @@ const updateArticleByAddress=(address,aart)=>(dispatch,getState)=>{
 		return;
 	}
 
-	const cor=ksanacorpus.openCorpus(active.corpus);
+	const cor=openCorpus(active.corpus);
 	if (!cor)return;//should be open
 
 	const article=cor.articleOf(address);
