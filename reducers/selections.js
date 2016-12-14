@@ -6,7 +6,7 @@ const emptySelection=function(A){
   const ranges=[article.start];
   const caretpos=article.start;
   const caretposH=article.startH;
-  return {[A.id]:{caretpos,caretposH,ranges,cursor:{line:0,ch:0}}};  
+  return {[A.id]:{caretpos,caretposH,ranges,index:0,cursor:{line:0,ch:0}}};  
 }
 const initialState=emptySelection({id:"resultview",article:{start:1}});
 

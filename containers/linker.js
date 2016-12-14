@@ -3,6 +3,7 @@ const { connect } = require('react-redux');
 const CorpusActions=require("../actions/corpus");
 const ArticleActions=require("../actions/article");
 const SelectionActions=require("../actions/selection");
+const LinkActions=require("../actions/link");
 
 const LinkerDesktop =require('./linkerdesktop');
 function mapStateToProps(state,ownProps) {  
@@ -19,7 +20,8 @@ function mapDispatchToProps(dispatch,ownProps) {
 	const boundcorpus=bindActionCreators(CorpusActions, dispatch);
 	const boundarticle=bindActionCreators(ArticleActions, dispatch);
   const boundselection=bindActionCreators(SelectionActions, dispatch);
-	const bound=Object.assign({},boundcorpus,boundarticle, boundselection);
+  const boundlink=bindActionCreators(LinkActions, dispatch);
+	const bound=Object.assign({},boundcorpus,boundarticle, boundselection, boundlink);
   return bound; 
 }
 

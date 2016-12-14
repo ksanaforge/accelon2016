@@ -28,7 +28,8 @@ const selectionActivity=function(cm){
 				corpus:this.props.corpus,id:this.props.id,
 				caretText:getCaretText(cm),selectionText,
 				ranges, caretpos:r.start, caretposH:this.cor.stringify(r.start),
-				cursor:{line:cursor.line,ch:cursor.ch}
+				index:cm.indexFromPos(cursor),
+				cursor
 			});
 	}
 }

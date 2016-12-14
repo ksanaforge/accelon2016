@@ -16,7 +16,8 @@ const CorpusView=React.createClass({
 		onViewport:PT.func,
 		onCopyText:PT.func, //custom copy handler
 		setSelection:PT.func, //used by selectionactivity
-		updateArticleByAddress:PT.func
+		updateArticleByAddress:PT.func,
+		extraKeys:PT.object
 	}
 	,getInitialState(){
 		return {text:"",linebreaks:[],pagebreaks:[]};
@@ -42,7 +43,6 @@ const CorpusView=React.createClass({
 	,markinview:{}//fast check if mark already render, assuming no duplicate mark in same range
 	,actions:{} 
 	,decorate(fromkpos,tokpos){
-		var decorated=0;
 		for (let field in this.props.fields) {
 			if (!this.props.fields[field]) continue;
 			const pos=this.props.fields[field].pos, value=this.props.fields[field].value;
@@ -52,12 +52,13 @@ const CorpusView=React.createClass({
 			for (let i=0;i<pos.length;i++) {
 				const range=this.cor.parseRange(pos[i]);
 				if (range.start<fromkpos || range.end>tokpos) continue;
-				if (this.markinview[range.kRange+field]) continue; 
+
+				if (this.markinview[field+range.kRange]) continue; 
 
 				const r=this.toLogicalRange(pos[i]);
 				decorator({cm:this.cm,cor:this.cor,start:r.start,end:r.end,corpus:this.props.corpus,
 					tabid:this.props.id,id:i+1,target:value[i],actions:this.actions});
-				this.markinview[range.kRange+field]=true;
+				this.markinview[field+range.kRange]=true;
 			}
 		}
 	}
@@ -201,6 +202,7 @@ const CorpusView=React.createClass({
 			text:this.state.text,
 			onCursorActivity:this.onCursorActivity,
 			onCopy:this.onCopy,
+			extraKeys:this.props.extraKeys,
 			onViewportChange:this.onViewportChange,
 			articlename:this.props.article.articlename
 			}

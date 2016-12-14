@@ -116,9 +116,10 @@ const updateArticleByAddress=(address,aart)=>(dispatch,getState)=>{
 		_fetchArticle(active.corpus,address,dispatch,UPDATE_ARTICLE,active.id);
 	} else {//don't need to fetch 
     dispatch({type:UPDATE_ARTICLE,corpus:active.corpus,address,id:active.id,
+    				fields:active.fields,
             article,title:article.articlename,rawlines:active.rawlines});
 	}
 }
 module.exports={TOGGLE_LAYOUT,UPDATE_ARTICLE,fetchArticle,goArticle,openLink,
-	findArticle,
+	findArticle,findArticleByCorpus,
 	toggleLayout,nextArticle,prevArticle,_fetchArticle,updateArticleByAddress,newid};

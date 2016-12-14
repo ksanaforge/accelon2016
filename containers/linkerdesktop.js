@@ -4,6 +4,7 @@ const LinkerTab=require("../components/linkertab");
 const CorpusView=require("../components/corpusview");
 const {openCorpus}=require("ksana-corpus");
 const {OPEN_AT}=require("../actions/articles");
+const {getQuoteText}=require("../units/quote");
 const LinkerDesktop=React.createClass({
 	getInitialState(){
 		return {ready:false}
@@ -24,6 +25,20 @@ const LinkerDesktop=React.createClass({
 		this.props.openCorpus(this.props.corpus1);
 		this.props.openCorpus(this.props.corpus2);
 	}
+	,sourcePos(){
+		for (var i in this.props.selections){
+			if (this.props.selections[i].corpus==this.props.corpus2){
+				return this.props.selections[i].caretpos;
+			}
+		}
+		return 0;
+	}
+	,findOrigin(cm){
+		const quotetext=getQuoteText(cm);
+		if (!quotetext)return;
+		const searchfrom=this.sourcePos();
+  	this.props.findOrigin(quotetext, this.props.corpus2, searchfrom);
+	}
 	,render(){
 		if (!this.state.ready) {
 			return E("loading");
@@ -41,7 +56,10 @@ const LinkerDesktop=React.createClass({
 			openLink:this.props.openLink,
 			setSelection:this.props.setSelection
 		}
-		const props1=Object.assign({},actions,this.props.leftarticle);
+		const extraKeys={
+			"Ctrl-M": this.findOrigin
+		}	
+		const props1=Object.assign({},actions,this.props.leftarticle,{extraKeys});
 		const props2=Object.assign({},actions,this.props.rightarticle);
 		return E("div",{style:styles.container},
 			E("div",{style:styles.corpustab},
