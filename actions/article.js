@@ -55,7 +55,7 @@ const prevArticle=(now)=>(dispatch,getState)=>{
 	nextprevArticle(dispatch,getState,now,-1);
 };
 const goArticle=(corpus,narticle,id)=>(dispatch,getState)=>{
-	ksanacorpus.openCorpus(corpus,(err,cor)=>{
+	openCorpus(corpus,(err,cor)=>{
 		const article=cor.getArticle(narticle);
 		if (!article)return;
 		_fetchArticle(corpus,article.start,dispatch,UPDATE_ARTICLE,id);

@@ -7,12 +7,18 @@ const LinkActions=require("../actions/link");
 
 const LinkerDesktop =require('./linkerdesktop');
 function mapStateToProps(state,ownProps) {  
+  var wlinkkey="";
+  if (state.articles[1]&&state.articles[2]) {
+    wlinkkey=state.articles[2].corpus+"_"+state.articles[1].corpus;
+  }
   return {
     corpora: state.corpora,
     selections: state.selections,
     rightarticle:state.articles[1],
     leftarticle:state.articles[2],
-    articles:state.articles
+    articles:state.articles,
+    activeWLink:state.activeWLink,
+    workinglinks:ownProps.remotedata.workinglinks[wlinkkey]||[]
   };
 }
 

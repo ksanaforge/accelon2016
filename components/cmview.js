@@ -24,8 +24,11 @@ const CMView=React.createClass({
 		const cm=this.cm;
 		const cursor=cm.getCursor();
 		if ((from.ch!==to.ch||from.line!==to.line)) {
-				this.marktext&&this.marktext.clear&&this.marktext.clear();
-				this.marktext=cm.markText(from,to,{className:"gotomarker",clearOnEnter:true});	
+			const s=cm.indexFromPos(from);const e=cm.indexFromPos(to);
+			this.marktext&&this.marktext.clear&&this.marktext.clear();
+			if (Math.abs(s-e)>1){
+				this.marktext=cm.markText(from,to,{className:"gotomarker",clearOnEnter:true});					
+			}
 		}
 		const vp=cm.getViewport();
 		const vpm=cm.getOption("viewportMargin");

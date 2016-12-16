@@ -1,39 +1,39 @@
 const getQuoteText=(cm)=>{
 	const str=cm.getSelection();
-	if (!str) { //try 「  」
-		const text=cm.getValue();
-		const cursor=cm.indexFromPos(cm.getCursor());
-		var start=cursor,end=cursor;
-		while (start>0) {
-			if (text.charAt(start)==="「") break;
-			if (text.charAt(start)==="」") break;
-			start--;
-		}
-		while (end<text.length) {
-			if (text.charAt(end)==="「") break;
-			if (text.charAt(end)==="」") break;
-			end++;
-		}
-		quote=text.substring(start,end+1);
-		if (quote.charAt(0)==="「" && quote.charAt(quote.length-1)==="」") {
-			var q=quote.substr(1,quote.length-2);
-			while (q.charAt(0)=="\n") {
-				start++;
-				q=q.substr(1);
-			}
-			while (q.charAt(q.length-1)=="\n") {
-				end++;
-				q=q.substr(0,q.length-1);
-			}
+	if (str) return str;
 
-			const s=cm.posFromIndex(start+1);
-			const e=cm.posFromIndex(end);
-			cm.setSelection(s,e);
-
-			return q.replace(/\n/g,"");
-		}
-		return "";
+	const text=cm.getValue();
+	const cursor=cm.indexFromPos(cm.getCursor());
+	var start=cursor,end=cursor;
+	while (start>0) {
+		if (text.charAt(start)==="「") break;
+		if (text.charAt(start)==="」") break;
+		start--;
 	}
+	while (end<text.length) {
+		if (text.charAt(end)==="「") break;
+		if (text.charAt(end)==="」") break;
+		end++;
+	}
+	quote=text.substring(start,end+1);
+	if (quote.charAt(0)==="「" && quote.charAt(quote.length-1)==="」") {
+		var q=quote.substr(1,quote.length-2);
+		while (q.charAt(0)=="\n") {
+			start++;
+			q=q.substr(1);
+		}
+		while (q.charAt(q.length-1)=="\n") {
+			end++;
+			q=q.substr(0,q.length-1);
+		}
+
+		const s=cm.posFromIndex(start+1);
+		const e=cm.posFromIndex(end);
+		cm.setSelection(s,e);
+
+		return q.replace(/\n/g,"");
+	}
+	return null;
 }
 const articleSubstr=function(cor,article,startfrom){
 	const l1=cor.bookLineOf(article.article.start);

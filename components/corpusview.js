@@ -3,11 +3,12 @@ const E=React.createElement;
 const PT=React.PropTypes;
 const CMView=require("./cmview");
 const {openCorpus}=require("ksana-corpus");
+const decorate=require("./decorate");
 const selectionActivity=require("./selectionactivity");
 const CorpusView=React.createClass({
 	propTypes:{
 		corpus:PT.string.isRequired,
-		address:PT.string.isRequired,
+		address:PT.oneOfType([PT.string.isRequired,PT.number.isRequired]),
 		rawlines:PT.array.isRequired,
 		article:PT.object.isRequired,
 		layout:PT.bool, //layout with p?
@@ -42,26 +43,6 @@ const CorpusView=React.createClass({
 	}
 	,markinview:{}//fast check if mark already render, assuming no duplicate mark in same range
 	,actions:{} 
-	,decorate(fromkpos,tokpos){
-		for (let field in this.props.fields) {
-			if (!this.props.fields[field]) continue;
-			const pos=this.props.fields[field].pos, value=this.props.fields[field].value;
-			const decorator=this.props.decorators[field];
-			if (!decorator) continue;
-
-			for (let i=0;i<pos.length;i++) {
-				const range=this.cor.parseRange(pos[i]);
-				if (range.start<fromkpos || range.end>tokpos) continue;
-
-				if (this.markinview[field+range.kRange]) continue; 
-
-				const r=this.toLogicalRange(pos[i]);
-				decorator({cm:this.cm,cor:this.cor,start:r.start,end:r.end,corpus:this.props.corpus,
-					tabid:this.props.id,id:i+1,target:value[i],actions:this.actions});
-				this.markinview[field+range.kRange]=true;
-			}
-		}
-	}
 	,textReady(){
 		this.scrollToAddress(this.props.address);
 	}
@@ -185,7 +166,7 @@ const CorpusView=React.createClass({
 			const vp=cm.getViewport();
 			const from=this.fromLogicalPos({line:vp.from,ch:0});
 			const to=this.fromLogicalPos({line:vp.to,ch:0});
-			this.decorate(from,to);
+			decorate.call(this,from,to);
 			this.onViewport&&this.onViewport(cm,vp.from,vp.to,from,to); //extra params start and end kpos
 		},50);
 	}

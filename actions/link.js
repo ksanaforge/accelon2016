@@ -1,8 +1,10 @@
-const {findArticleByCorpus}=require("./article");
-const {openCorpus}=require("ksana-corpus");
-const strstr=require("ksana-corpus-search").strstr;
+const {findArticleByCorpus,_fetchArticle}=require("./article");
+const {openCorpus,bsearch}=require("ksana-corpus");
+const {strstr}=require("ksana-corpus-search");
+
 const {articleSubstr,posFromIndex,fromLogicalPos}=require("../units/quote");
 const {UPDATE_ARTICLE}=require("./article");
+const SET_ACTIVE_WLINK="SET_ACTIVE_WLINK";
 const findOrigin=(tofind,sourcecorpus,searchfrom)=>(dispatch,getState)=>{
 	const articles=getState().articles;
 	const at=findArticleByCorpus(articles,sourcecorpus);
@@ -19,9 +21,41 @@ const findOrigin=(tofind,sourcecorpus,searchfrom)=>(dispatch,getState)=>{
 	const start=layout.linebreaks[linech1.line];
 	const end=layout.linebreaks[linech2.line];
 
-	const range=cor.makeKRange(start,end);
+	const range=cor.makeKRange(start,end+cor.addressPattern.maxchar);
 	const address=cor.stringify(range);
 	const obj=Object.assign({},{type:UPDATE_ARTICLE},article,{address});
   dispatch(obj);
 }
-module.exports={findOrigin};
+
+const nextWLink=(corpus,workinglinks,from)=>(dispatch,getState)=>{
+	const cor=openCorpus(corpus);
+	const r=cor.parseRange(from);
+
+	const at=bsearch(workinglinks.pos,r.start+1,true);
+	if (at==-1)return;
+
+	const articles=getState().articles;
+	const ncorpus=findArticleByCorpus(articles,corpus);
+
+	const article=articles[ncorpus];
+	if (!article)return;
+
+
+	const address=cor.stringify(workinglinks.pos[at]);
+	if (workinglinks.pos[at]>article.article.end) {
+		alert("no more working link, goto next article");
+		return;
+	}
+
+	const article2=(ncorpus==1)?articles[2]:articles[1];
+
+	const id=workinglinks.pos[at].toString(36)+"_"+workinglinks.value[at];
+	const obj=Object.assign({},{type:UPDATE_ARTICLE},article,{address});
+	dispatch(obj);
+
+
+  _fetchArticle(article2.corpus,workinglinks.value[at],dispatch,UPDATE_ARTICLE,article2.id);
+
+	dispatch({type:SET_ACTIVE_WLINK, id});
+}
+module.exports={findOrigin,SET_ACTIVE_WLINK,nextWLink};

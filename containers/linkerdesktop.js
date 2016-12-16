@@ -5,15 +5,47 @@ const CorpusView=require("../components/corpusview");
 const {openCorpus}=require("ksana-corpus");
 const {OPEN_AT}=require("../actions/articles");
 const {getQuoteText}=require("../units/quote");
+const {getWorkingLinks}=require("../units/link");
 const LinkerDesktop=React.createClass({
 	getInitialState(){
 		return {ready:false}
+	}
+	,added(key,val,from,article,to){
+		console.log("added",arguments)
+	}
+	,remove(key,val,from,article,to){
+		console.log("removed",arguments)
+	}
+	,bindData(from,article,to){
+		if (article==this.onarticle)return;
+		console.log(from,article,to)
+		this.offbinding(from,to);
+		const binding=this.props.remotedata.binding;
+
+		binding(from,article,to).on('child_added',(snapshot)=>{
+			this.added.call(this,snapshot.key,snapshot.val(),from,article,to);
+		});
+		binding(from,article,to).on('child_removed',(snapshot)=>{
+			this.removed.call(this,snapshot.key,snapshot.val(),from,article,to);
+		});
+		this.onarticle=article;
+	}
+	,offbinding(from,to){
+		if (this.onarticle) {
+			this.props.remotedata.binding(from,this.onarticle,to).off('child_added');
+			this.props.remotedata.binding(from,this.onarticle,to).off('child_removed');
+		}		
+	}
+	,componentWillUnmount(){
+		this.offbinding(this.props.corpus2,this.props.corpus1);
 	}
 	,componentWillReceiveProps(nextProps){
 		if (!this.state.ready&&nextProps.corpora[nextProps.corpus1] && nextProps.corpora[nextProps.corpus2]) {
 			if (!nextProps.rightarticle && !nextProps.leftarticle) {
 				this.props.fetchArticle(nextProps.corpus1,nextProps.address1,OPEN_AT);
 				this.props.fetchArticle(nextProps.corpus2,nextProps.address2,OPEN_AT);
+			} else {
+				this.bindData(nextProps.corpus2,nextProps.rightarticle.article.at,nextProps.corpus1);
 			}
 
 			if (nextProps.leftarticle&&nextProps.rightarticle) {
@@ -59,8 +91,12 @@ const LinkerDesktop=React.createClass({
 		const extraKeys={
 			"Ctrl-M": this.findOrigin
 		}	
-		const props1=Object.assign({},actions,this.props.leftarticle,{extraKeys});
-		const props2=Object.assign({},actions,this.props.rightarticle);
+		const wlink=getWorkingLinks(this.props.workinglinks,this.props.corpus2,this.props.leftarticle.article);
+		const fields=(wlink)?
+		Object.assign({},this.props.leftarticle.fields,{wlink}):this.props.leftarticle.fields;
+
+		const props1=Object.assign({},actions,this.props.leftarticle,{extraKeys,fields});
+		const props2=Object.assign({},actions,this.props.rightarticle,{});
 		return E("div",{style:styles.container},
 			E("div",{style:styles.corpustab},
 				E("div",{style:styles.lefttab},E(CorpusView,props1)),
