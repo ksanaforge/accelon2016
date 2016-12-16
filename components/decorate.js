@@ -27,7 +27,7 @@ const decorate=function(fromkpos,tokpos){
 			const r=this.toLogicalRange(p);
 			
 			decorator({cm:this.cm,cor:this.cor,start:r.start,end:r.end,corpus:this.props.corpus,
-				tabid:this.props.id,id:i,target,actions:this.actions});
+				kpos:range.start,krange:range,tabid:this.props.id,id:i,target,actions:this.actions});
 
 			this.markinview[field+range.kRange]=true;
 		}

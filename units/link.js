@@ -7,5 +7,7 @@ const	getWorkingLinks=(workinglinks,prefix,article)=>{
 	const value=fields.value.map( v=> prefix+"@"+v);
 	return {pos:fields.pos,value};
 }
-
-module.exports={getWorkingLinks};
+const makeWLinkId=function(kpos,address){
+	return kpos.toString(36) +"_"+address.replace(/.+@/,"");
+}
+module.exports={getWorkingLinks,makeWLinkId};

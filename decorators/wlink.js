@@ -1,3 +1,4 @@
+const {makeWLinkId}=require("../units/link");
 const setinnerhtml=function(dom){
 	const addrs=dom.target.split(";");
 	if (addrs.length>1) {
@@ -6,25 +7,27 @@ const setinnerhtml=function(dom){
 		dom.innerHTML=dom.target;
 	}
 }
+const linkaction=function(actions,address,kpos){
+	actions.openLink(address);
+	actions.setActiveWLink(makeWLinkId(kpos,address));
+}
 const onLinkMouseDown=function(e){
 	e.stopPropagation();
 	const target=e.target;
 	const fulladdress=e.target.target;
-	if (!target.action) {
-		console.error("action openLink is not defined",fulladdress);
-	}
 	const addrs=fulladdress.split(";");
 	if (addrs.length==1) {
-		target.action&&target.action(fulladdress);
+		linkaction(target.actions,fulladdress,target.kpos);
 	} else {
-		target.action&&target.action(addrs[target.nlink]);
+		linkaction(target.actions,addrs[target.nlink],target.kpos);
 		target.nlink++;
 		if(target.nlink>=addrs.length) target.nlink=0;
 		setinnerhtml(target);
 	}
+
 }
 
-const createLink=function({cm,cor,start,end,id,target,actions}){
+const createLink=function({cm,cor,kpos,start,end,id,target,actions}){
 	const dom=document.createElement("span");
 	dom.className="notelink";
 	if (target.indexOf(";")>-1) dom.className="notelink2";
@@ -33,7 +36,8 @@ const createLink=function({cm,cor,start,end,id,target,actions}){
 	dom.nlink=0;//target might have multiple link
 	dom.target=target;
 	setinnerhtml(dom);	
-	dom.action=actions.openLink;
+	dom.actions=actions;
+	dom.kpos=kpos;
 	cm.setBookmark(start,{widget:dom,handleMouseEvents:true});
 }
 module.exports=createLink;

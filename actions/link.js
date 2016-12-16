@@ -1,6 +1,7 @@
 const {findArticleByCorpus,_fetchArticle}=require("./article");
 const {openCorpus,bsearch}=require("ksana-corpus");
 const {strstr}=require("ksana-corpus-search");
+const {makeWLinkId}=require("../units/link");
 
 const {articleSubstr,posFromIndex,fromLogicalPos}=require("../units/quote");
 const {UPDATE_ARTICLE}=require("./article");
@@ -41,7 +42,7 @@ const nextWLink=(corpus,workinglinks,from)=>(dispatch,getState)=>{
 	if (!article)return;
 
 
-	const address=cor.stringify(workinglinks.pos[at]);
+	const address=cor.stringify(workinglinks.pos[at],workinglinks.pos[at]+3);
 	if (workinglinks.pos[at]>article.article.end) {
 		alert("no more working link, goto next article");
 		return;
@@ -49,13 +50,15 @@ const nextWLink=(corpus,workinglinks,from)=>(dispatch,getState)=>{
 
 	const article2=(ncorpus==1)?articles[2]:articles[1];
 
-	const id=workinglinks.pos[at].toString(36)+"_"+workinglinks.value[at];
+	const id=makeWLinkId(workinglinks.pos[at],workinglinks.value[at]);
 	const obj=Object.assign({},{type:UPDATE_ARTICLE},article,{address});
 	dispatch(obj);
 
 
   _fetchArticle(article2.corpus,workinglinks.value[at],dispatch,UPDATE_ARTICLE,article2.id);
-
-	dispatch({type:SET_ACTIVE_WLINK, id});
+	dispatch(setActiveWLink(id));
 }
-module.exports={findOrigin,SET_ACTIVE_WLINK,nextWLink};
+const setActiveWLink=(id)=>{
+	return {type:SET_ACTIVE_WLINK, id};
+}
+module.exports={findOrigin,setActiveWLink,SET_ACTIVE_WLINK,nextWLink};

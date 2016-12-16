@@ -45,6 +45,7 @@ const CorpusView=React.createClass({
 	,actions:{} 
 	,textReady(){
 		this.scrollToAddress(this.props.address);
+		this.onViewportChange(this.cm);
 	}
 	,componentWillUnmount(){
 		this.cm.getAllMarks().forEach((m)=>m.clear()); //might not need this
@@ -183,6 +184,7 @@ const CorpusView=React.createClass({
 			text:this.state.text,
 			onCursorActivity:this.onCursorActivity,
 			onCopy:this.onCopy,
+			paddingLine:this.props.paddingLine,
 			extraKeys:this.props.extraKeys,
 			onViewportChange:this.onViewportChange,
 			articlename:this.props.article.articlename
