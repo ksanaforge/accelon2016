@@ -43,6 +43,6 @@ const createPtr=function({cm,cor,start,end,id,tabid,target,actions}){
 	dom.action=actions.updateArticleByAddress;
 	dom.onmouseenter=onPtrEnter;
 	dom.onmouseleave=onPtrLeave;
-	cm.setBookmark(start,{widget:dom,handleMouseEvents:true});
+	return cm.setBookmark(start,{widget:dom,handleMouseEvents:true});
 }
 module.exports=createPtr;

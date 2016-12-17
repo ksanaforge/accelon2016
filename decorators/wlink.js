@@ -38,6 +38,6 @@ const createLink=function({cm,cor,kpos,start,end,id,target,actions}){
 	setinnerhtml(dom);	
 	dom.actions=actions;
 	dom.kpos=kpos;
-	cm.setBookmark(start,{widget:dom,handleMouseEvents:true});
+	return cm.setBookmark(start,{widget:dom,handleMouseEvents:true});
 }
 module.exports=createLink;

@@ -10,4 +10,5 @@ const	getWorkingLinks=(workinglinks,prefix,article)=>{
 const makeWLinkId=function(kpos,address){
 	return kpos.toString(36) +"_"+address.replace(/.+@/,"");
 }
+
 module.exports={getWorkingLinks,makeWLinkId};

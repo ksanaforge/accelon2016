@@ -39,6 +39,9 @@ const LinkerTab=(props)=>{
 	const onNextWLink=(address)=>{
 		props.nextWLink(props.corpus1,props.workinglinks,address);
 	}
+	const onMakeLink=(createtime,user)=>{
+		props.makeLink(props.remotedata.binding,createtime,user);
+	}
 	const cor1=openCorpus(props.corpus1);
 	const cor2=openCorpus(props.corpus2);
 	const sel1=selectionOf(props.selections,props.corpus1);
@@ -57,7 +60,7 @@ const LinkerTab=(props)=>{
 		E(GotoAddress,{corpus:props.corpus2,value:value2,onEnter}),
 		E(ArticleNav,{editable:true,now:now2,total:total2,onNext:next2,onPrev:prev2,onChange:change2}),
 		E(WLinkNav,{onNextWLink,address:value1}),
-		E(WLinkBuilder,Object.assign({},props,{linkable}))
+		E(WLinkBuilder,Object.assign({},props,{linkable,onMakeLink}))
 	);
 }
 module.exports=LinkerTab;

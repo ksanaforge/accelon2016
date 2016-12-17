@@ -30,7 +30,7 @@ const note=function({cm,cor,start,end,id,target}){
 	dom.onmouseenter=onNoteEnter;
 	dom.onmouseleave=onNoteLeave;
 	dom.cor=cor;
-	cm.setBookmark(start,{widget:dom,handleMouseEvents:true});
+	return cm.setBookmark(start,{widget:dom,handleMouseEvents:true});
 }
 
 module.exports=note;

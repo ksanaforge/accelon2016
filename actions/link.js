@@ -61,4 +61,33 @@ const nextWLink=(corpus,workinglinks,from)=>(dispatch,getState)=>{
 const setActiveWLink=(id)=>{
 	return {type:SET_ACTIVE_WLINK, id};
 }
-module.exports={findOrigin,setActiveWLink,SET_ACTIVE_WLINK,nextWLink};
+const getCorpusSelection=(selections,corpus)=>{
+	for (let i in selections) {
+		if (selections[i].corpus==corpus) return selections[i].ranges[0];
+	}
+	return 0;
+}
+const makeLink=(databinding,createtime,user)=>(dispatch,getState)=>{
+	const articles=getState().articles;
+	const article1=articles[1], article2=articles[2];
+	const id=getState().activeWLink;
+	if (!id || !databinding) return;
+	const elapsed=new Date()-createtime;
+	const sel1=getCorpusSelection(getState().selections,article1.corpus);
+	const sel2=getCorpusSelection(getState().selections,article2.corpus);
+	if (!sel1||!sel2)return;
+
+	const cor1=openCorpus(article1.corpus);
+	const cor2=openCorpus(article2.corpus);
+
+	databinding(article1.corpus,article1.article.at,article2.corpus).child(id).set({
+		from:cor1.stringify(sel1),to:cor2.stringify(sel2), elapsed, user
+	});
+	databinding(article2.corpus,article2.article.at,article1.corpus).child(id).set({
+		from:cor2.stringify(sel2),to:cor1.stringify(sel1), elapsed, user
+	});
+	dispatch(setActiveWLink(""));
+}
+
+
+module.exports={findOrigin,setActiveWLink,SET_ACTIVE_WLINK,nextWLink,makeLink};

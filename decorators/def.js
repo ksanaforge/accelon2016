@@ -16,7 +16,7 @@ const createDef=function({cm,cor,corpus,start,end,id,tabid,target,actions}){
 	dom.action=actions.updateArticleByAddress;
 	dom.cor=cor;
 	dom.tabid=tabid;
-	cm.setBookmark(start,{widget:dom,handleMouseEvents:true});
+	return cm.setBookmark(start,{widget:dom,handleMouseEvents:true});
 }
 
 module.exports=createDef;

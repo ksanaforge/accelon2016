@@ -4,6 +4,7 @@ const PT=React.PropTypes;
 const CMView=require("./cmview");
 const {openCorpus}=require("ksana-corpus");
 const decorate=require("./decorate");
+const paintUserField=require("./paintuserfield");
 const selectionActivity=require("./selectionactivity");
 const CorpusView=React.createClass({
 	propTypes:{
@@ -18,7 +19,8 @@ const CorpusView=React.createClass({
 		onCopyText:PT.func, //custom copy handler
 		setSelection:PT.func, //used by selectionactivity
 		updateArticleByAddress:PT.func,
-		extraKeys:PT.object
+		extraKeys:PT.object,
+		fields:PT.object,
 	}
 	,getInitialState(){
 		return {text:"",linebreaks:[],pagebreaks:[]};
@@ -39,6 +41,8 @@ const CorpusView=React.createClass({
 		const {corpus,article,fields,rawlines,address,layout}=props;
 		this.cor=openCorpus(corpus);
 		this.markinview={};
+		this.props.removeAllUserLinks(corpus);
+		paintUserField.call(this,{},this.props.userfield);//this will unpaint all fields
 		this.layout(article,rawlines,address,layout);
 	}
 	,markinview:{}//fast check if mark already render, assuming no duplicate mark in same range
@@ -59,14 +63,17 @@ const CorpusView=React.createClass({
 	}
 	,componentWillReceiveProps(nextProps){//cor changed
 		const {corpus,address,layout,article}=this.props;
-		if (nextProps.corpus!==corpus||nextProps.address!==address||nextProps.layout!==layout){
-			if (nextProps.article.at===article.at&&nextProps.layout===layout&&nextProps.corpus===corpus) {
-				this.scrollToAddress(nextProps.address);
-			} else {
-				this.loadtext(nextProps);
-			}
+		if (nextProps.article.at!==article.at||nextProps.layout!==layout||nextProps.corpus!==corpus) {
+			this.loadtext(nextProps);
+			return;
+		}
+
+		if (nextProps.userfield && nextProps.userfield !== this.props.userfield) { //user field should have id
+			paintUserField.call(this,nextProps.userfield,this.props.userfield);
+			return;
 		}
 		if (this.cm && nextProps.active)this.cm.focus();
+		if (this.props.address!==nextProps.address) this.scrollToAddress(nextProps.address);
 	}	
 	,clearSelection(){
 		const cursor=this.cm.getCursor();
@@ -126,8 +133,8 @@ const CorpusView=React.createClass({
 		if (!from||!to)return 0;
 		const f=this.cor.fromLogicalPos.bind(this.cor);
 		const firstline=this.cor.bookLineOf(this.props.article.start); //first of of the article
-		const s=f(cm.doc.getLine(from.line),from.ch,this.state.linebreaks[from.line],firstline,this.getRawLine);
-		const e=f(cm.doc.getLine(to.line),to.ch,this.state.linebreaks[to.line],firstline,this.getRawLine);
+		const s=f(cm.doc.getLine(from.line),from.ch,this.state.linebreaks[from.line],firstline,this.getRawLine,true);
+		const e=f(cm.doc.getLine(to.line),to.ch,this.state.linebreaks[to.line],firstline,this.getRawLine,true);
 		return this.cor.makeKRange(s,e);
 	}
 	,kRangeFromCursor(cm){

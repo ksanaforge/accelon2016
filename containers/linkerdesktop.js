@@ -5,51 +5,55 @@ const CorpusView=require("../components/corpusview");
 const {openCorpus}=require("ksana-corpus");
 const {OPEN_AT}=require("../actions/articles");
 const {getQuoteText}=require("../units/quote");
-const {getWorkingLinks}=require("../units/link");
+const {getWorkingLinks,getUserLinks}=require("../units/link");
 const LinkerDesktop=React.createClass({
 	getInitialState(){
 		return {ready:false}
 	}
-	,added(key,val,from,article,to){
-		console.log("added",arguments)
-	}
-	,remove(key,val,from,article,to){
-		console.log("removed",arguments)
-	}
-	,bindData(from,article,to){
-		if (article==this.onarticle)return;
-		console.log(from,article,to)
-		this.offbinding(from,to);
+	,bindData(from,narticle,to){
 		const binding=this.props.remotedata.binding;
-
-		binding(from,article,to).on('child_added',(snapshot)=>{
-			this.added.call(this,snapshot.key,snapshot.val(),from,article,to);
+		binding(from,narticle,to).on('child_added',(snapshot)=>{
+			this.props.addUserLink(snapshot.key,snapshot.val(),from,narticle,to);
 		});
-		binding(from,article,to).on('child_removed',(snapshot)=>{
-			this.removed.call(this,snapshot.key,snapshot.val(),from,article,to);
+		binding(from,narticle,to).on('child_removed',(snapshot)=>{
+			this.props.removedUserLink(snapshot.key,snapshot.val(),from,narticle,to);
 		});
-		this.onarticle=article;
+		return narticle;
 	}
-	,offbinding(from,to){
-		if (this.onarticle) {
-			this.props.remotedata.binding(from,this.onarticle,to).off('child_added');
-			this.props.remotedata.binding(from,this.onarticle,to).off('child_removed');
-		}		
+	,offbinding(article){
+		const {corpus1,corpus2}=this.props;
+		if (article==this.bindarticle1) {
+			this.props.remotedata.binding(corpus1,this.bindarticle1,corpus2).off('child_added');
+			this.props.remotedata.binding(corpus1,this.bindarticle1,corpus2).off('child_removed');			
+			this.bindarticle1=-1;
+		}
+		if (article==this.bindarticle2){
+			this.props.remotedata.binding(corpus2,this.bindarticle2,corpus1).off('child_added');
+			this.props.remotedata.binding(corpus2,this.bindarticle2,corpus1).off('child_removed');			
+			this.bindarticle2=-1;
+		}
 	}
 	,componentWillUnmount(){
-		this.offbinding(this.props.corpus2,this.props.corpus1);
+		this.props.removeAllUserLinks();
+		this.offbinding();
 	}
 	,componentWillReceiveProps(nextProps){
 		if (!this.state.ready&&nextProps.corpora[nextProps.corpus1] && nextProps.corpora[nextProps.corpus2]) {
 			if (!nextProps.rightarticle && !nextProps.leftarticle) {
 				this.props.fetchArticle(nextProps.corpus1,nextProps.address1,OPEN_AT);
 				this.props.fetchArticle(nextProps.corpus2,nextProps.address2,OPEN_AT);
-			} else {
-				this.bindData(nextProps.corpus2,nextProps.rightarticle.article.at,nextProps.corpus1);
 			}
-
 			if (nextProps.leftarticle&&nextProps.rightarticle) {
-				this.setState({ready:true})
+				if (!this.state.ready) this.setState({ready:true})
+			}
+		} else if (this.state.ready) {
+			if (this.bindarticle1!==nextProps.leftarticle.article.at){
+				this.offbinding(this.bindarticle1);
+				this.bindarticle1=this.bindData(nextProps.corpus1,nextProps.leftarticle.article.at,nextProps.corpus2);
+			}
+			if (this.bindarticle2!==nextProps.rightarticle.article.at){
+				this.offbinding(this.bindarticle2);
+				this.bindarticle2=this.bindData(nextProps.corpus2,nextProps.rightarticle.article.at,nextProps.corpus1);
 			}
 		}
 	}
@@ -87,17 +91,20 @@ const LinkerDesktop=React.createClass({
 			updateArticleByAddress:this.props.updateArticleByAddress,
 			openLink:this.props.openLink,
 			setActiveWLink:this.props.setActiveWLink,
-			setSelection:this.props.setSelection
+			setSelection:this.props.setSelection,
+			removeAllUserLinks:this.props.removeAllUserLinks
 		}
 		const extraKeys={
 			"Ctrl-M": this.findOrigin
 		}	
 		const wlink=getWorkingLinks(this.props.workinglinks,this.props.corpus2,this.props.leftarticle.article);
+
 		const fields=(wlink)?
 		Object.assign({},this.props.leftarticle.fields,{wlink}):this.props.leftarticle.fields;
 
-		const props1=Object.assign({},actions,this.props.leftarticle,{extraKeys,fields});
-		const props2=Object.assign({},actions,this.props.rightarticle,{});
+		const props1=Object.assign({},actions,this.props.leftarticle,{fields,extraKeys,userfield:this.props.leftuserlink});
+		const props2=Object.assign({},actions,this.props.rightarticle,{userfield:this.props.rightuserlink});
+
 		return E("div",{style:styles.container},
 			E("div",{style:styles.corpustab},
 				E("div",{style:styles.lefttab},E(CorpusView,props1)),

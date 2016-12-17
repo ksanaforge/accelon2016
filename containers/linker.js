@@ -4,6 +4,7 @@ const CorpusActions=require("../actions/corpus");
 const ArticleActions=require("../actions/article");
 const SelectionActions=require("../actions/selection");
 const LinkActions=require("../actions/link");
+const UserLinkActions=require("../actions/userlink");
 
 const LinkerDesktop =require('./linkerdesktop');
 function mapStateToProps(state,ownProps) {  
@@ -11,6 +12,8 @@ function mapStateToProps(state,ownProps) {
   if (state.articles[1]&&state.articles[2]) {
     wlinkkey=state.articles[2].corpus+"_"+state.articles[1].corpus;
   }
+  const rightuserlink=state.articles[1]?state.userLink[state.articles[1].corpus]:{};
+  const leftuserlink=state.articles[2]?state.userLink[state.articles[2].corpus]:{};
   return {
     corpora: state.corpora,
     selections: state.selections,
@@ -18,7 +21,9 @@ function mapStateToProps(state,ownProps) {
     leftarticle:state.articles[2],
     articles:state.articles,
     activeWLink:state.activeWLink,
-    workinglinks:ownProps.remotedata.workinglinks[wlinkkey]||[]
+    workinglinks:ownProps.remotedata.workinglinks[wlinkkey]||[],
+    rightuserlink,
+    leftuserlink
   };
 }
 
@@ -27,7 +32,9 @@ function mapDispatchToProps(dispatch,ownProps) {
 	const boundarticle=bindActionCreators(ArticleActions, dispatch);
   const boundselection=bindActionCreators(SelectionActions, dispatch);
   const boundlink=bindActionCreators(LinkActions, dispatch);
-	const bound=Object.assign({},boundcorpus,boundarticle, boundselection, boundlink);
+  const bounduserlink=bindActionCreators(UserLinkActions, dispatch);
+	const bound=Object.assign({},boundcorpus,boundarticle, boundselection, 
+    boundlink, bounduserlink);
   return bound; 
 }
 

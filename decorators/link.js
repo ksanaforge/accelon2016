@@ -16,7 +16,7 @@ const createLink=function({cm,cor,start,end,id,target,actions}){
 		dom.action=actions.updateArticleByAddress;
 		dom.cor=cor;
 		dom.innerHTML=target;
-		cm.setBookmark(start,{widget:dom,handleMouseEvents:true});
+		return cm.setBookmark(start,{widget:dom,handleMouseEvents:true});
 	} else {
 		const dom=document.createElement("span");
 		dom.className="link";
@@ -25,9 +25,8 @@ const createLink=function({cm,cor,start,end,id,target,actions}){
 		dom.cor=cor;
 		dom.innerHTML=cm.getRange(start,end);
 		dom.target=target;
-		cm.markText(start,end,{replacedWith:dom,handleMouseEvents:true});
+		return cm.markText(start,end,{replacedWith:dom,handleMouseEvents:true});
 		//.onmousedown=onLinkMouseDown;
 	}
-
 }
 module.exports=createLink;

@@ -2,7 +2,7 @@ const SET_SELECTION = 'SET_SELECTION';
 const CLEAR_SELECTION='CLEAR_SELECTION';
 const {SET_ACTIVE_ARTICLE}=require("./articles");
 
-const findById=function(articles,id){
+const findArticleById=function(articles,id){
 	for (let i=0;i<articles.length;i++) {
 		if (articles[i].id===id) return i;
 	}
@@ -12,7 +12,7 @@ const setSelection=(opts)=>(dispatch,getState)=>{
 	dispatch(Object.assign({},{type:SET_SELECTION},opts));
 	const articles=getState().articles;
 	if (articles[getState().activeArticle].id!==opts.id){
-		const index=findById(articles,opts.id);
+		const index=findArticleById(articles,opts.id);
 		if (index>-1) dispatch({type:SET_ACTIVE_ARTICLE, index});
 	}
 }
