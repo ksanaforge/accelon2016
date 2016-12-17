@@ -12,7 +12,7 @@ module.exports=function userlink(state = {} , action = {}) {
     
   	return newstate;
   } else if (REMOVE_USERLINK==action.type) {
-    const corpususerlink=Object.assign({},state[corpus]||{});
+    const corpususerlink=Object.assign({},state[action.corpus]||{});
   	delete corpususerlink[action.id];
     const newstate=Object.assign({},state);
     newstate[action.corpus]=corpususerlink;

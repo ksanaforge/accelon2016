@@ -4,7 +4,11 @@ const GotoAddress=require("./gotoaddress");
 const {openCorpus}=require("ksana-corpus");
 const ArticleNav=require("./articlenav");
 const WLinkBuilder=require("./wlinkbuilder");
+const WLinkEditor=require("./wlinkeditor");
 const WLinkNav=require("./wlinknav");
+const User=require("./user");
+var user="";
+
 const selectionOf=(selections,corpus)=>{
 	for (var i in selections) {
 		const sel=selections[i];
@@ -39,8 +43,16 @@ const LinkerTab=(props)=>{
 	const onNextWLink=(address)=>{
 		props.nextWLink(props.corpus1,props.workinglinks,address);
 	}
-	const onMakeLink=(createtime,user)=>{
+	const onMakeLink=(createtime)=>{
 		props.makeLink(props.remotedata.binding,createtime,user);
+	}
+	const onDeleteLink=()=>{
+		props.deleteLink(props.remotedata.binding);	
+	}
+	const linkEditable=()=>{
+		if (!props.leftuserlink)return false;
+		const lnk=props.leftuserlink[props.activeWLink] ;
+		return lnk && lnk.user==user;
 	}
 	const cor1=openCorpus(props.corpus1);
 	const cor2=openCorpus(props.corpus2);
@@ -54,13 +66,19 @@ const LinkerTab=(props)=>{
 	const total2=cor2.articleCount();
 	const linkable=value1.indexOf("-")>-1&&value2.indexOf("-")>-1&&props.activeWLink;//has range
 
+	const onSetUser=(_user)=>{
+		console.log("setuser",user)
+		user=_user;
+	}
 	return E("div",{},
 		E(GotoAddress,{corpus:props.corpus1,value:value1,onEnter}),
 		E(ArticleNav,{editable:true,now:now1,total:total1,onNext:next1,onPrev:prev1,onChange:change1}),
 		E(GotoAddress,{corpus:props.corpus2,value:value2,onEnter}),
 		E(ArticleNav,{editable:true,now:now2,total:total2,onNext:next2,onPrev:prev2,onChange:change2}),
 		E(WLinkNav,{onNextWLink,address:value1}),
-		E(WLinkBuilder,Object.assign({},props,{linkable,onMakeLink}))
+		E(User,{onSetUser}),		
+		linkEditable()?E(WLinkEditor,Object.assign({},props,{onDeleteLink})):
+			E(WLinkBuilder,Object.assign({},props,{linkable,onMakeLink}))
 	);
 }
 module.exports=LinkerTab;

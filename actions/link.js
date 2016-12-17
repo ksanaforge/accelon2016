@@ -88,6 +88,19 @@ const makeLink=(databinding,createtime,user)=>(dispatch,getState)=>{
 	});
 	dispatch(setActiveWLink(""));
 }
+const deleteLink=(databinding)=>(dispatch,getState)=>{
+	const id=getState().activeWLink;
 
+	const articles=getState().articles;
+	const article1=articles[1], article2=articles[2];
 
-module.exports={findOrigin,setActiveWLink,SET_ACTIVE_WLINK,nextWLink,makeLink};
+	const userlink1=getState().userLink[article1.corpus];
+	const userlink2=getState().userLink[article2.corpus];
+
+	databinding(article1.corpus,article1.article.at,article2.corpus).child(id).remove();
+	databinding(article2.corpus,article2.article.at,article1.corpus).child(id).remove();
+
+	dispatch(setActiveWLink(""));
+}
+
+module.exports={findOrigin,setActiveWLink,SET_ACTIVE_WLINK,nextWLink,makeLink,deleteLink};

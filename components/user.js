@@ -15,11 +15,11 @@ const User=React.createClass({
 		this.props.onSetUser(this.state.user);
 	}
 	,onChange(e){
-		this.setState({user:e.target.value});
+		const user=e.target.value||"anonymous"
+		this.setState({user});
 		clearTimeout(this.timer);
 		this.timer=setTimeout(()=>{
 			this.props.onSetUser(user);
-			const user=this.state.user||"anonymous";
 			localStorage.setItem("user",user);
 		},500);
 	}

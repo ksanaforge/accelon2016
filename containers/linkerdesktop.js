@@ -16,7 +16,7 @@ const LinkerDesktop=React.createClass({
 			this.props.addUserLink(snapshot.key,snapshot.val(),from,narticle,to);
 		});
 		binding(from,narticle,to).on('child_removed',(snapshot)=>{
-			this.props.removedUserLink(snapshot.key,snapshot.val(),from,narticle,to);
+			this.props.removeUserLink(snapshot.key,snapshot.val(),from,narticle,to);
 		});
 		return narticle;
 	}
