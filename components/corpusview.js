@@ -184,7 +184,6 @@ const CorpusView=React.createClass({
 			text:this.state.text,
 			onCursorActivity:this.onCursorActivity,
 			onCopy:this.onCopy,
-			paddingLine:this.props.paddingLine,
 			extraKeys:this.props.extraKeys,
 			onViewportChange:this.onViewportChange,
 			articlename:this.props.article.articlename

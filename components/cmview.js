@@ -36,12 +36,11 @@ const CMView=React.createClass({
 		var line=from.line;
 
 		cm.scrollIntoView({line:0,ch:0});
-		line+=this.props.paddingLine||5;
-		if(line>=cm.lineCount()-1)line=cm.lineCount()-1;
-		cm.scrollIntoView({line,ch:0});
-
-		cm.focus();
 		cm.setCursor(from);
+		var coords=cm.cursorCoords(from,"local");
+		coords.bottom+=cm.getScrollInfo().clientHeight*2/3;
+		cm.scrollIntoView(coords);
+		cm.focus();
 	}
 	,scrollToText(t){
 		var text=this.cm.getValue();

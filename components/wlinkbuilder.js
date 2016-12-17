@@ -11,7 +11,7 @@ const WLinkBuilder=(props)=>{
 	}
 	return E("div",{},
 		E(User),
-		E("div",{style:styles.label},"id",props.activeWLink),
+		E("div",{style:styles.label},props.activeWLink),
 		props.linkable?E(LinkSelection,{onLink}):null
 	)
 }

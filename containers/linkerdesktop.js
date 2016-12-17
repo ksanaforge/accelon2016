@@ -96,8 +96,8 @@ const LinkerDesktop=React.createClass({
 		const fields=(wlink)?
 		Object.assign({},this.props.leftarticle.fields,{wlink}):this.props.leftarticle.fields;
 
-		const props1=Object.assign({paddingLine:15},actions,this.props.leftarticle,{extraKeys,fields});
-		const props2=Object.assign({paddingLine:15},actions,this.props.rightarticle,{});
+		const props1=Object.assign({},actions,this.props.leftarticle,{extraKeys,fields});
+		const props2=Object.assign({},actions,this.props.rightarticle,{});
 		return E("div",{style:styles.container},
 			E("div",{style:styles.corpustab},
 				E("div",{style:styles.lefttab},E(CorpusView,props1)),
