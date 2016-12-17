@@ -73,7 +73,12 @@ const CorpusView=React.createClass({
 			return;
 		}
 		if (this.cm && nextProps.active)this.cm.focus();
-		if (this.props.address!==nextProps.address) this.scrollToAddress(nextProps.address);
+		if (this.props.address!==nextProps.address || this.addresschanged) {
+			this.scrollToAddress(nextProps.address);
+			setTimeout(()=>{
+				this.addresschanged=false;
+			},100); //overwrite onviewport set addresschanged to true
+		}
 	}	
 	,clearSelection(){
 		const cursor=this.cm.getCursor();
@@ -166,6 +171,7 @@ const CorpusView=React.createClass({
 		this.cursortimer=setTimeout(()=>{
 			selectionActivity.call(this,cm);
 			this.props.onCursorActivity&&this.props.onCursorActivity(cm);
+			this.addresschanged=true;
 		},300);
 	}
 	,onViewportChange(cm,from,to){
@@ -176,6 +182,7 @@ const CorpusView=React.createClass({
 			const to=this.fromLogicalPos({line:vp.to,ch:0});
 			decorate.call(this,from,to);
 			this.onViewport&&this.onViewport(cm,vp.from,vp.to,from,to); //extra params start and end kpos
+			this.addresschanged=true;
 		},50);
 	}
 	,setCM(cmviewer){
