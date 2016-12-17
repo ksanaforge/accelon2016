@@ -49,7 +49,7 @@ const LinkerTab=(props)=>{
 	const now2=props.rightarticle.article.at;
 	const total1=cor1.articleCount();
 	const total2=cor2.articleCount();
-	const linkable=value1.indexOf("-")>-1&&value2.indexOf("-")>-1;//has range
+	const linkable=value1.indexOf("-")>-1&&value2.indexOf("-")>-1&&props.activeWLink;//has range
 
 	return E("div",{},
 		E(GotoAddress,{corpus:props.corpus1,value:value1,onEnter}),

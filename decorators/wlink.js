@@ -19,10 +19,10 @@ const onLinkMouseDown=function(e){
 	if (addrs.length==1) {
 		linkaction(target.actions,fulladdress,target.kpos);
 	} else {
+		setinnerhtml(target);
 		linkaction(target.actions,addrs[target.nlink],target.kpos);
 		target.nlink++;
 		if(target.nlink>=addrs.length) target.nlink=0;
-		setinnerhtml(target);
 	}
 
 }

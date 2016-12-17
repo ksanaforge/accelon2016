@@ -21,8 +21,8 @@ const decorate=function(fromkpos,tokpos){
 			i++;
 
 			while (pos[i]==p) {
-				i++;
 				target+=";"+value[i];
+				i++;
 			}
 			const r=this.toLogicalRange(p);
 			
