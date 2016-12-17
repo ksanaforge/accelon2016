@@ -67,7 +67,6 @@ const LinkerTab=(props)=>{
 	const linkable=value1.indexOf("-")>-1&&value2.indexOf("-")>-1&&props.activeWLink;//has range
 
 	const onSetUser=(_user)=>{
-		console.log("setuser",user)
 		user=_user;
 	}
 	return E("div",{},

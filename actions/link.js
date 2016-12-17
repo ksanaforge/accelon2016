@@ -32,7 +32,7 @@ const nextWLink=(corpus,workinglinks,from)=>(dispatch,getState)=>{
 	const cor=openCorpus(corpus);
 	const r=cor.parseRange(from);
 
-	const at=bsearch(workinglinks.pos,r.start+1,true);
+	var at=bsearch(workinglinks.pos,r.start+1,true);
 	if (at==-1)return;
 
 	const articles=getState().articles;
@@ -40,13 +40,20 @@ const nextWLink=(corpus,workinglinks,from)=>(dispatch,getState)=>{
 
 	const article=articles[ncorpus];
 	if (!article)return;
+	const userlinks=getState().userLink[corpus];
+	//check if id already in userlink
 
+	var linkid=makeWLinkId(workinglinks.pos[at],workinglinks.value[at]);
+	while (userlinks[linkid]) {
+		at++;
+		linkid=makeWLinkId(workinglinks.pos[at],workinglinks.value[at]);
+	}
 
-	const address=cor.stringify(workinglinks.pos[at],workinglinks.pos[at]+3);
-	if (workinglinks.pos[at]>article.article.end) {
+	if (at>=workinglinks.length || workinglinks.pos[at]>article.article.end) {
 		alert("no more working link, goto next article");
 		return;
 	}
+	const address=cor.stringify(workinglinks.pos[at],workinglinks.pos[at]+3);
 
 	const article2=(ncorpus==1)?articles[2]:articles[1];
 
