@@ -6,18 +6,16 @@ const setinnerhtml=function(dom){
 	}
 	//TODO , highlight source range
 }
-const linkaction=function(actions,address,kpos){
-	actions.openLink(address);
-}
 const onMouseEnter=function(e){
 	const dom=e.target;
 	const targetcorpus=(dom.target instanceof Array)?dom.target[0].corpus:dom.target.corpus;
 	dom.restore=targetcorpus+"@"+dom.actions.corpusCurrentAddress(targetcorpus);
+	dom.opencount=0;
 	dom.innerHTML= (dom.target instanceof Array) ? dom.target.length:dom.target.to;
 }
 const onMouseLeave=function(e){
 	const dom=e.target;
-	dom.actions.openLink(dom.restore);
+	if (dom.opencount) dom.actions.openLink(dom.restore);
 	dom.innerHTML="●";
 }
 const onMouseDown=function(e){
@@ -31,6 +29,7 @@ const onMouseDown=function(e){
 		if(dom.nlink>=link.length) dom.nlink=0;
 	}
 	dom.actions.openLink(lnk.corpus+"@"+lnk.to);
+	dom.opencount++;
 }
 
 const createLinkedBy=({cm,cor,start,end,id,target,active,actions})=>{
