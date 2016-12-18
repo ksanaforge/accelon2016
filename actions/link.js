@@ -53,6 +53,7 @@ const nextWLink=(corpus,workinglinks,from)=>(dispatch,getState)=>{
 		alert("no more working link, goto next article");
 		return;
 	}
+
 	const address=cor.stringify(workinglinks.pos[at],workinglinks.pos[at]+3);
 
 	const article2=(ncorpus==1)?articles[2]:articles[1];

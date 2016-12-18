@@ -70,14 +70,11 @@ const CorpusView=React.createClass({
 		if (nextProps.userfield && nextProps.userfield !== this.props.userfield
 		||nextProps.activeUserfield!==this.props.activeUserfield) { //user field should have id
 			decorateUserField.call(this,nextProps.userfield,this.props.userfield,nextProps.activeUserfield);
-			return;
 		}
 		if (this.cm && nextProps.active)this.cm.focus();
+
 		if (this.props.address!==nextProps.address ) {
 			this.scrollToAddress(nextProps.address);
-			//setTimeout(()=>{
-			//	this.addresschanged=false;
-			//},100); //overwrite onviewport set addresschanged to true
 		}
 	}	
 	,clearSelection(){

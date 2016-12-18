@@ -18,7 +18,7 @@ const decorateField=function(fname,pos,value,decorator,fromkpos,tokpos){
 			var target=value[i], multitarget=false;
 			i++;
 
-			while (i<pos.length && this.cor.parseRange(pos[i]).kRange==range.kRange) {
+			while (i<pos.length && this.cor.parseRange(pos[i]).start==range.start) {
 				if (!multitarget) target=[target];
 				target.push(value[i]);
 				multitarget=true;
@@ -52,6 +52,7 @@ const sortFields=function(fields){
 	out.sort((a,b)=>a[0]-b[0]);
 	const pos=out.map((i)=>i[0]);
 	const value=out.map((i)=>i[1]);
+	const starts=out.map((i)=>i[2]);
 
 	return {pos,value};
 }

@@ -10,7 +10,7 @@ const linkaction=function(actions,address,kpos){
 	actions.openLink(address);
 	actions.setActiveWLink(makeWLinkId(kpos,address));
 }
-const onLinkMouseDown=function(e){
+const onMouseDown=function(e){
 	e.stopPropagation();
 	const target=e.target;
 	const address=e.target.target;
@@ -20,20 +20,28 @@ const onLinkMouseDown=function(e){
 		target.nlink++;
 		if(target.nlink>=address.length) target.nlink=0;
 	} else {
-		linkaction(target.actions,fulladdress,target.kpos);
+		linkaction(target.actions,address,target.kpos);
 	}
-
 }
-
+const onMouseLeave=function(e){
+	const dom=e.target;
+	dom.innerHTML="●";
+}
+const onMouseEnter=function(e){
+	const dom=e.target;
+	dom.innerHTML= (dom.target instanceof Array) ? dom.target.length:dom.target;
+}
 const createLink=function({cm,cor,kpos,start,end,id,target,actions}){
 	const dom=document.createElement("span");
 	dom.className="notelink";
 	if (target instanceof Array) dom.className="notelink2";
-	dom.onmousedown=onLinkMouseDown;
+	dom.onmousedown=onMouseDown;
+	dom.onmouseenter=onMouseEnter;
+	dom.onmouseleave=onMouseLeave;
 	dom.cor=cor;
 	dom.nlink=0;//target might have multiple link
 	dom.target=target;
-	setinnerhtml(dom);	
+	dom.innerHTML="●";
 	dom.actions=actions;
 	dom.kpos=kpos;
 	return cm.setBookmark(start,{widget:dom,handleMouseEvents:true});

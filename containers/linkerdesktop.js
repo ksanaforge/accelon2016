@@ -15,9 +15,18 @@ const LinkerDesktop=React.createClass({
 			openLink:this.props.openLink,
 			setActiveWLink:this.props.setActiveWLink,
 			setSelection:this.props.setSelection,
-			removeAllUserLinks:this.props.removeAllUserLinks
+			removeAllUserLinks:this.props.removeAllUserLinks,
+			corpusCurrentAddress:this.corpusCurrentAddress
 		}		
 		return {ready:false}
+	}
+	,corpusCurrentAddress(corpus){
+		for (var i in this.props.selections){
+			if (this.props.selections[i].corpus==corpus){
+				return this.props.selections[i].caretposH;
+			}
+		}
+		return 0;
 	}
 	,bindData(fromcorpus,narticle,tocorpus,decorator){
 		const binding=this.props.remotedata.binding;
