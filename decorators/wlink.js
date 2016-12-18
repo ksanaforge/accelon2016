@@ -1,8 +1,7 @@
 const {makeWLinkId}=require("../units/link");
 const setinnerhtml=function(dom){
-	const addrs=dom.target.split(";");
-	if (addrs.length>1) {
-		dom.innerHTML = (dom.nlink+1)+"/"+addrs.length+" "+addrs[dom.nlink];
+	if (dom.target instanceof Array) {
+		dom.innerHTML = (dom.nlink+1)+"/"+dom.target.length+" "+dom.target[dom.nlink];
 	} else {
 		dom.innerHTML=dom.target;
 	}
@@ -14,15 +13,14 @@ const linkaction=function(actions,address,kpos){
 const onLinkMouseDown=function(e){
 	e.stopPropagation();
 	const target=e.target;
-	const fulladdress=e.target.target;
-	const addrs=fulladdress.split(";");
-	if (addrs.length==1) {
-		linkaction(target.actions,fulladdress,target.kpos);
-	} else {
+	const address=e.target.target;
+	if (address instanceof Array) {
 		setinnerhtml(target);
-		linkaction(target.actions,addrs[target.nlink],target.kpos);
+		linkaction(target.actions,address[target.nlink],target.kpos);
 		target.nlink++;
-		if(target.nlink>=addrs.length) target.nlink=0;
+		if(target.nlink>=address.length) target.nlink=0;
+	} else {
+		linkaction(target.actions,fulladdress,target.kpos);
 	}
 
 }
@@ -30,7 +28,7 @@ const onLinkMouseDown=function(e){
 const createLink=function({cm,cor,kpos,start,end,id,target,actions}){
 	const dom=document.createElement("span");
 	dom.className="notelink";
-	if (target.indexOf(";")>-1) dom.className="notelink2";
+	if (target instanceof Array) dom.className="notelink2";
 	dom.onmousedown=onLinkMouseDown;
 	dom.cor=cor;
 	dom.nlink=0;//target might have multiple link

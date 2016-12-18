@@ -5,9 +5,13 @@ const ADD_USERLINK="ADD_USERLINK"
 var addtimer=null;
 var additems=[];
 
-const addUserLink=(id,rawpayload,corpus,article,targetcorpus)=>(dispatch,getState)=>{
+const addUserLink=(id,rawpayload,corpus,article,targetcorpus,decorator,fromcor)=>(dispatch,getState)=>{
 	clearTimeout(addtimer);
-	const payload=Object.assign({},rawpayload,{corpus:targetcorpus});
+	const r=fromcor.parseRange(rawpayload.from);
+	const payload=Object.assign({},rawpayload,{
+		start:r.start,end:r.end,
+		corpus:targetcorpus,decorator
+	});
 	additems.push({id,payload,corpus});
 	addtimer=setTimeout(()=>{
 		dispatch({type:ADD_USERLINK, items:additems});

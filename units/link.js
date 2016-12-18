@@ -10,5 +10,15 @@ const	getWorkingLinks=(workinglinks,prefix,article)=>{
 const makeWLinkId=function(kpos,address){
 	return kpos.toString(36) +"_"+address.replace(/.+@/,"");
 }
+const hasLinkAt=function(kpos,fields) {
 
-module.exports={getWorkingLinks,makeWLinkId};
+}
+const hasUserLinkAt=function(kpos,userfields){
+	const out=[];
+	for (var id in userfields) {
+		const field=userfields[id];
+		if (kpos>=field.start && kpos<=field.end) out.push(id);
+	}
+	return out;
+}
+module.exports={getWorkingLinks,makeWLinkId,hasLinkAt,hasUserLinkAt};

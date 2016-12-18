@@ -3,8 +3,7 @@ const E=React.createElement;
 const PT=React.PropTypes;
 const CMView=require("./cmview");
 const {openCorpus}=require("ksana-corpus");
-const decorate=require("./decorate");
-const paintUserField=require("./paintuserfield");
+const {decorate,decorateUserField}=require("./decorate");
 const selectionActivity=require("./selectionactivity");
 const CorpusView=React.createClass({
 	propTypes:{
@@ -42,7 +41,7 @@ const CorpusView=React.createClass({
 		this.cor=openCorpus(corpus);
 		this.markinview={};
 		this.props.removeAllUserLinks(corpus);
-		paintUserField.call(this,{},this.props.userfield);//this will unpaint all fields
+		decorateUserField.call(this,{},this.props.userfield);//this will unpaint all fields
 		this.layout(article,rawlines,address,layout);
 	}
 	,markinview:{}//fast check if mark already render, assuming no duplicate mark in same range
@@ -68,16 +67,17 @@ const CorpusView=React.createClass({
 			return;
 		}
 
-		if (nextProps.userfield && nextProps.userfield !== this.props.userfield) { //user field should have id
-			paintUserField.call(this,nextProps.userfield,this.props.userfield);
+		if (nextProps.userfield && nextProps.userfield !== this.props.userfield
+		||nextProps.activeUserfield!==this.props.activeUserfield) { //user field should have id
+			decorateUserField.call(this,nextProps.userfield,this.props.userfield,nextProps.activeUserfield);
 			return;
 		}
 		if (this.cm && nextProps.active)this.cm.focus();
-		if (this.props.address!==nextProps.address || this.addresschanged) {
+		if (this.props.address!==nextProps.address ) {
 			this.scrollToAddress(nextProps.address);
-			setTimeout(()=>{
-				this.addresschanged=false;
-			},100); //overwrite onviewport set addresschanged to true
+			//setTimeout(()=>{
+			//	this.addresschanged=false;
+			//},100); //overwrite onviewport set addresschanged to true
 		}
 	}	
 	,clearSelection(){
@@ -170,8 +170,8 @@ const CorpusView=React.createClass({
 		clearTimeout(this.cursortimer);
 		this.cursortimer=setTimeout(()=>{
 			selectionActivity.call(this,cm);
-			this.props.onCursorActivity&&this.props.onCursorActivity(cm);
-			this.addresschanged=true;
+			const kpos=this.fromLogicalPos(cm.getCursor());
+			this.props.onCursorActivity&&this.props.onCursorActivity(cm,kpos);
 		},300);
 	}
 	,onViewportChange(cm,from,to){

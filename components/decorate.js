@@ -1,36 +1,87 @@
-const decorate=function(fromkpos,tokpos){
-	for (let field in this.props.fields) {
-		if (!this.props.fields[field]) continue;
-		const pos=this.props.fields[field].pos, value=this.props.fields[field].value;
-		const decorator=this.props.decorators[field];
-		if (!decorator) continue;
+const decorateField=function(fname,pos,value,decorator,fromkpos,tokpos){
 		let i=0;
 		while (i<pos.length) {
 			const range=this.cor.parseRange(pos[i]);
-			if (range.start<fromkpos || range.end>tokpos) {
-				i++;
+			if (typeof fromkpos!==undefined && typeof tokpos !==undefined){
+				if (range.start<fromkpos || range.end>tokpos) {
+					i++;
+					continue;
+				}
+			}
+
+			if (this.markinview[fname+range.kRange]==true) {
+				i++
 				continue;
 			}
 
-			if (this.markinview[field+range.kRange]==true) {
-				i++
-				continue; 
-			}
 			const p=pos[i],v=value[i];
-			var target=value[i];
+			var target=value[i], multitarget=false;
 			i++;
 
-			while (pos[i]==p) {
-				target+=";"+value[i];
+			while (i<pos.length && this.cor.parseRange(pos[i]).kRange==range.kRange) {
+				if (!multitarget) target=[target];
+				target.push(value[i]);
+				multitarget=true;
 				i++;
 			}
 			const r=this.toLogicalRange(p);
 			
 			decorator({cm:this.cm,cor:this.cor,start:r.start,end:r.end,corpus:this.props.corpus,
-				kpos:range.start,krange:range,tabid:this.props.id,id:i,target,actions:this.actions});
+				kpos:range.start,krange:range,tabid:this.props.id,id:i,target,
+				multitarget,actions:this.actions});
 
-			this.markinview[field+range.kRange]=true;
+			this.markinview[fname+range.kRange]=true;
+		}
+}
+const removeDeleted=function(fields, oldfields){
+	this.painted=this.painted||{};
+	for (let id in oldfields) {
+		if (!fields[id] && this.painted[id]) {
+			this.painted[id].clear();
+			delete this.painted[id];
 		}
 	}
 }
-module.exports=decorate;
+const sortFields=function(fields){
+	const out=[];
+	for (let id in fields) {
+		const field=fields[id];
+		const r=this.cor.parseRange(field.from);
+		out.push([r.kRange, field]);
+	}
+	out.sort((a,b)=>a[0]-b[0]);
+	const pos=out.map((i)=>i[0]);
+	const value=out.map((i)=>i[1]);
+
+	return {pos,value};
+}
+const groupByDecorator=function(pos,value){
+	const out={};
+	for (var i=0;i<value.length;i++) {
+		const v=value[i];
+		if (!out[v.decorator]) out[v.decorator]={pos:[],value:[]};
+		out[v.decorator].pos.push(pos[i]);
+		out[v.decorator].value.push(v);
+	}
+	return out;
+}
+const decorateUserField=function(_fields, oldfields, activeWLink){
+	removeDeleted.call(this);
+	const {pos,value}=sortFields.call(this,_fields);
+	
+	const fields=groupByDecorator(pos,value);
+	for (var name in fields) {
+		const decorator=this.props.decorators[name];
+		decorateField.call(this,name,fields[name].pos,fields[name].value,decorator);
+	}
+}
+const decorate=function(fromkpos,tokpos){
+	for (let fname in this.props.fields) {
+		if (!this.props.fields[fname]) continue;
+		const pos=this.props.fields[fname].pos, value=this.props.fields[fname].value;
+		const decorator=this.props.decorators[fname];
+		if (!decorator) continue;
+		decorateField.call(this,fname,pos,value,decorator,fromkpos,tokpos);
+	}
+}
+module.exports={decorate,decorateField,decorateUserField};

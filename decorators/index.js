@@ -3,4 +3,6 @@ const ptr=require("./ptr");
 const def=require("./def");
 const link=require("./link");
 const wlink=require("./wlink");
-module.exports={note,ptr,def,link,wlink}
+const linkedby=require("./linkedby");
+const linkto=require("./linkto");
+module.exports={note,ptr,def,link,wlink,linkedby,linkto};

@@ -5,18 +5,28 @@ const CorpusView=require("../components/corpusview");
 const {openCorpus}=require("ksana-corpus");
 const {OPEN_AT}=require("../actions/articles");
 const {getQuoteText}=require("../units/quote");
+const followLinkButton=require("../components/followlinkbutton");
 const {getWorkingLinks,getUserLinks}=require("../units/link");
 const LinkerDesktop=React.createClass({
 	getInitialState(){
+		this.actions={
+			decorators:this.props.decorators,
+			updateArticleByAddress:this.props.updateArticleByAddress,
+			openLink:this.props.openLink,
+			setActiveWLink:this.props.setActiveWLink,
+			setSelection:this.props.setSelection,
+			removeAllUserLinks:this.props.removeAllUserLinks
+		}		
 		return {ready:false}
 	}
-	,bindData(from,narticle,to){
+	,bindData(fromcorpus,narticle,tocorpus,decorator){
 		const binding=this.props.remotedata.binding;
-		binding(from,narticle,to).on('child_added',(snapshot)=>{
-			this.props.addUserLink(snapshot.key,snapshot.val(),from,narticle,to);
+		const fromcor=openCorpus(fromcorpus);
+		binding(fromcorpus,narticle,tocorpus).on('child_added',(snapshot)=>{
+			this.props.addUserLink(snapshot.key,snapshot.val(),fromcorpus,narticle,tocorpus,decorator,fromcor);
 		});
-		binding(from,narticle,to).on('child_removed',(snapshot)=>{
-			this.props.removeUserLink(snapshot.key,snapshot.val(),from,narticle,to);
+		binding(fromcorpus,narticle,tocorpus).on('child_removed',(snapshot)=>{
+			this.props.removeUserLink(snapshot.key,snapshot.val(),fromcorpus,narticle,tocorpus);
 		});
 		return narticle;
 	}
@@ -49,11 +59,11 @@ const LinkerDesktop=React.createClass({
 		} else if (this.state.ready) {
 			if (this.bindarticle1!==nextProps.leftarticle.article.at){
 				this.offbinding(this.bindarticle1);
-				this.bindarticle1=this.bindData(nextProps.corpus1,nextProps.leftarticle.article.at,nextProps.corpus2);
+				this.bindarticle1=this.bindData(nextProps.corpus1,nextProps.leftarticle.article.at,nextProps.corpus2,"linkto");
 			}
 			if (this.bindarticle2!==nextProps.rightarticle.article.at){
 				this.offbinding(this.bindarticle2);
-				this.bindarticle2=this.bindData(nextProps.corpus2,nextProps.rightarticle.article.at,nextProps.corpus1);
+				this.bindarticle2=this.bindData(nextProps.corpus2,nextProps.rightarticle.article.at,nextProps.corpus1,"linkedby");
 			}
 		}
 	}
@@ -75,6 +85,15 @@ const LinkerDesktop=React.createClass({
 		const searchfrom=this.sourcePos();
   	this.props.findOrigin(quotetext, this.props.corpus2, searchfrom);
 	}
+	,noSelection(cm){
+		const sels=cm.listSelections();	
+		if (sels.length!==1)false;
+		const s=sels[0].anchor,e=sels[0].head;
+		return s.line==e.line&&s.ch==e.ch;
+	}	
+	,leftCursorActivity(cm,kpos){
+		if (this.noSelection(cm)) followLinkButton(cm,kpos,this.props.leftuserlink,this.actions);
+	}
 	,render(){
 		if (!this.state.ready) {
 			return E("loading");
@@ -86,24 +105,21 @@ const LinkerDesktop=React.createClass({
 			corpustab:{flex:16,display:"flex"},
 			linkertab:{flex:2}
 		}
-		const actions={
-			decorators:this.props.decorators,
-			updateArticleByAddress:this.props.updateArticleByAddress,
-			openLink:this.props.openLink,
-			setActiveWLink:this.props.setActiveWLink,
-			setSelection:this.props.setSelection,
-			removeAllUserLinks:this.props.removeAllUserLinks
-		}
+
 		const extraKeys={
-			"Ctrl-M": this.findOrigin
+			"Ctrl-M": this.findOrigin,
+			"Enter":this.followLink
 		}	
 		const wlink=getWorkingLinks(this.props.workinglinks,this.props.corpus2,this.props.leftarticle.article);
 
 		const fields=(wlink)?
 		Object.assign({},this.props.leftarticle.fields,{wlink}):this.props.leftarticle.fields;
 
-		const props1=Object.assign({},actions,this.props.leftarticle,{fields,extraKeys,userfield:this.props.leftuserlink});
-		const props2=Object.assign({},actions,this.props.rightarticle,{userfield:this.props.rightuserlink});
+		const props1=Object.assign({},this.actions,this.props.leftarticle,
+			{onCursorActivity:this.leftCursorActivity,
+				fields,extraKeys,userfield:this.props.leftuserlink,activeUserfield:this.props.activeWLink});
+		const props2=Object.assign({},this.actions,this.props.rightarticle,
+			{userfield:this.props.rightuserlink,activeUserfield:this.props.activeWLink});
 
 		return E("div",{style:styles.container},
 			E("div",{style:styles.corpustab},

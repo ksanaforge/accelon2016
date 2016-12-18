@@ -7,8 +7,9 @@ const onLinkMouseDown=function(e){
 	}
 	target.action&&target.action(fulladdress);	
 }
-
-const createLink=function({cm,cor,start,end,id,target,actions}){
+/* TODO , show link only when in cursor ,
+to save some dom node*/
+const createLink=function({cm,cor,start,end,id,target,active,actions}){
 	if (start.ch==end.ch && start.line==end.line) {
 		const dom=document.createElement("span");
 		dom.className="notelink";
@@ -25,6 +26,7 @@ const createLink=function({cm,cor,start,end,id,target,actions}){
 		dom.cor=cor;
 		dom.innerHTML=cm.getRange(start,end);
 		dom.target=target;
+		
 		return cm.markText(start,end,{replacedWith:dom,handleMouseEvents:true});
 		//.onmousedown=onLinkMouseDown;
 	}
