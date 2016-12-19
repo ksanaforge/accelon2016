@@ -7,6 +7,7 @@ const onPtrMouseDown=function(e){
 		console.error("action updateArticleByAddress not defined");
 	}
 	target.action&&target.action(address,target.tabid);
+	e.target.innerHTML=e.target.dataset.id;
 }
 
 var entertimer,leavetimer;

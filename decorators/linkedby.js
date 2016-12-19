@@ -15,12 +15,20 @@ const onMouseEnter=function(e){
 }
 const onMouseLeave=function(e){
 	const dom=e.target;
-	if (dom.opencount) dom.actions.openLink(dom.restore);
 	dom.innerHTML="●";
+	if (dom.restoring) {
+		if (dom.opencount) dom.actions.openLink(dom.restore);
+		dom.restoring=false;
+	}
+}
+const onMouseUp=function(e){
+	const dom=e.target;
+	dom.restoring=true;
 }
 const onMouseDown=function(e){
-	e.stopPropagation();
 	const dom=e.target;
+	dom.restoring=false;
+	e.stopPropagation();
 	var lnk=link=e.target.target;
 	if (link instanceof Array) {
 		setinnerhtml(dom);
@@ -40,6 +48,7 @@ const createLinkedBy=({cm,cor,start,end,id,target,active,actions})=>{
 	dom.onmouseenter=onMouseEnter;
 	dom.onmouseleave=onMouseLeave;
 	dom.onmousedown=onMouseDown;
+	dom.onmouseup=onMouseUp;
 	dom.actions=actions;
 	dom.cor=cor;
 	dom.nlink=0;
