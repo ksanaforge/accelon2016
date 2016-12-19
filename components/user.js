@@ -27,7 +27,7 @@ const User=React.createClass({
 		return E("div",{},
 			E("span",{style:styles.user},"User"),
 			E("br"),
-			E("input",{value:this.state.user,onChange:this.onChange})
+			E("input",{size:12,value:this.state.user,onChange:this.onChange})
 			)
 	}
 })

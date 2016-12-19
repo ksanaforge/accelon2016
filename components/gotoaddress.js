@@ -22,7 +22,7 @@ const GotoAddress=React.createClass({
 		return E("div",{},
 			E("span",{style:styles.corpus},this.props.corpus),
 			E("br"),
-			E("input",{spellCheck:false,onChange:this.onChange,onKeyPress:this.onKeyPress,
+			E("input",{size:12,spellCheck:false,onChange:this.onChange,onKeyPress:this.onKeyPress,
 				value:this.state.value,ref:this.getRef})
 		);		
 	}

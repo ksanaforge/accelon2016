@@ -15,7 +15,7 @@ const getQuoteText=(cm)=>{
 		if (text.charAt(end)==="」") break;
 		end++;
 	}
-	quote=text.substring(start,end+1);
+	var quote=text.substring(start,end+1);
 	if (quote.charAt(0)==="「" && quote.charAt(quote.length-1)==="」") {
 		var q=quote.substr(1,quote.length-2);
 		while (q.charAt(0)=="\n") {

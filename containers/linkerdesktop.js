@@ -111,8 +111,8 @@ const LinkerDesktop=React.createClass({
 			container:{display:"flex",width:"100%"},
 			lefttab:{flex:this.props.leftFlex||6},
 			righttab:{flex:this.props.rightFlex||4},
-			corpustab:{flex:16,display:"flex"},
-			linkertab:{flex:2}
+			corpustab:{flex:"20",display:"flex"},
+			linkertab:{flex:"2"}
 		}
 
 		const extraKeys={

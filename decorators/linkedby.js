@@ -32,7 +32,8 @@ const onMouseDown=function(e){
 	const dom=e.target;
 	dom.restoring=false;
 	e.stopPropagation();
-	var lnk=link=e.target.target;
+	var lnk=e.target.target;
+	var link=e.target.target;
 	if (link instanceof Array) {
 		updateLabel(dom);
 		lnk=link[dom.nlink];

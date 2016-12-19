@@ -42,9 +42,8 @@ const nextWLink=(corpus,workinglinks,from)=>(dispatch,getState)=>{
 	if (!article)return;
 	const userlinks=getState().userLink[corpus];
 	//check if id already in userlink
-
 	var linkid=makeWLinkId(workinglinks.pos[at],workinglinks.value[at]);
-	while (userlinks[linkid]) {
+	while (userlinks&&userlinks[linkid]) {
 		at++;
 		linkid=makeWLinkId(workinglinks.pos[at],workinglinks.value[at]);
 	}
