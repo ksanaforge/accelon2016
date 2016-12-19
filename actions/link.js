@@ -2,7 +2,7 @@ const {findArticleByCorpus,_fetchArticle}=require("./article");
 const {openCorpus,bsearch}=require("ksana-corpus");
 const {strstr}=require("ksana-corpus-search");
 const {makeWLinkId}=require("../units/link");
-
+const {saveAddress}=require("../units/saveaddress");
 const {articleSubstr,posFromIndex,fromLogicalPos}=require("../units/quote");
 const {UPDATE_ARTICLE}=require("./article");
 const SET_ACTIVE_WLINK="SET_ACTIVE_WLINK";
@@ -61,9 +61,11 @@ const nextWLink=(corpus,workinglinks,from)=>(dispatch,getState)=>{
 	const obj=Object.assign({},{type:UPDATE_ARTICLE},article,{address});
 	dispatch(obj);
 
-
   _fetchArticle(article2.corpus,workinglinks.value[at],dispatch,UPDATE_ARTICLE,article2.id);
 	dispatch(setActiveWLink(id));
+
+	saveAddress(corpus,address);
+	saveAddress(article2.corpus,workinglinks.value[at]);
 }
 const setActiveWLink=(id)=>{
 	return {type:SET_ACTIVE_WLINK, id};

@@ -2,6 +2,7 @@
 const {openCorpus,parseLink}=require("ksana-corpus");
 const TOGGLE_LAYOUT = 'TOGGLE_LAYOUT';
 const UPDATE_ARTICLE='UPDATE_ARTICLE';
+const {saveAddress}=require("../units/saveaddress");
 const getActiveArticle=(state)=>state.articles[state.activeArticle];
 
 const toggleLayout=()=>(dispatch,getState)=>{
@@ -21,6 +22,7 @@ const _fetchArticle=(corpus,address,dispatch,type,id)=>{
       	    dispatch({type,corpus,address,id,
             article,title:article.articlename,rawlines:res.text,fields:res.fields});
         });
+				saveAddress(corpus,address);
       } else {
         dispatch({type: FETCH_FAILED,corpus,address});
       }

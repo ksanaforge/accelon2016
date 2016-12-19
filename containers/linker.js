@@ -9,19 +9,29 @@ const UserLinkActions=require("../actions/userlink");
 const LinkerDesktop =require('./linkerdesktop');
 function mapStateToProps(state,ownProps) {  
   var wlinkkey="";
-  if (state.articles[1]&&state.articles[2]) {
-    wlinkkey=state.articles[2].corpus+"_"+state.articles[1].corpus;
+
+  var leftarticle=state.articles[1];
+  var rightarticle=state.articles[2];
+  var rightuserlink={}, leftuserlink={};
+
+  if (leftarticle && rightarticle) {
+    if (leftarticle.corpus!==ownProps.corpus1) {
+      const t=leftarticle;
+      leftarticle=rightarticle;
+      rightarticle=t;
+    }
+    wlinkkey=leftarticle.corpus+"_"+rightarticle.corpus;
+    rightuserlink=state.userLink[rightarticle.corpus]||{};
+    leftuserlink=state.userLink[leftarticle.corpus]||{};
   }
-  const rightuserlink=state.articles[1]?state.userLink[state.articles[1].corpus]:{};
-  const leftuserlink=state.articles[2]?state.userLink[state.articles[2].corpus]:{};
   return {
     corpora: state.corpora,
     selections: state.selections,
-    rightarticle:state.articles[1],
-    leftarticle:state.articles[2],
+    rightarticle,
+    leftarticle,
     articles:state.articles,
     activeWLink:state.activeWLink,
-    workinglinks:ownProps.remotedata.workinglinks[wlinkkey]||[],
+    workinglinks:ownProps.remotedata.workinglinks[wlinkkey]||{},
     rightuserlink,
     leftuserlink
   };
