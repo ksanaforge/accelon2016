@@ -5,6 +5,8 @@ const CMView=require("./cmview");
 const {openCorpus}=require("ksana-corpus");
 const {decorate,decorateUserField}=require("./decorate");
 const selectionActivity=require("./selectionactivity");
+const followLinkButton=require("../components/followlinkbutton");
+
 const CorpusView=React.createClass({
 	propTypes:{
 		corpus:PT.string.isRequired,
@@ -26,16 +28,33 @@ const CorpusView=React.createClass({
 	}
 	,setupDecoratorActions(){
 		//prepare actions for decorators
+		this.actions={};
 		for (let i in this.props) {
 			if (typeof this.props[i]==="function") {
 				this.actions[i]=this.props[i];
 			}
 		}
-		this.actions.highlight=this.highlight;
+		this.actions.highlightAddress=this.highlightAddress;
+		this.actions.clearHightlight=this.clearHightlight;
 	}
-	,highlight(from,to){
+	,highlightAddress(address){
+		const r=this.cor.parseRange(address);
+		const {start,end}=this.toLogicalRange(r.kRange);
+		this.highlight(start,end);
+	}
+	,clearHightlight(){
+		if(this.highlighmarker) {
+			this.highlighmarker.clear();		
+			this.highlighmarker=null;
+		}
+		if (this.linkbuttons) {
+			this.linkbuttons.clear();
+			this.linkbuttons=null;
+		}
+	}
+	,highlight(start,end){
 		if(this.highlighmarker) this.highlighmarker.clear();
-		this.highlighmarker=this.cm.markText(from,to,{className:"highlight",clearOnEnter:true});
+		this.highlighmarker=this.cm.markText(start,end,{className:"highlight",clearOnEnter:true});
 	}
 	,componentDidMount(){
 		if (!this.props.corpus) {
@@ -48,14 +67,12 @@ const CorpusView=React.createClass({
 		props=props||this.props;
 		const {corpus,article,fields,rawlines,address,layout}=props;
 		this.cor=openCorpus(corpus);
-		this.markinview={};
+		this.markinview={};//fast check if mark already render, assuming no duplicate mark in same range
 		this.props.removeAllUserLinks(corpus);
 		this.setupDecoratorActions();
 		decorateUserField.call(this,{},this.props.userfield);//this will unpaint all fields
 		this.layout(article,rawlines,address,layout);
 	}
-	,markinview:{}//fast check if mark already render, assuming no duplicate mark in same range
-	,actions:{} 
 	,textReady(){
 		this.scrollToAddress(this.props.address);
 		this.onViewportChange(this.cm);
@@ -173,12 +190,24 @@ const CorpusView=React.createClass({
 			evt.target.select();//reselect the hidden textarea
 		}
 	}
+	,noSelection(cm){
+		const sels=cm.listSelections();	
+		if (sels.length!==1)false;
+		const s=sels[0].anchor,e=sels[0].head;
+		return s.line==e.line&&s.ch==e.ch;
+	}		
 	,onCursorActivity(cm){
 		if (!this.cor) return;
 		clearTimeout(this.cursortimer);
 		this.cursortimer=setTimeout(()=>{
 			selectionActivity.call(this,cm);
 			const kpos=this.fromLogicalPos(cm.getCursor());
+
+			this.clearHightlight();
+			if (this.noSelection(cm)) {				
+				this.linkbuttons=followLinkButton(cm,kpos,this.props.userfield,this.actions);
+			}
+			
 			this.props.onCursorActivity&&this.props.onCursorActivity(cm,kpos);
 		},300);
 	}

@@ -5,7 +5,6 @@ const CorpusView=require("../components/corpusview");
 const {openCorpus}=require("ksana-corpus");
 const {OPEN_AT}=require("../actions/articles");
 const {getQuoteText}=require("../units/quote");
-const followLinkButton=require("../components/followlinkbutton");
 const {getWorkingLinks,getUserLinks}=require("../units/link");
 const LinkerDesktop=React.createClass({
 	getInitialState(){
@@ -94,15 +93,6 @@ const LinkerDesktop=React.createClass({
 		const searchfrom=this.sourcePos();
   	this.props.findOrigin(quotetext, this.props.corpus2, searchfrom);
 	}
-	,noSelection(cm){
-		const sels=cm.listSelections();	
-		if (sels.length!==1)false;
-		const s=sels[0].anchor,e=sels[0].head;
-		return s.line==e.line&&s.ch==e.ch;
-	}	
-	,leftCursorActivity(cm,kpos){
-		if (this.noSelection(cm)) followLinkButton(cm,kpos,this.props.leftuserlink,this.actions);
-	}
 	,render(){
 		if (!this.state.ready) {
 			return E("loading");
@@ -120,13 +110,12 @@ const LinkerDesktop=React.createClass({
 			"Enter":this.followLink
 		}	
 		const wlink=getWorkingLinks(this.props.workinglinks,this.props.corpus2,this.props.leftarticle.article);
-
+		
 		const fields=(wlink)?
 		Object.assign({},this.props.leftarticle.fields,{wlink}):this.props.leftarticle.fields;
 
 		const props1=Object.assign({},this.actions,this.props.leftarticle,
-			{onCursorActivity:this.leftCursorActivity,
-				fields,extraKeys,userfield:this.props.leftuserlink,activeUserfield:this.props.activeWLink});
+			{fields,extraKeys,userfield:this.props.leftuserlink,activeUserfield:this.props.activeWLink});
 		const props2=Object.assign({},this.actions,this.props.rightarticle,
 			{userfield:this.props.rightuserlink,activeUserfield:this.props.activeWLink});
 

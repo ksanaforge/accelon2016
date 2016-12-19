@@ -1,3 +1,4 @@
+/*
 const setinnerhtml=function(dom){
 	if (dom.target instanceof Array) {
 		dom.innerHTML = (dom.nlink+1)+"/"+dom.target.length+" "+dom.target[dom.nlink].to;	
@@ -14,7 +15,7 @@ const onMouseEnter=function(e){
 	const targetcorpus=(dom.target instanceof Array)?dom.target[0].corpus:dom.target.corpus;
 	dom.restore=targetcorpus+"@"+dom.actions.corpusCurrentAddress(targetcorpus);
 	dom.opencount=0;
-	dom.innerHTML= (dom.target instanceof Array) ? dom.target.length:dom.target.to;
+	dom.innerHTML= (dom.target instanceof Array) ? "Link Count:"+dom.target.length:dom.target.to;
 }
 const onMouseLeave=function(e){
 	const dom=e.target;
@@ -43,20 +44,8 @@ const onMouseDown=function(e){
 	dom.actions.openLink(lnk.corpus+"@"+lnk.to);
 	dom.opencount++;
 }
-
+*/
 const createLinkedBy=({cm,cor,start,end,id,target,active,actions})=>{
-	const dom=document.createElement("span");
-	dom.className="linkedby";
-	if (active) dom.className+=" linkedby-active"
-	dom.innerHTML="●";
-	dom.onmouseenter=onMouseEnter;
-	dom.onmouseleave=onMouseLeave;
-	dom.onmousedown=onMouseDown;
-	dom.onmouseup=onMouseUp;
-	dom.actions=actions;
-	dom.cor=cor;
-	dom.nlink=0;
-	dom.target=target;
-	return cm.setBookmark(start,{widget:dom,handleMouseEvents:true});
+	return cm.markText(start,end,{className:"linkto"});
 }
 module.exports=createLinkedBy;

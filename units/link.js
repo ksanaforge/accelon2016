@@ -12,10 +12,10 @@ const hasLinkAt=function(kpos,fields) {
 
 }
 const hasUserLinkAt=function(kpos,userfields){
-	const out=[];
+	const out={};
 	for (var id in userfields) {
 		const field=userfields[id];
-		if (kpos>=field.start && kpos<=field.end) out.push(id);
+		if (kpos>=field.start && kpos<=field.end) out[id]=field;
 	}
 	return out;
 }

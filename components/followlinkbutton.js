@@ -4,27 +4,41 @@ highlight range when hover
 yinshun@57p1262.1301 has two sources
 
 */
+const React=require("react");
+const ReactDOM=require("react-dom");
+const E=React.createElement;
 const {hasUserLinkAt}=require("../units/link");
-const onlinkbutton=function(e){
-	e.stopPropagation();
-	e.target.actions.openLink(e.target.target);
-}
-var linkbutton;
-const followLinkButton=function(cm,kpos,fields,actions){
+const followLink=function(cm,kpos,fields,actions){
 	const links=hasUserLinkAt(kpos,fields);
-	if (linkbutton) {
-		linkbutton.clear();
-		linkbutton=null;
-	}
-	if (!links.length)return;
+	
+	if (!Object.keys(links).length) return;
 
-	const id=links[0];
+	const onMouseDown=function(e){
+		e.stopPropagation();
+		actions.openLink(e.target.target);
+	}
+
+	const onMouseOver=function(e){
+		const link=links[e.target.id]
+		actions.highlightAddress(link.from);
+	}
+
 	var widget=document.createElement("span");
-	widget.className="followbutton";
-	widget.target=fields[id].corpus+"@"+fields[id].to;
-	widget.innerHTML=widget.target;
-	widget.onmousedown=onlinkbutton;
-	widget.actions=actions;
-	linkbutton=cm.setBookmark(cm.getCursor(),{widget,handleMouseEvents:true} );
+	widget.className="followbuttongroup";
+	
+	for (let id in links) {
+		var child=document.createElement("span");
+		child.onmousedown=onMouseDown;
+		child.onmouseover=onMouseOver;	
+		child.className="followbutton"
+		child.target=links[id].corpus+"@"+links[id].to;
+		child.innerHTML=links[id].to.replace(/\..*/,"");//remove after page,make it shorter
+		child.id=id;
+		widget.appendChild(child);
+	}
+	
+	const insertat={line:cm.getCursor().line,ch:cm.getCursor().ch}
+	return cm.setBookmark(insertat,{widget,handleMouseEvents:true} );
 }
-module.exports=followLinkButton;
+
+module.exports=followLink;
