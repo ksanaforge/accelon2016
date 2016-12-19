@@ -22,12 +22,18 @@ const CorpusViewOptions=React.createClass({
 			this.props.updateArticleByAddress(this.state.caretposH);
 		}
 	}
+	,nextArticle(){
+		this.props.nextArticle();
+	}
+	,prevArticle(){
+		this.props.prevArticle();
+	}
 	,render(){
 		return E("div",{},
 		E("button",{onClick:this.props.toggleLayout},"layout")
 		,E("br")
-		,E("button",{onClick:this.props.prevArticle},"prev")
-		,E("button",{onClick:this.props.nextArticle},"next")
+		,E("button",{onClick:this.prevArticle},"prev")
+		,E("button",{onClick:this.nextArticle},"next")
 		,E("br")
 		,E("input",{size:10,value:this.state.caretposH,onKeyPress:this.onKeyPress,
 			onChange:this.onChange})

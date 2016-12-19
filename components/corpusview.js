@@ -24,16 +24,25 @@ const CorpusView=React.createClass({
 	,getInitialState(){
 		return {text:"",linebreaks:[],pagebreaks:[]};
 	}
+	,setupDecoratorActions(){
+		//prepare actions for decorators
+		for (let i in this.props) {
+			if (typeof this.props[i]==="function") {
+				this.actions[i]=this.props[i];
+			}
+		}
+		this.actions.highlight=this.highlight;
+	}
+	,highlight(from,to){
+		if(this.highlighmarker) this.highlighmarker.clear();
+		this.highlighmarker=this.cm.markText(from,to,{className:"highlight",clearOnEnter:true});
+	}
 	,componentDidMount(){
 		if (!this.props.corpus) {
 			if(this.props.text) this.setState({text:this.props.text.join("\n")});
 			return;
 		}
 		this.loadtext();
-		//prepare actions for decorators
-		for (let i in this.props) {
-			if (typeof this.props[i]==="function") this.actions[i]=this.props[i];
-		}
 	}
 	,loadtext(props){
 		props=props||this.props;
@@ -41,6 +50,7 @@ const CorpusView=React.createClass({
 		this.cor=openCorpus(corpus);
 		this.markinview={};
 		this.props.removeAllUserLinks(corpus);
+		this.setupDecoratorActions();
 		decorateUserField.call(this,{},this.props.userfield);//this will unpaint all fields
 		this.layout(article,rawlines,address,layout);
 	}
@@ -71,7 +81,7 @@ const CorpusView=React.createClass({
 		||nextProps.activeUserfield!==this.props.activeUserfield) { //user field should have id
 			decorateUserField.call(this,nextProps.userfield,this.props.userfield,nextProps.activeUserfield);
 		}
-		if (this.cm && nextProps.active)this.cm.focus();
+		//if (this.cm && nextProps.active)this.cm.focus();
 
 		if (this.props.address!==nextProps.address ) {
 			this.scrollToAddress(nextProps.address);
@@ -154,8 +164,9 @@ const CorpusView=React.createClass({
 		/*1p178a0103-15 copy and paste incorrect*/
 		/* TODO,  address error crossing a page, has line 30 */
 		const krange=this.kRangeFromCursor(cm);
-		if (this.props.onCopyText) { //for excerpt copy
-			evt.target.value=this.props.onCopyText({cm,value:evt.target.value,krange,cor:this.cor});
+
+		if (this.props.copyText) { //for excerpt copy
+			evt.target.value=this.props.copyText({cm,value:evt.target.value,krange,cor:this.cor});
 			evt.target.select();
 		} else { //default copy address
 			evt.target.value="@"+this.cor.stringify(krange)+';';

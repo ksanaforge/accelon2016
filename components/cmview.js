@@ -40,7 +40,7 @@ const CMView=React.createClass({
 		var coords=cm.cursorCoords(from,"local");
 		coords.bottom+=cm.getScrollInfo().clientHeight*2/3;
 		cm.scrollIntoView(coords);
-		cm.focus();
+		//cm.focus();
 	}
 	,scrollToText(t){
 		var text=this.cm.getValue();

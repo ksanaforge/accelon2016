@@ -4,7 +4,7 @@ const PT=React.PropTypes;
 const BreadCrumbTOC=require("ksana2015-breadcrumbtoc").Component;
 const {openCorpus}=require("ksana-corpus");
 
-TOCNav=React.createClass({
+const TOCNav=React.createClass({
 	propTypes:{
 		corpus:PT.string.isRequired,
 		caretpos:PT.number.isRequired,

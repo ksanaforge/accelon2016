@@ -12,7 +12,7 @@ const styles={
 
 const MainTabs=React.createClass({
 	getInitialState(){
-		return this.createPanes()
+		return this.createPanes();
 	}
 	,onSelectItem(address){
 		this.props.updateArticleByAddress(address);
@@ -28,18 +28,25 @@ const MainTabs=React.createClass({
 		const resultstyle={ height: "-webkit-calc(49.8vh - "+parseFloat(topmargin,10)/2+"em )"} ;
 		const containerstyle={ height: "-webkit-calc(99.6vh - "+topmargin+")"} ;		
 
+		const actions={
+			decorators:this.props.decorators,
+			updateArticleByAddress:this.props.updateArticleByAddress,
+			openLink:this.props.openLink,
+			setSelection:this.props.setSelection,
+			removeAllUserLinks:this.props.removeAllUserLinks,
+			copyText:this.props.copyText
+		}		
+
 		const tabs=props.articles.map((a)=>[a.id,a.title]);
 		var rightButtons=[];
-		const panes=props.articles.map((a,idx)=>{
+		const panes=props.articles.map(function(a,idx){
 			var article=a;
 			const active=props.activeArticle==idx;
 			const ranges=props.selections[article.id].ranges;
-			const viewprops=Object.assign({},article,{rawlines:article.rawlines},
-				{updateArticleByAddress:props.updateArticleByAddress,
-				ranges,setSelection:props.setSelection,active,decorators:props.decorators});
-			const excerptprops=Object.assign({}, props.excerpts,
-				{corpus:article.corpus,updateArticleByAddress:props.updateArticleByAddress
-					,goOccur:props.goOccur,now:(props.query||{}).now});
+			const viewprops=Object.assign({},article,{rawlines:article.rawlines},actions,
+				{ranges,setSelection:props.setSelection,active,decorators:props.decorators});
+			const excerptprops=Object.assign({}, props.excerpts,actions,
+				{corpus:article.corpus,goOccur:props.goOccur,now:(props.query||{}).now});
 			const caretpos=props.selections[article.id].caretpos;
 
 			rightButtons.push(article.rightButton||TabCloseButton);
@@ -52,7 +59,7 @@ const MainTabs=React.createClass({
 				E(article.view||CorpusView,viewprops)
 				,isresultview?E(ExcerptView,excerptprops):null
 			);
-		});
+		}.bind(this));
 		return {rightButtons,tabs,panes}
 	}
 	,onSelectTab(newtab,oldtab){
@@ -62,10 +69,10 @@ const MainTabs=React.createClass({
 		return true; //do not change tab now
 	}	
 	,onRightButtonClick(i){
-		if (!props.articles[i].rightButton) {
-			props.closeArticle(props.articles[i].id);	
+		if (!this.props.articles[i].rightButton) {
+			this.props.closeArticle(this.props.articles[i].id);	
 		} else { //clone button
-			props.cloneArticle(props.articles[i].id);
+			this.props.cloneArticle(this.props.articles[i].id);
 		}
 	}
 	,onLabelEnter(idx,menux,menuy){

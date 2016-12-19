@@ -22,8 +22,8 @@ const ExcerptView=React.createClass({
 	}
 	,buildGroupText(excerpts){
 		excerpts=excerpts||this.props.excerpts;
-		this.group=[],linecount=0;
-		var text="";
+		this.group=[];
+		var text="",linecount=0;
 		excerpts.forEach((item)=>{
 			this.group.push(linecount);
 			linecount+=item.text.split("\n").length;
@@ -34,6 +34,7 @@ const ExcerptView=React.createClass({
 	}
 	,cursorline:0
 	,linewidgethandles:[]
+	,group:[]
 	,excerptTitle(now){
 		const cor=openCorpus(this.props.corpus);
 		const tpos=this.props.query.filtered[now];
@@ -61,7 +62,7 @@ const ExcerptView=React.createClass({
 			const title=this.excerptTitle(now);
 			var domnode=document.createElement("span");
 			ReactDOM.render( E(ExcerptHeader,{title,now,goOccur}), domnode);
-			linewidgethandle=this.cm.doc.addLineWidget(line,domnode,{above:true,handleMouseEvents:true});
+			const linewidgethandle=this.cm.doc.addLineWidget(line,domnode,{above:true,handleMouseEvents:true});
 			this.linewidgethandles.push(linewidgethandle);
 		});
 	}

@@ -7,6 +7,9 @@ const SelectionActions=require('../actions/selection');
 const SearchActions=require('../actions/search');
 const OccurActions=require('../actions/occur');
 const FilterActions=require('../actions/filter');
+const UserLinkActions=require("../actions/userlink");
+const CopyTextActions=require("../actions/copytext");
+
 const Desktop =require('./desktop');
 function mapStateToProps(state,ownProps) {
 	const article=state.articles[state.activeArticle];
@@ -36,8 +39,10 @@ function mapDispatchToProps(dispatch,ownProps) {
   const boundsearch=bindActionCreators(SearchActions, dispatch);
   const boundoccur=bindActionCreators(OccurActions, dispatch);
   const boundfilter=bindActionCreators(FilterActions, dispatch);
-	const bound=Object.assign({},boundcorpus,boundarticles,
-    boundarticle,boundselection,boundsearch,boundoccur,boundfilter);
+  const bounduserlink=bindActionCreators(UserLinkActions, dispatch);
+  const boundcopytext=bindActionCreators(CopyTextActions, dispatch);
+	const bound=Object.assign({},boundcorpus,boundarticles,boundcopytext,
+    boundarticle,boundselection,boundsearch,boundoccur,boundfilter,bounduserlink);
   return bound; 
 }
 

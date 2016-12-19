@@ -4,7 +4,10 @@ const setinnerhtml=function(dom){
 	} else {
 		dom.innerHTML=dom.target.to;
 	}
-	//TODO , highlight source range
+}
+const updateLabel=function(dom){
+	setinnerhtml(dom);
+	//TODO , highlight source range	
 }
 const onMouseEnter=function(e){
 	const dom=e.target;
@@ -31,7 +34,7 @@ const onMouseDown=function(e){
 	e.stopPropagation();
 	var lnk=link=e.target.target;
 	if (link instanceof Array) {
-		setinnerhtml(dom);
+		updateLabel(dom);
 		lnk=link[dom.nlink];
 		dom.nlink++;
 		if(dom.nlink>=link.length) dom.nlink=0;
