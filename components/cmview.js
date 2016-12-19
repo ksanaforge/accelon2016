@@ -65,6 +65,9 @@ const CMView=React.createClass({
 	,onCopy(cm,evt){
 		this.props.onCopy&&this.props.onCopy(cm,evt);
 	}
+	,onCut(cm,evt){
+		this.props.onCut&&this.props.onCut(cm,evt);
+	}
 	,getCodeMirror(){
 		return this.cm;
 	}
@@ -76,6 +79,7 @@ const CMView=React.createClass({
 	  	E(CodeMirror,{ref:this.setCM,value:"",theme:this.props.theme||"ambiance",readOnly:true,
   	  onCursorActivity:this.props.onCursorActivity
   	  ,onCopy:this.onCopy
+  	  ,onCut:this.onCut
   	  ,extraKeys:this.props.extraKeys
   	  ,onViewportChange:this.props.onViewportChange})
   	 )

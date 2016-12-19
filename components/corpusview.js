@@ -160,7 +160,7 @@ const CorpusView=React.createClass({
 		}
 		return this.kRangeFromSel(cm,from,to);
 	}
-	,onCopy(cm,evt){
+	,onCut(cm,evt){
 		/*1p178a0103-15 copy and paste incorrect*/
 		/* TODO,  address error crossing a page, has line 30 */
 		const krange=this.kRangeFromCursor(cm);
@@ -205,7 +205,7 @@ const CorpusView=React.createClass({
 			{ref:this.setCM,
 			text:this.state.text,
 			onCursorActivity:this.onCursorActivity,
-			onCopy:this.onCopy,
+			onCut:this.onCut,
 			extraKeys:this.props.extraKeys,
 			onViewportChange:this.onViewportChange,
 			articlename:this.props.article.articlename
