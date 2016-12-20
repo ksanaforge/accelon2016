@@ -8,8 +8,10 @@ var additems=[];
 const addUserLink=(id,rawpayload,corpus,article,targetcorpus,decorator,fromcor)=>(dispatch,getState)=>{
 	clearTimeout(addtimer);
 	const r=fromcor.parseRange(rawpayload.from);
+	
 	const payload=Object.assign({},rawpayload,{
 		start:r.start,end:r.end,
+		kRange:r.kRange,
 		corpus:targetcorpus,decorator
 	});
 	additems.push({id,payload,corpus});

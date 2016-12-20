@@ -23,6 +23,7 @@ const CMView=React.createClass({
 	,jumpToRange(from,to){
 		const cm=this.cm;
 		const cursor=cm.getCursor();
+		/*
 		if ((from.ch!==to.ch||from.line!==to.line)) {
 			const s=cm.indexFromPos(from);const e=cm.indexFromPos(to);
 			this.marktext&&this.marktext.clear&&this.marktext.clear();
@@ -30,11 +31,7 @@ const CMView=React.createClass({
 				this.marktext=cm.markText(from,to,{className:"gotomarker",clearOnEnter:true});					
 			}
 		}
-		const vp=cm.getViewport();
-		const vpm=cm.getOption("viewportMargin");
-		const vpto=vp.to-vpm,vpfrom=vp.from-vpm;
-		var line=from.line;
-
+		*/
 		cm.scrollIntoView({line:0,ch:0});
 		cm.setCursor(from);
 		var coords=cm.cursorCoords(from,"local");

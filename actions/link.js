@@ -6,6 +6,7 @@ const {saveAddress}=require("../units/saveaddress");
 const {articleSubstr,posFromIndex,fromLogicalPos}=require("../units/quote");
 const {UPDATE_ARTICLE}=require("./article");
 const SET_ACTIVE_WLINK="SET_ACTIVE_WLINK";
+const MAX_ELAPSE=5*60*1000;//max 5 minutes
 const findOrigin=(tofind,sourcecorpus,searchfrom)=>(dispatch,getState)=>{
 	const articles=getState().articles;
 	const at=findArticleByCorpus(articles,sourcecorpus);
@@ -31,9 +32,11 @@ const findOrigin=(tofind,sourcecorpus,searchfrom)=>(dispatch,getState)=>{
 const nextWLink=(corpus,workinglinks,from)=>(dispatch,getState)=>{
 	const cor=openCorpus(corpus);
 	const r=cor.parseRange(from);
-
+	
 	var at=bsearch(workinglinks.pos,r.start+1,true);
 	if (at==-1)return;
+
+	const activeWLink=getState().activeWLink;
 
 	const articles=getState().articles;
 	const ncorpus=findArticleByCorpus(articles,corpus);
@@ -43,6 +46,12 @@ const nextWLink=(corpus,workinglinks,from)=>(dispatch,getState)=>{
 	const userlinks=getState().userLink[corpus];
 	//check if id already in userlink
 	var linkid=makeWLinkId(workinglinks.pos[at],workinglinks.value[at]);
+
+	//corpus address point to current working link, go to next
+	if (linkid==activeWLink && at<workinglinks.pos.length) { 
+		at++;
+	}
+
 	while (userlinks&&userlinks[linkid]) {
 		at++;
 		linkid=makeWLinkId(workinglinks.pos[at],workinglinks.value[at]);
@@ -53,17 +62,19 @@ const nextWLink=(corpus,workinglinks,from)=>(dispatch,getState)=>{
 		return;
 	}
 
-	const address=cor.stringify(workinglinks.pos[at],workinglinks.pos[at]+3);
+	var address=cor.stringify(workinglinks.pos[at],workinglinks.pos[at]+3);
 
 	const article2=(ncorpus==1)?articles[2]:articles[1];
 
-	const id=makeWLinkId(workinglinks.pos[at],workinglinks.value[at]);
+	var id=makeWLinkId(workinglinks.pos[at],workinglinks.value[at]);
+
+
 	const obj=Object.assign({},{type:UPDATE_ARTICLE},article,{address});
 	dispatch(obj);
 
   _fetchArticle(article2.corpus,workinglinks.value[at],dispatch,UPDATE_ARTICLE,article2.id);
 	dispatch(setActiveWLink(id));
-
+	
 	saveAddress(corpus,address);
 	saveAddress(article2.corpus,workinglinks.value[at]);
 }
@@ -81,7 +92,8 @@ const makeLink=(databinding,createtime,user)=>(dispatch,getState)=>{
 	const article1=articles[1], article2=articles[2];
 	const id=getState().activeWLink;
 	if (!id || !databinding) return;
-	const elapsed=new Date()-createtime;
+	var elapsed=new Date()-createtime;
+	if (elapsed>MAX_ELAPSE) elapsed=MAX_ELAPSE;
 	const sel1=getCorpusSelection(getState().selections,article1.corpus);
 	const sel2=getCorpusSelection(getState().selections,article2.corpus);
 	if (!sel1||!sel2)return;

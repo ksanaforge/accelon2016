@@ -9,7 +9,7 @@ const decorateField=function(fname,pos,value,decorator,fromkpos,tokpos){
 				}
 			}
 
-			if (this.markinview[fname+range.kRange]==true) {
+			if (this.markinview[fname+range.kRange]) {
 				i++
 				continue;
 			}
@@ -26,19 +26,19 @@ const decorateField=function(fname,pos,value,decorator,fromkpos,tokpos){
 			}
 			const r=this.toLogicalRange(p);
 			
-			decorator({cm:this.cm,cor:this.cor,start:r.start,end:r.end,corpus:this.props.corpus,
+			this.markinview[fname+range.kRange]=decorator({cm:this.cm,cor:this.cor,start:r.start,end:r.end,corpus:this.props.corpus,
 				kpos:range.start,krange:range,tabid:this.props.id,id:i,target,
 				multitarget,actions:this.actions});
 
-			this.markinview[fname+range.kRange]=true;
 		}
 }
 const removeDeleted=function(fields, oldfields){
-	this.painted=this.painted||{};
 	for (let id in oldfields) {
-		if (!fields[id] && this.painted[id]) {
-			this.painted[id].clear();
-			delete this.painted[id];
+		const old=oldfields[id];
+		const id=old.decorator+old.kRange;
+		if (!fields[id] && this.markinview[id]) {
+			this.markinview[id].clear();
+			delete this.markinview[id];
 		}
 	}
 }
@@ -67,7 +67,7 @@ const groupByDecorator=function(pos,value){
 	return out;
 }
 const decorateUserField=function(_fields, oldfields, activeWLink){
-	removeDeleted.call(this);
+	removeDeleted.call(this,_fields,oldfields);
 	const {pos,value}=sortFields.call(this,_fields);
 	
 	const fields=groupByDecorator(pos,value);

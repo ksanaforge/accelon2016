@@ -35,25 +35,26 @@ const CorpusView=React.createClass({
 			}
 		}
 		this.actions.highlightAddress=this.highlightAddress;
-		this.actions.clearHightlight=this.clearHightlight;
 	}
 	,highlightAddress(address){
 		const r=this.cor.parseRange(address);
 		const {start,end}=this.toLogicalRange(r.kRange);
 		this.highlight(start,end);
 	}
-	,clearHightlight(){
-		if(this.highlighmarker) {
-			this.highlighmarker.clear();		
-			this.highlighmarker=null;
-		}
+	,clearLinkButtons(){
 		if (this.linkbuttons) {
 			this.linkbuttons.clear();
 			this.linkbuttons=null;
 		}
 	}
+	,clearHighlight(){
+		if(this.highlighmarker) {
+			this.highlighmarker.clear();		
+			this.highlighmarker=null;
+		}
+	}
 	,highlight(start,end){
-		if(this.highlighmarker) this.highlighmarker.clear();
+		this.clearHighlight();
 		this.highlighmarker=this.cm.markText(start,end,{className:"highlight",clearOnEnter:true});
 	}
 	,componentDidMount(){
@@ -97,6 +98,7 @@ const CorpusView=React.createClass({
 		if (nextProps.userfield && nextProps.userfield !== this.props.userfield
 		||nextProps.activeUserfield!==this.props.activeUserfield) { //user field should have id
 			decorateUserField.call(this,nextProps.userfield,this.props.userfield,nextProps.activeUserfield);
+			this.clearLinkButtons();
 		}
 		//if (this.cm && nextProps.active)this.cm.focus();
 
@@ -128,7 +130,8 @@ const CorpusView=React.createClass({
 	,scrollToAddress(address){
 		const r=this.cor.toLogicalRange(this.state.linebreaks,address,this.getRawLine);
 		if (!r || r.start.line<0)return;
-		if (this.viewer) this.viewer.jumpToRange(r.start,r.end);		
+		if (this.viewer) this.viewer.jumpToRange(r.start,r.end);
+		this.highlightAddress(address);
 	}
 	,layout(article,rawlines,address,playout){
 		const cor=this.cor;
@@ -203,8 +206,8 @@ const CorpusView=React.createClass({
 			selectionActivity.call(this,cm);
 			const kpos=this.fromLogicalPos(cm.getCursor());
 
-			this.clearHightlight();
-			if (this.noSelection(cm)) {				
+			this.clearLinkButtons();
+			if (this.noSelection(cm)) {
 				this.linkbuttons=followLinkButton(cm,kpos,this.props.userfield,this.actions);
 			}
 			
