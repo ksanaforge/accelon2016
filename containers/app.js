@@ -16,7 +16,6 @@ function mapStateToProps(state,ownProps) {
 	const query=state.querys[state.activeQuery];
 	const corpus=state.corpora[state.activeCorpus];
   const filter=state.filters[state.activeCorpus]||{};
-  
   return {
     corpora: state.corpora,
     articles: state.articles,

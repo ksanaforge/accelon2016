@@ -1,3 +1,4 @@
+const {makeMarkerId,clearWorkingLink}=require("../units/link");
 const decorateField=function(fname,pos,value,decorator,fromkpos,tokpos){
 		let i=0;
 		while (i<pos.length) {
@@ -9,7 +10,7 @@ const decorateField=function(fname,pos,value,decorator,fromkpos,tokpos){
 				}
 			}
 
-			if (this.markinview[fname+range.kRange]) {
+			if (this.markinview[makeMarkerId(fname,range)]) {
 				i++
 				continue;
 			}
@@ -24,24 +25,16 @@ const decorateField=function(fname,pos,value,decorator,fromkpos,tokpos){
 				multitarget=true;
 				i++;
 			}
-			const r=this.toLogicalRange(p);
-			
-			this.markinview[fname+range.kRange]=decorator({cm:this.cm,cor:this.cor,start:r.start,end:r.end,corpus:this.props.corpus,
-				kpos:range.start,krange:range,tabid:this.props.id,id:i,target,
-				multitarget,actions:this.actions});
 
+			const r=this.toLogicalRange(p);
+			const markerid=makeMarkerId(fname,range);
+			const done=this.markdone[markerid];
+			this.markinview[markerid]=decorator({cm:this.cm,cor:this.cor,start:r.start,end:r.end,corpus:this.props.corpus,
+				kpos:range.start,krange:range,tabid:this.props.id,id:i,target,
+				multitarget,actions:this.actions,done});
 		}
 }
-const removeDeleted=function(fields, oldfields){
-	for (let id in oldfields) {
-		const old=oldfields[id];
-		const id=old.decorator+old.kRange;
-		if (!fields[id] && this.markinview[id]) {
-			this.markinview[id].clear();
-			delete this.markinview[id];
-		}
-	}
-}
+
 const sortFields=function(fields){
 	const out=[];
 	for (let id in fields) {
@@ -66,15 +59,34 @@ const groupByDecorator=function(pos,value){
 	}
 	return out;
 }
-const decorateUserField=function(_fields, oldfields, activeWLink){
+
+const removeDeleted=function(fields, oldfields){
+	for (let id in oldfields) {
+		const old=oldfields[id];
+		const markerid=makeMarkerId(old.decorator,old.kRange);
+		if (!fields[id]) {
+			const m=this.markinview[markerid];
+			if (m){
+				m.clear();
+				delete this.markinview[markerid];
+				clearWorkingLink.call(this,id,false);
+			}
+		}
+	}
+}
+const decorateUserField=function(_fields, oldfields){
 	removeDeleted.call(this,_fields,oldfields);
 	const {pos,value}=sortFields.call(this,_fields);
-	
+	for (let f in _fields) { //remove all worling link marker, force redraw
+		clearWorkingLink.call(this,f,true);
+	}
+
 	const fields=groupByDecorator(pos,value);
-	for (var name in fields) {
+	for (let name in fields) {
 		const decorator=this.props.decorators[name];
 		decorateField.call(this,name,fields[name].pos,fields[name].value,decorator);
 	}
+
 }
 const decorate=function(fromkpos,tokpos){
 	for (let fname in this.props.fields) {

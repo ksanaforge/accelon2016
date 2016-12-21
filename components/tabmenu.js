@@ -46,7 +46,8 @@ const TabMenu=React.createClass({
 		var caption=this.state.sticky?"⏷":"⏵";
 		return E("div",{onMouseEnter:this.onMouseEnter,onMouseLeave:this.onMouseLeave},
 			E("span",{style:styles.menubutton,onClick:this.toggleMenu},caption),
-			this.state.menuopen&&E("div",{style:styles.panel},E(this.props.panel))
+			this.state.menuopen&&E("div",{style:styles.panel},
+				E(this.props.panel))
 		)		
 	}
 });

@@ -9,7 +9,8 @@ const SearchBox=React.createClass({
 	prevline:-1
 	,changetimer:null
 	,shouldComponentUpdate(nextProps) {
-		return nextProps.querys!==this.cm.getValue();
+		return false;
+		//return nextProps.querys!==this.cm.getValue();
 	}
 	,onCursorActivity(cm){
 		const cursor=cm.getCursor();

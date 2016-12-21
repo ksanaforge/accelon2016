@@ -69,9 +69,11 @@ const CorpusView=React.createClass({
 		const {corpus,article,fields,rawlines,address,layout}=props;
 		this.cor=openCorpus(corpus);
 		this.markinview={};//fast check if mark already render, assuming no duplicate mark in same range
+		this.markdone={};
 		this.props.removeAllUserLinks(corpus);
 		this.setupDecoratorActions();
 		decorateUserField.call(this,{},this.props.userfield);//this will unpaint all fields
+
 		this.layout(article,rawlines,address,layout);
 	}
 	,textReady(){
@@ -98,6 +100,8 @@ const CorpusView=React.createClass({
 		if (nextProps.userfield && nextProps.userfield !== this.props.userfield
 		||nextProps.activeUserfield!==this.props.activeUserfield) { //user field should have id
 			decorateUserField.call(this,nextProps.userfield,this.props.userfield,nextProps.activeUserfield);
+			//decorateUserField might clearWorking Link , call viewportchange to repaint
+			this.onViewportChange();
 			this.clearLinkButtons();
 		}
 		//if (this.cm && nextProps.active)this.cm.focus();
@@ -109,9 +113,6 @@ const CorpusView=React.createClass({
 	,clearSelection(){
 		const cursor=this.cm.getCursor();
 		this.cm.doc.setSelection(cursor,cursor);
-	}
-	,toLogicalPos(address){
-		return this.cor.toLogicalPos(this.state.linebreaks,address,this.getRawLine);		
 	}
 	,toLogicalRange(range){
 		return this.cor.toLogicalRange(this.state.linebreaks,range,this.getRawLine);
@@ -215,12 +216,14 @@ const CorpusView=React.createClass({
 		},300);
 	}
 	,onViewportChange(cm,from,to){
+		cm=cm||this.cm;
+		if (!cm)return;
 		clearTimeout(this.viewporttimer);
 		this.viewporttimer=setTimeout(()=>{
 			const vp=cm.getViewport();
 			const from=this.fromLogicalPos({line:vp.from,ch:0});
 			const to=this.fromLogicalPos({line:vp.to,ch:0});
-			decorate.call(this,from,to);
+			decorate.call(this,from,to,this.props.userfield);
 			this.onViewport&&this.onViewport(cm,vp.from,vp.to,from,to); //extra params start and end kpos
 			this.addresschanged=true;
 		},50);

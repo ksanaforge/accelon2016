@@ -52,7 +52,7 @@ const LinkerTab=(props)=>{
 	const linkEditable=()=>{
 		if (!props.leftuserlink)return false;
 		const lnk=props.leftuserlink[props.activeWLink] ;
-		return lnk && lnk.user==user;
+		return !!lnk;
 	}
 	const cor1=openCorpus(props.corpus1);
 	const cor2=openCorpus(props.corpus2);
@@ -74,9 +74,9 @@ const LinkerTab=(props)=>{
 		E(ArticleNav,{editable:true,now:now1,total:total1,onNext:next1,onPrev:prev1,onChange:change1}),
 		E(GotoAddress,{corpus:props.corpus2,value:value2,onEnter}),
 		E(ArticleNav,{editable:true,now:now2,total:total2,onNext:next2,onPrev:prev2,onChange:change2}),
-		E(WLinkNav,{onNextWLink,address:value1}),
+		E(WLinkNav,{onNextWLink,address:value1,userlink:props.leftuserlink||{}}),
 		E(User,{onSetUser}),		
-		linkEditable()?E(WLinkEditor,Object.assign({},props,{onDeleteLink})):
+		linkEditable()?E(WLinkEditor,Object.assign({},props,{user,onDeleteLink})):
 			E(WLinkBuilder,Object.assign({},props,{linkable,onMakeLink}))
 	);
 }

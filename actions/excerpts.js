@@ -1,4 +1,5 @@
 const SHOW_EXCERPT="SHOW_EXCERPT";
+const SET_EXCERPT_LINE="SET_EXCERPT_LINE";
 const {fetchExcerpts}=require("ksana-corpus-search/excerpt");
 
 const {openCorpus}=require("ksana-corpus");
@@ -16,9 +17,15 @@ const listExcerpts=function(cor,query,dispatch,stateExcerpts){
 		if (at>=filtered.length) break;
 		tpos.push(filtered[at]);
 	}
-
-	fetchExcerpts(cor,{tpos,line:3,phrasepostings:query.phrasepostings},function(excerpts){
+	const line=stateExcerpts.excerptline;
+	fetchExcerpts(cor,{tpos,line,phrasepostings:query.phrasepostings},function(excerpts){
 		dispatch({type:SHOW_EXCERPT, excerpts, query, hitperbatch})
 	});
 }
-module.exports={listExcerpts,SHOW_EXCERPT,hitperbatch};
+const setExcerptLine=function(line){
+	if (!line) line=1;
+	if (line>5) line=5;
+	if (line==2||line==4) line==3;
+	return {type:SET_EXCERPT_LINE, excerptline:line};
+}
+module.exports={listExcerpts,SHOW_EXCERPT,SET_EXCERPT_LINE,hitperbatch,setExcerptLine};

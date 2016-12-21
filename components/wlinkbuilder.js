@@ -3,7 +3,7 @@ const E=React.createElement;
 const LinkSelection=require("./linkselection");
 
 const styles={
-	label:{color:"silver"}
+	label:{color:"lightblue",fontSize:"80%"}
 }
 var previousactive=null;
 var createtime=null;    //to record time taken by selecting corresponding text

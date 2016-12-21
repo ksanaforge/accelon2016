@@ -29,12 +29,15 @@ const onMouseLeave=function(e){
 }
 const onMouseEnter=function(e){
 	const dom=e.target;
-	dom.innerHTML= (dom.target instanceof Array) ? dom.target.length:dom.target;
+	dom.innerHTML= (dom.target instanceof Array) ? "count "+dom.target.length:dom.target;
 }
-const createLink=function({cm,cor,kpos,start,end,id,target,actions}){
+const createLink=function({cm,cor,kpos,start,end,id,target,active,actions,done}){
 	const dom=document.createElement("span");
-	dom.className="notelink";
-	if (target instanceof Array) dom.className="notelink2";
+	dom.className="worklink";
+
+	if (done)dom.className="worklink-done";
+	//if (target instanceof Array) dom.className="notelink2";
+
 	dom.onmousedown=onMouseDown;
 	dom.onmouseenter=onMouseEnter;
 	dom.onmouseleave=onMouseLeave;

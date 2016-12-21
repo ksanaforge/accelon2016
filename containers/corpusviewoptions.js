@@ -4,6 +4,8 @@ const { connect } = require('react-redux');
 const React =require('react');
 const E=React.createElement;
 const ArticleActions=require("../actions/article");
+const ExcerptActions=require("../actions/excerpts");
+const SetExcerptLine=require("../components/setexcerptline");
 
 const CorpusViewOptions=React.createClass({
 	getInitialState(){
@@ -28,13 +30,19 @@ const CorpusViewOptions=React.createClass({
 	,prevArticle(){
 		this.props.prevArticle();
 	}
+	,onSetExcerptLine(line){
+		this.props.setExcerptLine(line);
+	}
 	,render(){
 		return E("div",{},
 		E("button",{onClick:this.props.toggleLayout},"layout")
+		,E(SetExcerptLine,{excerptline:this.props.excerptline,
+			onSetExcerptLine:this.onSetExcerptLine})
 		,E("br")
 		,E("button",{onClick:this.prevArticle},"prev")
 		,E("button",{onClick:this.nextArticle},"next")
 		,E("br")
+		
 		,E("input",{size:10,value:this.state.caretposH,onKeyPress:this.onKeyPress,
 			onChange:this.onChange})
 		)
@@ -44,12 +52,14 @@ const CorpusViewOptions=React.createClass({
 function mapStateToProps(state,ownProps) {
 	const activeArticle=state.articles[state.activeArticle];
 	const caretposH=state.selections[activeArticle.id].caretposH;
-	return Object.assign({},activeArticle, {caretposH} );
+	const excerptline=state.excerpts.excerptline;
+	return Object.assign({},activeArticle, {caretposH,excerptline} );
 }
 
 function mapDispatchToProps(dispatch,ownProps) {
 	const boundarticleactions=bindActionCreators(ArticleActions, dispatch);
-	const bound=Object.assign({},boundarticleactions);
+	const boundexcerptactions=bindActionCreators(ExcerptActions,dispatch);
+	const bound=Object.assign({},boundarticleactions,boundexcerptactions);
   return bound; 
 }
 

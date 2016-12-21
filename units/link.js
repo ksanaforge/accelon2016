@@ -8,6 +8,19 @@ const	getWorkingLinks=(workinglinks,prefix,article)=>{
 const makeWLinkId=function(kpos,address){
 	return kpos.toString(36) +"_"+address.replace(/.+@/,"");
 }
+const parseWLinkId=function(wlinkid){
+	return parseInt(wlinkid.replace(/_.+/,""),36);
+}
+const makeMarkerId=function(prefix,rangeobj){
+	if (typeof rangeobj=="number") {
+		return prefix+rangeobj;
+	}
+	if (rangeobj.start==rangeobj.end) {
+		return prefix+rangeobj.start;
+	} else {
+		return prefix+rangeobj.kRange;
+	}
+}
 const hasLinkAt=function(kpos,fields) {
 
 }
@@ -19,4 +32,20 @@ const hasUserLinkAt=function(kpos,userfields){
 	}
 	return out;
 }
-module.exports={getWorkingLinks,makeWLinkId,hasLinkAt,hasUserLinkAt};
+const clearWorkingLink=function(f,done){
+	if (!this.markinview ||!this.markdone)return;
+	const p=parseWLinkId(f);
+	const markerid=makeMarkerId("wlink",p);
+	const m=this.markinview[markerid];
+	if (m) {
+		m.clear();
+		if (done){
+			this.markdone[markerid]=done;	
+		} else if (this.markdone[markerid]) {
+			delete this.markdone[markerid];
+		}
+		delete this.markinview[markerid];
+	}	
+}
+module.exports={getWorkingLinks,makeWLinkId,parseWLinkId,
+	hasLinkAt,hasUserLinkAt,makeMarkerId,clearWorkingLink};

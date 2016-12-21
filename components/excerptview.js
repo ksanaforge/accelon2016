@@ -42,7 +42,7 @@ const ExcerptView=React.createClass({
 		if (address) {
 			var addressH=cor.stringify(address);
 			addressH=addressH.substr(0,addressH.length-2);
-			const title=(now+1)+"."+cor.articleOf(address).articlename + " "+addressH;
+			const title=cor.getTitle(address)+ " "+addressH;
 			return title;			
 		} else {
 			return "";
@@ -78,11 +78,11 @@ const ExcerptView=React.createClass({
 				const phraselengths=this.props.query.phrasepostings[j].lengths;
 				const linecharr=hits.map((hit,idx)=>{
 					const phraselength=phraselengths[idx]||phraselengths;//should be kpos width
-					var from=cor.toLogicalPos(excerpt.linebreaks,hit,getrawline);
-					var to=cor.toLogicalPos(excerpt.linebreaks,hit+phraselength,getrawline);
-					from.line+=this.group[i];
-					to.line+=this.group[i];
-					this.cm.markText(from,to,{className:"hl hl"+j});
+					const range=cor.makeKRange(hit,hit+phraselength);
+					var {start,end}=cor.toLogicalRange(excerpt.linebreaks,range,getrawline);
+					start.line+=this.group[i];
+					end.line+=this.group[i];
+					this.cm.markText(start,end,{className:"hl hl"+j});
 				});
 			}
 		}

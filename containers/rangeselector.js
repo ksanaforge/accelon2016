@@ -39,7 +39,9 @@ const RangeSelector=React.createClass({
 			g=g.substr(2);
 			br=true;
 		}
-		return E(filterItem,{label:g,hit,exclude,key,br,idx:key,
+		const hint=g.replace(/.*;/,"");
+		const label=g.replace(/;.*/,"");
+		return E(filterItem,{label,hit,exclude,key,br,idx:key,hint,idx:key,
 			setExclude:this.setExclude,goGroup:this.goGroup,goHit:this.goHit});
 	}
 	,selectall(){
