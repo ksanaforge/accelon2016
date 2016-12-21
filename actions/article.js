@@ -20,7 +20,7 @@ const _fetchArticle=(corpus,address,dispatch,type,id)=>{
       	id=id||newid();
         cor.getArticleTextTag( article.at, articleFields , (res)=>{
       	    dispatch({type,corpus,address,id,
-            article,title:article.articlename,rawlines:res.text,fields:res.fields});
+            article,title:cor.getTitle(address),rawlines:res.text,fields:res.fields});
         });
 				saveAddress(corpus,address);
       } else {
@@ -119,7 +119,7 @@ const updateArticleByAddress=(address,aart)=>(dispatch,getState)=>{
 	} else {//don't need to fetch 
     dispatch({type:UPDATE_ARTICLE,corpus:active.corpus,address,id:active.id,
     				fields:active.fields,
-            article,title:article.articlename,rawlines:active.rawlines});
+            article,title:cor.getTitle(address),rawlines:active.rawlines});
 	}
 }
 module.exports={TOGGLE_LAYOUT,UPDATE_ARTICLE,fetchArticle,goArticle,openLink,

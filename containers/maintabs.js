@@ -96,6 +96,7 @@ const MainTabs=React.createClass({
 		this.setState({menuopen:false});
 	}
 	,renderArticleList(){
+		if (this.props.activeArticle!==this.state.menuidx) return ;
 		const article=this.props.articles[this.state.menuidx];
 		const corpus=article.corpus, address=article.address;
 		return E(ArticleList,{close:this.closeMenu,corpus,address,

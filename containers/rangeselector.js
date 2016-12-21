@@ -4,7 +4,7 @@ const {openCorpus}=require("ksana-corpus");
 const filterItem=require("../components/filteritem");
 const {_}=require("ksana-localization")
 const styles={
-	container:{overflowY:"auto",height:"49vh"},
+	container:{overflowY:"auto"},
 	btn:{marginLeft:"10px"}
 }
 const RangeSelector=React.createClass({
@@ -40,7 +40,7 @@ const RangeSelector=React.createClass({
 			br=true;
 		}
 		const hint=g.replace(/.*;/,"");
-		const label=g.replace(/;.*/,"");
+		const label=hint;//g.replace(/;.*/,"");
 		return E(filterItem,{label,hit,exclude,key,br,idx:key,hint,idx:key,
 			setExclude:this.setExclude,goGroup:this.goGroup,goHit:this.goHit});
 	}

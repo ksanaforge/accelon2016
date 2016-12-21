@@ -42,14 +42,14 @@ const filterItem=React.createClass({
 		const firstitem=this.props.br||this.props.idx==0?" tooltipfirst":"";
 		return E("span",{},
 			firstitem?E("br"):E("span"),
-		  E("span",{style:styles.container,className:"tooltip"},
-		  	E("span",{className:"tooltiptext"+firstitem},this.props.hint)
-		  	,"　",
-				E("input",{type:"checkbox",checked:!this.props.exclude,onChange:this.setExclude}),
-				E("span",{onClick:this.labelClick},this.props.label),
-				" ",
+		  E("span",{style:styles.container,className:"tooltip"}
+//		  	,E("span",{className:"tooltiptext"+firstitem},this.props.hint)
+		  	,"　"
+				,E("input",{type:"checkbox",checked:!this.props.exclude,onChange:this.setExclude})
+				,E("span",{onClick:this.labelClick},this.props.label)
+				," "
 
-				E("span",{className:this.props.exclude?"disablefilterhit":"filterhit",onClick:this.hitClick}, humanhit(this.props.hit))
+				,E("span",{className:this.props.exclude?"disablefilterhit":"filterhit",onClick:this.hitClick}, humanhit(this.props.hit))
 			)
 		)
 	}
