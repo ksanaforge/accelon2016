@@ -2,22 +2,18 @@ const React =require('react');
 const E=React.createElement;
 
 const OccurIndidator=React.createClass({
-	getInitialState(){
-		return {editing:false}
-	}
-	,onKeyDown(e){
+onKeyDown(e){
 		if (e.key=="Enter") {
-			this.setState({editing:false});
 			this.props.onChange&&this.props.onChange(this.input.value);
 		} else if (e.key=="Escape") {
-			if (this.state.editing) this.setState({editing:false});
+			this.props.onCancelEdit();
 		}
 	}
 	,getInput(ref){
 		this.input=ref;
 	}
 	,onClick(){
-		if (!this.state.editing) this.setState({editing:true});
+		this.props.onEdit();
 	}
 	,componentDidUpdate(){
 		if (this.input) this.input.focus();
@@ -29,8 +25,8 @@ const OccurIndidator=React.createClass({
 		if (now>count) now=count;
 
 		return E("span",{onClick:this.onClick,style:{color:"silver"}},
-		this.props.editable&&this.state.editing?E("input",{style:styles.input,
-			ref:this.getInput,size:3,
+		this.props.editing?E("input",{style:styles.input,
+			ref:this.getInput,size:3,onBlur:this.props.onCancelEdit,
 			defaultValue:now,onKeyDown:this.onKeyDown}):now
 		,"/"+count+" ");
 	}
