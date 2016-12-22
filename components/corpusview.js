@@ -199,7 +199,18 @@ const CorpusView=React.createClass({
 		if (sels.length!==1)false;
 		const s=sels[0].anchor,e=sels[0].head;
 		return s.line==e.line&&s.ch==e.ch;
-	}		
+	}
+	,showDictHandle(cm){
+		this.dicthandle&&this.dicthandle.clear();
+		if (!cm.hasFocus())return;
+		var widget=document.createElement("span");
+		widget.className="dicthandle";
+		widget.innerHTML="佛光";
+		this.dicthandle=cm.setBookmark(cm.getCursor(),{widget,handleMouseEvents:true});
+	}
+	,onBlur(cm){
+		this.dicthandle&&this.dicthandle.clear();
+	}
 	,onCursorActivity(cm){
 		if (!this.cor) return;
 		clearTimeout(this.cursortimer);
@@ -211,7 +222,7 @@ const CorpusView=React.createClass({
 			if (this.noSelection(cm)) {
 				this.linkbuttons=followLinkButton(cm,kpos,this.props.userfield,this.actions);
 			}
-			
+			this.showDictHandle(cm);	
 			this.props.onCursorActivity&&this.props.onCursorActivity(cm,kpos);
 		},300);
 	}
@@ -241,6 +252,7 @@ const CorpusView=React.createClass({
 			text:this.state.text,
 			onCursorActivity:this.onCursorActivity,
 			onCut:this.onCut,
+			onBlur:this.onBlur,
 			extraKeys:this.props.extraKeys,
 			onViewportChange:this.onViewportChange,
 			articlename:this.props.article.articlename

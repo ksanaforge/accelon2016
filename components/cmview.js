@@ -77,6 +77,8 @@ const CMView=React.createClass({
   	  onCursorActivity:this.props.onCursorActivity
   	  ,onCopy:this.onCopy
   	  ,onCut:this.onCut
+  	  ,onFocus:this.props.onFocus
+  	  ,onBlur:this.props.onBlur
   	  ,extraKeys:this.props.extraKeys
   	  ,onViewportChange:this.props.onViewportChange})
   	 )
