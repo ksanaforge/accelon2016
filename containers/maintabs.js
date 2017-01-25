@@ -1,7 +1,7 @@
 const React =require('react');
 const E=React.createElement;
 const MUITabs=require("../components/muitabs");
-const CorpusView=require("../components/corpusview");
+const CorpusView=require("ksana-corpus-view").CorpusView;
 const ExcerptView=require("../components/excerptview");
 const TabCloseButton=require("../components/tabclosebutton");
 const ArticleList=require("../components/articlelist");

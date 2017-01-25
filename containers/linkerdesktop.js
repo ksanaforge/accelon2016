@@ -1,11 +1,19 @@
 const React=require("react");
 const E=React.createElement;
 const LinkerTab=require("../components/linkertab");
-const CorpusView=require("../components/corpusview");
 const {openCorpus}=require("ksana-corpus");
 const {OPEN_AT}=require("../actions/articles");
 const {getQuoteText}=require("../units/quote");
-const {getWorkingLinks,getUserLinks}=require("../units/link");
+
+const CorpusView=require("ksana-corpus-view").CorpusView;
+const trimArticleField=require("ksana-corpus").trimArticleField;
+
+const	getWorkingLinks=(workinglinks,prefix,article)=>{
+	const fields=trimArticleField(workinglinks,article);
+	const value=fields.value.map( v=> prefix+"@"+v);
+	return {pos:fields.pos,value};
+}
+
 const LinkerDesktop=React.createClass({
 	getInitialState(){
 		this.actions={
@@ -94,8 +102,9 @@ const LinkerDesktop=React.createClass({
   	this.props.findOrigin(quotetext, this.props.corpus2, searchfrom);
 	}
 	,render(){
+
 		if (!this.state.ready) {
-			return E("loading");
+			return E("div",{},"loading linker");
 		}
 		const styles={
 			container:{display:"flex",width:"100%"},
@@ -115,9 +124,10 @@ const LinkerDesktop=React.createClass({
 		Object.assign({},this.props.leftarticle.fields,{wlink}):this.props.leftarticle.fields;
 
 		const props1=Object.assign({},this.actions,this.props.leftarticle,
-			{fields,extraKeys,userfield:this.props.leftuserlink,activeUserfield:this.props.activeWLink});
+			{fields,extraKeys,userfield:this.props.leftuserlink,activeUserfield:this.props.activeWLink
+				,theme:"ambiance"});
 		const props2=Object.assign({},this.actions,this.props.rightarticle,
-			{userfield:this.props.rightuserlink,activeUserfield:this.props.activeWLink});
+			{userfield:this.props.rightuserlink,activeUserfield:this.props.activeWLink,theme:"ambiance"});
 
 		return E("div",{style:styles.container},
 			E("div",{style:styles.corpustab},

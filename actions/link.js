@@ -1,12 +1,17 @@
 const {findArticleByCorpus,_fetchArticle}=require("./article");
 const {openCorpus,bsearch}=require("ksana-corpus");
 const {strstr}=require("ksana-corpus-search");
-const {makeWLinkId}=require("../units/link");
+
 const {saveAddress}=require("../units/saveaddress");
 const {articleSubstr,posFromIndex,fromLogicalPos}=require("../units/quote");
 const {UPDATE_ARTICLE}=require("./article");
 const SET_ACTIVE_WLINK="SET_ACTIVE_WLINK";
 const MAX_ELAPSE=5*60*1000;//max 5 minutes
+
+const makeWLinkId=function(kpos,address){
+	return kpos.toString(36) +"_"+address.replace(/.+@/,"");
+}
+
 const findOrigin=(tofind,sourcecorpus,searchfrom)=>(dispatch,getState)=>{
 	const articles=getState().articles;
 	const at=findArticleByCorpus(articles,sourcecorpus);

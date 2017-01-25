@@ -4,7 +4,7 @@ const {TOGGLE_LAYOUT,UPDATE_ARTICLE }=require("../actions/article");
 const {SEARCH_DONE}=require("../actions/search");
 const rightButton=require("../components/tabclonebutton");
 const initialArticles=[
-  {view:require("../components/corpusview")
+  {view:require("ksana-corpus-view").CorpusView
   ,corpus:"",article:{}
   ,title:"ResultView",id:'resultview',rawlines:["a","b"],rightButton,address:"1p1"}
 ]

@@ -1,4 +1,7 @@
-const {makeWLinkId}=require("../units/link");
+const makeWLinkId=function(kpos,address){
+	return kpos.toString(36) +"_"+address.replace(/.+@/,"");
+}
+
 const setinnerhtml=function(dom){
 	if (dom.target instanceof Array) {
 		dom.innerHTML = (dom.nlink+1)+"/"+dom.target.length+" "+dom.target[dom.nlink];
