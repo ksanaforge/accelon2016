@@ -7,10 +7,10 @@ const onDefMouseDown=function(e){
 	}
 	target.action&&target.action(address,target.tabid);
 }
-const createDef=function({cm,cor,corpus,start,end,id,tabid,target,actions}){
+const createDef=function({cm,cor,corpus,start,end,id,tabid,target,actions,fields}){
 	const dom=document.createElement("span");
 	dom.className="def";
-	dom.innerHTML=id;
+	dom.innerHTML=fields.noteid.value[id].replace(/.+\./,"").replace(/^0+/,"");
 	dom.dataset.target=target;
 	dom.onmousedown=onDefMouseDown;
 	dom.action=actions.updateArticleByAddress;

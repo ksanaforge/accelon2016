@@ -32,11 +32,11 @@ const onPtrLeave=function(e){
 		e.target.innerHTML=e.target.dataset.id;
 	},50);
 }
-const createPtr=function({cm,cor,start,end,id,tabid,target,actions}){
+const createPtr=function({cm,cor,start,end,id,tabid,target,actions,fields}){
 	const dom=document.createElement("span");
 	dom.className="ptr";
-	dom.innerHTML=id;
-	dom.dataset.id=id;
+	dom.innerHTML=fields.noteid.value[id].replace(/.+\./,"").replace(/^0+/,"");
+	dom.dataset.id=dom.innerHTML;
 	dom.dataset.target=target;
 	dom.onmousedown=onPtrMouseDown;
 	dom.cor=cor;
