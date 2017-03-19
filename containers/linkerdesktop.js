@@ -123,11 +123,17 @@ const LinkerDesktop=React.createClass({
 		const fields=(wlink)?
 		Object.assign({},this.props.leftarticle.fields,{wlink}):this.props.leftarticle.fields;
 
+		const corpora={};
+		for (var i in this.props.corpora) {
+			if (this.props.corpora[i]) {
+				corpora[i]=openCorpus(i);
+			}
+		}
 		const props1=Object.assign({},this.actions,this.props.leftarticle,
-			{fields,extraKeys,userfield:this.props.leftuserlink,activeUserfield:this.props.activeWLink
+			{corpora,fields,extraKeys,userfield:this.props.leftuserlink,activeUserfield:this.props.activeWLink
 				,theme:"ambiance"});
 		const props2=Object.assign({},this.actions,this.props.rightarticle,
-			{userfield:this.props.rightuserlink,activeUserfield:this.props.activeWLink,theme:"ambiance"});
+			{corpora,userfield:this.props.rightuserlink,activeUserfield:this.props.activeWLink,theme:"ambiance"});
 
 		return E("div",{style:styles.container},
 			E("div",{style:styles.corpustab},

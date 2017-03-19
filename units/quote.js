@@ -46,7 +46,7 @@ const articleSubstr=function(cor,article,startfrom){
 const fromLogicalPos=function(cor,firstline,linech,text,getrawlines,linebreaks,article){//similar function in corpusview
 	const lb=linebreaks[linech.line];
 	if (typeof text==="undefined") return null;
-	return cor.fromLogicalPos(text,linech.ch,lb,firstline,getrawlines);
+	return cor.fromLogicalPos(text,linech,lb,firstline,getrawlines);
 }
 const posFromIndex=function(index,lines){ //same as codemirror
 	var ch=index;

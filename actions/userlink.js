@@ -11,7 +11,7 @@ const addUserLink=(id,rawpayload,corpus,article,targetcorpus,decorator,fromcor)=
 	
 	const payload=Object.assign({},rawpayload,{
 		start:r.start,end:r.end,
-		kRange:r.kRange,
+		range:r.range,
 		corpus:targetcorpus,decorator
 	});
 	additems.push({id,payload,corpus});

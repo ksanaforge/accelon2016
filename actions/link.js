@@ -28,7 +28,7 @@ const findOrigin=(tofind,sourcecorpus,searchfrom)=>(dispatch,getState)=>{
 	const start=layout.linebreaks[linech1.line];
 	const end=layout.linebreaks[linech2.line];
 
-	const range=cor.makeKRange(start,end+cor.addressPattern.maxchar);
+	const range=cor.makeRange(start,end+cor.addressPattern.maxchar);
 	const address=cor.stringify(range);
 	const obj=Object.assign({},{type:UPDATE_ARTICLE},article,{address});
   dispatch(obj);

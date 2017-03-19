@@ -78,7 +78,7 @@ const ExcerptView=React.createClass({
 				const phraselengths=this.props.query.phrasepostings[j].lengths;
 				const linecharr=hits.map((hit,idx)=>{
 					const phraselength=phraselengths[idx]||phraselengths;//should be kpos width
-					const range=cor.makeKRange(hit,hit+phraselength);
+					const range=cor.makeRange(hit,hit+phraselength);
 					var {start,end}=cor.toLogicalRange(excerpt.linebreaks,range,getrawline);
 					start.line+=this.group[i];
 					end.line+=this.group[i];
