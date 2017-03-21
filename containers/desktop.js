@@ -8,7 +8,7 @@ const TocNav=require("./tocnav");
 const Desktop=React.createClass({
 	componentDidMount(){
 		this.props.stockcorpora.forEach((corpus)=>{
-			this.props.openCorpus(corpus.name);	
+			this.props.openCorpus(corpus.id||corpus.name);	
 		});
 	}
 	,render(){
